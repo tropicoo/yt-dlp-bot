@@ -1,0 +1,5 @@
+telegram:
+  token: "<PASTE-HERE-TELEGRAM-TOKEN>"
+  allowed_user_ids:
+    - 123456789
+log_level: "INFO"

@@ -1,0 +1,94 @@
+version: "3"
+
+services:
+  api:
+    container_name: yt_api
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    env_file:
+      - envs/.env_common
+      - envs/.env_api
+    restart: unless-stopped
+    ports:
+      - "1984:8000"
+    command: bash -c "/app/start.sh && uvicorn main:app --host 0.0.0.0 --port 8000"
+    depends_on:
+      - postgres
+      - rabbitmq
+      - worker
+      - redis
+      - pgadmin
+  bot:
+    container_name: yt_bot
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
+    env_file:
+      - envs/.env_common
+      - envs/.env_bot
+    restart: unless-stopped
+    command: >
+      sh -c "/app/start.sh && python main.py"
+    depends_on:
+      - postgres
+      - rabbitmq
+      - worker
+      - api
+  worker:
+    container_name: yt_worker
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    env_file:
+      - envs/.env_common
+      - envs/.env_worker
+    restart: unless-stopped
+    command: >
+      sh -c "alembic upgrade head && /app/start.sh && python main.py"
+    depends_on:
+      - postgres
+      - rabbitmq
+    volumes:
+        - "/data/downloads:/filestorage"
+  postgres:
+    container_name: yt_postgres
+    image: postgres
+    env_file:
+      - envs/.env_common
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  rabbitmq:
+    image: "rabbitmq:3.6-management-alpine"
+    container_name: yt_rabbitmq
+    ports:
+      - "25672:5672"
+      - "15672:15672"
+  redis:
+    image: "redis:alpine"
+    container_name: yt_redis
+  pgadmin:
+    container_name: yt_pgadmin
+    image: dpage/pgadmin4:6
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "123"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin:/root/.pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1G
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
+  pgadmin:

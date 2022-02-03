@@ -1,0 +1,11 @@
+PyYAML==6.0
+SQLAlchemy-Utils==0.38.2
+SQLAlchemy==1.4.31
+aio-pika==7.1.0
+alembic==1.7.6
+asyncpg==0.25.0
+orjson==3.6.7
+pydantic==1.9.0
+python-dotenv==0.19.2
+uvloop==0.16.0
+yt-dlp

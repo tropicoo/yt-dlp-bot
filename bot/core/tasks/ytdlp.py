@@ -58,8 +58,7 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
         text = (
             f'New {code("yt-dlp")} version available: {bold(latest.version)}\n'
             f'Current version: {bold(current.version)}\n'
-            f'Bump new version in {code("requirements.txt")} and '
-            f'run {code("docker-compose build worker")}'
+            f'Rebuild worker with {code("docker-compose build --no-cache worker")}'
         )
         await self._send_to_chat(text)
 

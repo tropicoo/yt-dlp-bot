@@ -9,7 +9,7 @@ from core.utils.utils import bold, code
 from yt_shared.config import YTDLP_VERSION_CHECK_INTERVAL
 from yt_shared.db import get_db
 from yt_shared.emoji import INFORMATION_EMOJI
-from yt_shared.schemas.ytdlp import Current, Latest
+from yt_shared.schemas.ytdlp import VersionContext
 from yt_shared.ytdlp.version_checker import VersionChecker
 
 if TYPE_CHECKING:
@@ -32,7 +32,7 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
             except Exception:
                 self._log.exception('Failed check new yt-dlp version')
             self._log.info(
-                'Next check for new yt-dlp version planned at %s',
+                'Next yt-dlp version check planned at %s',
                 self._get_next_check_datetime().isoformat(' '))
             await asyncio.sleep(YTDLP_VERSION_CHECK_INTERVAL)
 
@@ -44,28 +44,25 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
 
     async def _notify_if_new_version(self) -> None:
         async for db in get_db():
-            latest, current = await asyncio.gather(
-                self._version_checker.get_latest_version(),
-                self._version_checker.get_current_version(db))
-
-            if latest.version != current.version:
-                await self._notify_outdated(latest, current)
+            context = await self._version_checker.get_version_context(db)
+            if context.has_new_version:
+                await self._notify_outdated(context)
             elif not self._startup_message_sent:
-                await self._notify_up_to_date(current)
+                await self._notify_up_to_date(context)
                 self._startup_message_sent = True
 
-    async def _notify_outdated(self, latest: Latest, current: Current) -> None:
+    async def _notify_outdated(self, ctx: VersionContext) -> None:
         text = (
-            f'New {code("yt-dlp")} version available: {bold(latest.version)}\n'
-            f'Current version: {bold(current.version)}\n'
+            f'New {code("yt-dlp")} version available: {bold(ctx.latest.version)}\n'
+            f'Current version: {bold(ctx.current.version)}\n'
             f'Rebuild worker with {code("docker-compose build --no-cache worker")}'
         )
         await self._send_to_chat(text)
 
-    async def _notify_up_to_date(self, current: Current) -> None:
+    async def _notify_up_to_date(self, ctx: VersionContext) -> None:
         """Send startup message that yt-dlp version is up to date."""
         text = f'{INFORMATION_EMOJI} Your {code("yt-dlp")} version ' \
-               f'{bold(current.version)} is up to date. Have fun.'
+               f'{bold(ctx.current.version)} is up to date. Have fun.'
         await self._send_to_chat(text)
 
     async def _send_to_chat(self, text: str) -> None:

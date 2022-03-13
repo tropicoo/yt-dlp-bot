@@ -1,5 +1,3 @@
-import asyncio
-
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,8 +12,7 @@ router = APIRouter()
             response_model_by_alias=False)
 async def yt_dlp_version(db: AsyncSession = Depends(get_db)):
     version_checker = VersionChecker()
-    latest, current = await asyncio.gather(
-        version_checker.get_latest_version(),
-        version_checker.get_current_version(db))
-    return YTDLPLatestVersion(current=current, latest=latest,
-                              need_upgrade=latest.version != current.version)
+    ctx = await version_checker.get_version_context(db)
+
+    return YTDLPLatestVersion(current=ctx.current, latest=ctx.latest,
+                              need_upgrade=ctx.has_new_version)

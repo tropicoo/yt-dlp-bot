@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 
 from pydantic import Field, StrictStr, validator
 
@@ -9,7 +10,7 @@ def _remove_microseconds(dt_obj: datetime.datetime) -> datetime.datetime:
     return dt_obj.replace(microsecond=0)
 
 
-class Latest(RealBaseModel):
+class LatestVersion(RealBaseModel):
     version: StrictStr
     retrieved_at: datetime.datetime
 
@@ -18,7 +19,7 @@ class Latest(RealBaseModel):
         return _remove_microseconds(value)
 
 
-class Current(RealBaseModel):
+class CurrentVersion(RealBaseModel):
     version: StrictStr = Field(..., alias='current_version')
     updated_at: datetime.datetime
 
@@ -28,3 +29,14 @@ class Current(RealBaseModel):
 
     class Config(RealBaseModel.Config):
         orm_mode = True
+
+
+class VersionContext(RealBaseModel):
+    latest: LatestVersion
+    current: CurrentVersion
+    has_new_version: Optional[bool]
+
+    @validator('has_new_version', always=True)
+    def check_new_version(cls, value, values: dict) -> bool:
+        return [int(x) for x in values['latest'].version.split('.')] > \
+               [int(x) for x in values['current'].version.split('.')]

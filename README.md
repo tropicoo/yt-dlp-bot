@@ -34,6 +34,12 @@ Your telegram bot should send you a startup message:
 After pasting video URL bot will send you appropriate message whether it was downloaded or something went wrong.
 
 
+## Advanced setup
+
+1. If you want to change `yt-dlp` download options, go to the `worker/ytdl_opts`
+directory, copy content from `default.py` to `user.py` and modify as you wish 
+by checking [official documentation](https://github.com/timethrow/yt-dlp/blob/patch-1/README.md#embedding-yt-dlp).
+
 ## 🛑 Failed download
 If your URL can't be downloaded for some reason, you will see this
 

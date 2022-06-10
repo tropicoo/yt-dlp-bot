@@ -1,14 +1,19 @@
 from setuptools import find_packages, setup
 
-
 # metadata
 VERSION = (0, 0, 1)
 __author__ = 'tropicoo'
 __email__ = 'good@example.com'
 __version__ = '.'.join(map(str, VERSION))
 
-
 setup_requirements = []
+
+
+def get_requirements() -> list[str]:
+    """This hack is needed to actually install deps in Docker."""
+    with open('requirements_shared.txt') as f_in:
+        return f_in.read().splitlines()
+
 
 setup(
     name='yt_shared',
@@ -25,8 +30,7 @@ setup(
         'Programming Language :: Python :: 3.9',
     ],
     description='Common shared utils for yt downloader bot',
-    install_requires=[
-    ],
+    install_requires=get_requirements(),
     include_package_data=True,
     keywords='yt-shared',
     packages=find_packages(),

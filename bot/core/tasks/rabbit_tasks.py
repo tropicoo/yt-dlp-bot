@@ -1,21 +1,24 @@
 import abc
+import asyncio
 import enum
 import os
 from typing import Optional, TYPE_CHECKING, Type
 
 from aio_pika import IncomingMessage
-from aiogram.types import InputFile, ParseMode
 from pydantic import BaseModel
+from pyrogram.enums import ParseMode
 
 from core.exceptions import InvalidBodyError
 from core.tasks.abstract import AbstractTask
-from core.utils.utils import bold
-from yt_shared.config import STORAGE_PATH
+from core.tasks.upload import UploadTask
+from core.utils import bold
+from yt_shared.config import TMP_DOWNLOAD_PATH, UPLOAD_VIDEO_FILE
 from yt_shared.emoji import SUCCESS_EMOJI
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.rabbit.rabbit_config import ERROR_QUEUE, SUCCESS_QUEUE
 from yt_shared.schemas.error import ErrorPayload
 from yt_shared.schemas.success import SuccessPayload
+from yt_shared.task_utils.tasks import create_task
 
 if TYPE_CHECKING:
     from core.bot import VideoBot
@@ -51,8 +54,7 @@ class AbstractResultWorkerTask(AbstractTask):
                 try:
                     await self._process_message(message)
                 except Exception:
-                    self._log.exception('Failed to process message %s',
-                                        message.body)
+                    self._log.exception('Failed to process message %s', message.body)
                     await message.nack(requeue=False)
 
     async def _process_message(self, message: IncomingMessage) -> None:
@@ -71,8 +73,7 @@ class AbstractResultWorkerTask(AbstractTask):
 
     async def _reject_invalid_body(self, message: IncomingMessage) -> None:
         body = message.body
-        self._log.critical('Invalid message body: %s, type: %s', body,
-                           type(body))
+        self._log.critical('Invalid message body: %s, type: %s', body, type(body))
         await message.reject(requeue=False)
 
 
@@ -82,7 +83,36 @@ class SuccessResultWorkerTask(AbstractResultWorkerTask):
     SCHEMA_CLS = SuccessPayload
 
     async def _process_body(self, body: SuccessPayload) -> None:
-        await self._send_success_text(body)
+        process_coros = [self._send_success_text(body)]
+        if self._eligible_for_upload(body):
+            process_coros.append(self._create_upload_task(body))
+        await asyncio.gather(*process_coros)
+        self._cleanup(body.filename)
+
+    def _cleanup(self, filename: str) -> None:
+        filepath = os.path.join(TMP_DOWNLOAD_PATH, filename)
+        try:
+            os.remove(filepath)
+        except Exception:
+            self._log.exception('Failed to remove "%s" during cleanup', filepath)
+
+    @staticmethod
+    def _eligible_for_upload(body: SuccessPayload) -> bool:
+        # TODO: Also validate file size.
+        if UPLOAD_VIDEO_FILE:
+            return True
+        return False
+
+    async def _create_upload_task(self, body: SuccessPayload) -> None:
+        """Upload video to Telegram chat."""
+        task_name = UploadTask.__class__.__name__
+        await create_task(
+            UploadTask(body=body, bot=self._bot).run(),
+            task_name=task_name,
+            logger=self._log,
+            exception_message='Task %s raised an exception',
+            exception_message_args=(task_name,),
+        )
 
     async def _send_success_text(self, body: SuccessPayload) -> None:
         text = f'{SUCCESS_EMOJI} Downloaded {bold(body.filename)}'
@@ -93,35 +123,37 @@ class SuccessResultWorkerTask(AbstractResultWorkerTask):
             parse_mode=ParseMode.HTML,
         )
 
-    async def _upload_video(self, body: dict) -> None:
-        """Telegram API has 50MB file size limit."""
-        uid = self._bot.user_ids[0]
-        file_ = InputFile(os.path.join(STORAGE_PATH, body['filename']))
-        await self._bot.send_chat_action(chat_id=uid, action='upload_video')
-        await self._bot.send_document(uid, document=file_,
-                                      caption=body['filename'])
-
 
 class ErrorResultWorkerTask(AbstractResultWorkerTask):
     TYPE = RabbitTaskType.ERROR
     QUEUE_TYPE = ERROR_QUEUE
     SCHEMA_CLS = ErrorPayload
 
-    _ERR_MSG_TPL = '🛑 <strong>Download failed</strong>\n\n' \
-                   'ℹ <strong>ID:</strong> <code>{task_id}</code>\n' \
-                   '💬 <strong>Message:</strong> {message}\n' \
-                   '📹 <strong>Video URL:</strong> <code>{url}</code>\n' \
-                   '👀 <strong>Details:</strong> <code>{details}</code>'
+    _ERR_MSG_TPL = (
+        '🛑 <strong>Download failed</strong>\n\n'
+        'ℹ <strong>ID:</strong> <code>{task_id}</code>\n'
+        '💬 <strong>Message:</strong> {message}\n'
+        '📹 <strong>Video URL:</strong> <code>{url}</code>\n'
+        '👀 <strong>Details:</strong> <code>{details}</code>\n'
+        '⬇️ <strong>yt-dlp version:</strong> <code>{yt_dlp_version}</code>'
+    )
 
     async def _process_body(self, body: ErrorPayload) -> None:
         await self._send_error_text(body)
 
     async def _send_error_text(self, body: ErrorPayload) -> None:
-        text = self._ERR_MSG_TPL.format(message=body.message,
-                                        url=body.url,
-                                        task_id=body.task_id,
-                                        details=body.exception_msg)
-        await self._bot.send_message(chat_id=self._bot.user_ids[0],
-                                     reply_to_message_id=body.message_id,
-                                     text=text,
-                                     parse_mode=ParseMode.HTML)
+        await self._bot.send_message(
+            chat_id=self._bot.user_ids[0],
+            reply_to_message_id=body.message_id,
+            text=self._format_error_message(body),
+            parse_mode=ParseMode.HTML,
+        )
+
+    def _format_error_message(self, body: ErrorPayload) -> str:
+        return self._ERR_MSG_TPL.format(
+            message=body.message,
+            url=body.url,
+            task_id=body.task_id,
+            details=body.exception_msg,
+            yt_dlp_version=body.yt_dlp_version,
+        )

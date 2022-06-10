@@ -1,6 +1,6 @@
 import logging
 
-from aiogram import Bot
+from pyrogram import Client
 
 from core.config.config import get_main_config
 from core.tasks.manager import RabbitWorkerManager
@@ -9,15 +9,20 @@ from yt_shared.rabbit import get_rabbitmq
 from yt_shared.task_utils.tasks import create_task
 
 
-class VideoBot(Bot):
-    """Extended aiogram `Bot` class."""
+class VideoBot(Client):
+    """Extended Pyrogram's `Client` class."""
 
     def __init__(self) -> None:
         conf = get_main_config()
-        super().__init__(conf.telegram.token)
+        super().__init__(
+            name='default_name',
+            api_id=conf.telegram.api_id,
+            api_hash=conf.telegram.api_hash,
+            bot_token=conf.telegram.token,
+        )
         self._log = logging.getLogger(self.__class__.__name__)
+        self._log.info('Initializing bot client')
 
-        self._log.info('Initializing bot')
         self.user_ids: list[int] = conf.telegram.allowed_user_ids
         self.rabbit_mq = get_rabbitmq()
         self.rabbit_worker_manager = RabbitWorkerManager(bot=self)
@@ -38,8 +43,9 @@ class VideoBot(Bot):
         """Send welcome message after bot launch."""
         self._log.info('Sending welcome message')
         await self.send_message_all(
-            f'{(await self.me).first_name} bot started, paste video URL to '
-            f'start download')
+            f'{(await self.get_me()).first_name} bot started, paste video URL to '
+            f'start download'
+        )
 
     async def send_message_all(self, msg: str) -> None:
         """Send message to all defined user IDs in config.json."""
@@ -47,5 +53,6 @@ class VideoBot(Bot):
             try:
                 await self.send_message(user_id, msg)
             except Exception:
-                self._log.exception('Failed to send message "%s" to user ID '
-                                    '%s', msg, user_id)
+                self._log.exception(
+                    'Failed to send message "%s" to user ID ' '%s', msg, user_id
+                )

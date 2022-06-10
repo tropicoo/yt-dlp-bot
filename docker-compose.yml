@@ -35,6 +35,8 @@ services:
       - rabbitmq
       - worker
       - api
+    volumes:
+      - "shared-tmpfs:/tmp/download_tmpfs"
   worker:
     container_name: yt_worker
     build:
@@ -50,10 +52,11 @@ services:
       - postgres
       - rabbitmq
     volumes:
-        - "/data/downloads:/filestorage"
+      - "/data/downloads:/filestorage"
+      - "shared-tmpfs:/tmp/download_tmpfs"
   postgres:
     container_name: yt_postgres
-    image: postgres
+    image: postgres:14
     env_file:
       - envs/.env_common
     ports:
@@ -92,3 +95,9 @@ services:
 volumes:
   pgdata:
   pgadmin:
+  shared-tmpfs:
+    driver: local
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
+      o: "size=5120m,uid=1000"

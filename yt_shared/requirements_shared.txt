@@ -1,0 +1,7 @@
+SQLAlchemy-Utils==0.38.2
+SQLAlchemy==1.4.37
+aio-pika==8.0.3
+aiohttp==3.8.1
+asyncpg==0.25.0
+orjson==3.7.2
+pydantic==1.9.1

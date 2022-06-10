@@ -38,5 +38,6 @@ class VersionContext(RealBaseModel):
 
     @validator('has_new_version', always=True)
     def check_new_version(cls, value, values: dict) -> bool:
-        return [int(x) for x in values['latest'].version.split('.')] > \
-               [int(x) for x in values['current'].version.split('.')]
+        return [int(x) for x in values['latest'].version.split('.')] > [
+            int(x) for x in values['current'].version.split('.')
+        ]

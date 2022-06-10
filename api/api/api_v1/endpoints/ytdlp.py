@@ -8,11 +8,10 @@ from yt_shared.ytdlp.version_checker import VersionChecker
 router = APIRouter()
 
 
-@router.get('/', response_model=YTDLPLatestVersion,
-            response_model_by_alias=False)
+@router.get('/', response_model=YTDLPLatestVersion, response_model_by_alias=False)
 async def yt_dlp_version(db: AsyncSession = Depends(get_db)):
     version_checker = VersionChecker()
     ctx = await version_checker.get_version_context(db)
-
-    return YTDLPLatestVersion(current=ctx.current, latest=ctx.latest,
-                              need_upgrade=ctx.has_new_version)
+    return YTDLPLatestVersion(
+        current=ctx.current, latest=ctx.latest, need_upgrade=ctx.has_new_version
+    )

@@ -1,6 +1,6 @@
 # Byte-compiled / optimized / DLL files
 
-.env
+*.session
 config.yml
 config.yaml
 
@@ -107,7 +107,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/

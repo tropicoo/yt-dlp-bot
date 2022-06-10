@@ -1,11 +1,11 @@
 import asyncio
 import logging
-from typing import Optional
 
-from aiogram import Dispatcher
+from pyrogram import filters
+from pyrogram.handlers import MessageHandler
 
-from core.bot.bot import VideoBot
-from core.bot.setup import BotSetup
+from core.bot import VideoBot
+from core.callbacks import TelegramCallback
 from core.config.config import get_main_config
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.task_utils.tasks import create_task
@@ -20,18 +20,23 @@ class BotLauncher:
         """Constructor."""
         self._log = logging.getLogger(self.__class__.__name__)
         logging.getLogger().setLevel(get_main_config().log_level)
-
-        self._setup: Optional[BotSetup] = None
-        self._bot: Optional[VideoBot] = None
-        self._dispatcher: Optional[Dispatcher] = None
-
+        self._bot = VideoBot()
         self._rabbit_mq = get_rabbitmq()
 
     async def run(self) -> None:
         """Run bot."""
         await self._setup_rabbit()
-        await self._setup_bot()
+        await self._setup_handlers()
         await self._start_bot()
+
+    async def _setup_handlers(self):
+        cb = TelegramCallback()
+        self._bot.add_handler(
+            MessageHandler(
+                cb.on_message,
+                filters=filters.user(self._bot.user_ids) & filters.private,
+            ),
+        )
 
     async def _setup_rabbit(self) -> None:
         task_name = f'Setup RabbitMQ Task ({self._rabbit_mq.__class__.__name__})'
@@ -43,20 +48,16 @@ class BotLauncher:
             exception_message_args=(task_name,),
         )
 
-    async def _setup_bot(self) -> None:
-        self._setup = BotSetup()
-        self._bot = self._setup.get_bot()
-        self._dispatcher = self._setup.get_dispatcher()
-
     async def _start_bot(self) -> None:
         """Start telegram bot and related processes."""
-        self._log.info('Starting %s bot', (await self._bot.me).first_name)
+        await self._bot.start()
+
+        self._log.info('Starting %s bot', (await self._bot.get_me()).first_name)
         await self._bot.start_tasks()
         await self._bot.send_startup_message()
+        await self._run_bot_forever()
 
-        # TODO: Look into aiogram `executor`.
-        try:
-            await self._dispatcher.start_polling()
-        finally:
-            await asyncio.gather(self._dispatcher.bot.close(),
-                                 self._rabbit_mq.close())
+    @staticmethod
+    async def _run_bot_forever() -> None:
+        while True:
+            await asyncio.sleep(86400)

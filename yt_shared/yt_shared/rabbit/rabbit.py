@@ -2,7 +2,8 @@ from asyncio import get_running_loop
 from typing import Optional
 
 import aio_pika
-from aio_pika import Exchange, RobustChannel, RobustConnection
+from aio_pika import RobustChannel, RobustConnection
+from aio_pika.abc import AbstractRobustExchange, AbstractRobustQueue
 
 from yt_shared.config import RABBITMQ_URI
 from yt_shared.rabbit.rabbit_config import get_rabbit_config
@@ -18,8 +19,8 @@ class RabbitMQ:
 
         self.connection: Optional[RobustConnection] = None
         self.channel: Optional[RobustChannel] = None
-        self.exchanges: dict[str, Exchange] = {}
-        self.queues: dict[str, aio_pika.queue.Queue] = {}
+        self.exchanges: dict[str, AbstractRobustExchange] = {}
+        self.queues: dict[str, AbstractRobustQueue] = {}
 
     async def register(self) -> None:
         await self._set_connection()
@@ -36,8 +37,7 @@ class RabbitMQ:
 
     async def _set_channel(self):
         self.channel = await self.connection.channel()
-        await self.channel.set_qos(
-            prefetch_count=self.MAX_UNACK_MESSAGES_PER_CHANNEL)
+        await self.channel.set_qos(prefetch_count=self.MAX_UNACK_MESSAGES_PER_CHANNEL)
 
     async def _set_exchanges(self):
         for exchange_data in self._config.get('exchanges', []):

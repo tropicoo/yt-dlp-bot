@@ -24,8 +24,7 @@ class ConfigLoader:
             self._process_errors_and_exit(errors)
         return data
 
-    def _load_config(self) -> tuple[Optional[ConfigSchema],
-                                    Optional[ValidationError]]:
+    def _load_config(self) -> tuple[Optional[ConfigSchema], Optional[ValidationError]]:
         """Loads telegram and camera configuration from config file."""
         dir_path = Path(__file__).parent.parent.parent
         conf_file_path = dir_path / self._CONF_FILENAME
@@ -46,8 +45,9 @@ class ConfigLoader:
     def _process_errors_and_exit(self, errors: ValidationError) -> None:
         sep_begin = '-' * 20
         sep_end = '-' * 18
-        self._log.error('%s Errors in %s %s\n%s', sep_begin, self._CONF_FILENAME,
-                        sep_begin, errors)
+        self._log.error(
+            '%s Errors in %s %s\n%s', sep_begin, self._CONF_FILENAME, sep_begin, errors
+        )
         sys.exit(f'{sep_end} Fix config and try again {sep_end}')
 
 

@@ -41,8 +41,9 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 class CustomBase:
-    id: uuid.UUID = sa.Column(UUIDType(binary=False), primary_key=True,
-                              default=uuid.uuid4)
+    id: uuid.UUID = sa.Column(
+        UUIDType(binary=False), primary_key=True, default=uuid.uuid4
+    )
     __name__: str
 
     @declared_attr

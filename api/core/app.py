@@ -27,8 +27,9 @@ app = create_app()
 
 @app.on_event('startup')
 async def startup_event():
-    redis = aioredis.from_url('redis://yt_redis', encoding='utf8',
-                              decode_responses=True)
+    redis = aioredis.from_url(
+        'redis://yt_redis', encoding='utf8', decode_responses=True
+    )
     FastAPICache.init(RedisBackend(redis), prefix='fastapi-cache')
     await get_rabbitmq().register()
 

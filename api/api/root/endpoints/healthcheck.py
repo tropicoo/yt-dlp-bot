@@ -12,8 +12,9 @@ healthcheck_router = APIRouter(tags=['healthcheck'])
 logger = logging.getLogger(__name__)
 
 
-@healthcheck_router.get('/status', response_model=HealthcheckSchema,
-                        description='API Healthcheck')
+@healthcheck_router.get(
+    '/status', response_model=HealthcheckSchema, description='API Healthcheck'
+)
 async def healthcheck(db: AsyncSession = Depends(get_db)):
     try:
         await db.execute('SELECT 1')

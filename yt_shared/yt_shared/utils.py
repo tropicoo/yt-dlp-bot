@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any
 
 
 class Singleton(type):
@@ -15,7 +15,7 @@ class Singleton(type):
         return cls._instances[cls]
 
 
-def get_env_bool(string: Union[str, bool]) -> bool:
+def get_env_bool(string: str | bool) -> bool:
     if isinstance(string, str):
         return string.lower() in ('true',)
     return string

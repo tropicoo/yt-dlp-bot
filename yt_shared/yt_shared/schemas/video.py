@@ -14,3 +14,11 @@ class VideoPayload(RealBaseModel):
     url: StrictStr
     source: TaskSource
     added_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class DownVideo(RealBaseModel):
+    """Downloaded video object context."""
+
+    title: StrictStr
+    name: StrictStr
+    meta: dict

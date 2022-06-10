@@ -14,16 +14,15 @@ if TYPE_CHECKING:
 
 
 class RabbitWorkerManager:
-    _TASKS_TYPES = [ErrorResultWorkerTask, SuccessResultWorkerTask]
-    _tasks: dict[RabbitTaskType, Task]
+    _TASK_TYPES = [ErrorResultWorkerTask, SuccessResultWorkerTask]
 
     def __init__(self, bot: 'VideoBot') -> None:
         self._log = logging.getLogger(self.__class__.__name__)
         self._bot = bot
-        self._tasks = {}
+        self._tasks: dict[RabbitTaskType, Task] = {}
 
     async def start_worker_tasks(self) -> None:
-        for task_cls in self._TASKS_TYPES:
+        for task_cls in self._TASK_TYPES:
             self._log.info('Starting %s', task_cls.__name__)
             self._tasks[task_cls.TYPE] = create_task(
                 task_cls(self._bot).run(),

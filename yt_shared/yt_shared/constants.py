@@ -3,7 +3,6 @@ import enum
 
 @enum.unique
 class ChoiceEnum(enum.Enum):
-
     @classmethod
     def choices(cls) -> tuple[str, ...]:
         return tuple(x.value for x in cls)

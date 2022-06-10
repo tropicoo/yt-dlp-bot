@@ -1,12 +1,6 @@
 PyYAML==6.0
-SQLAlchemy-Utils==0.38.2
-SQLAlchemy==1.4.31
+Pyrogram==2.0.27
 addict==2.4.0
-aio-pika==7.1.0
-aiogram==2.19
-alembic==1.7.6
-asyncpg==0.25.0
-orjson==3.6.7
-pydantic==1.9.0
 tenacity==8.0.1
+tgcrypto==1.2.3
 uvloop==0.16.0

@@ -14,3 +14,4 @@ class ErrorPayload(RealBaseModel):
     original_body: dict
     exception_msg: StrictStr
     exception_type: StrictStr
+    yt_dlp_version: Optional[StrictStr]

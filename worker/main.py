@@ -1,16 +1,10 @@
-import asyncio
-
 from core.launcher import WorkerLauncher
+from core.log import setup_logging
 
 
 def main() -> None:
-    worker = WorkerLauncher()
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(worker.start())
-    try:
-        loop.run_forever()
-    finally:
-        loop.run_until_complete(worker.stop())
+    setup_logging()
+    WorkerLauncher().start()
 
 
 if __name__ == '__main__':

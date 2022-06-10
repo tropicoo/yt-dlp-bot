@@ -9,12 +9,23 @@ from yt_shared.constants import TaskSource, TaskStatus
 from yt_shared.schemas.base import RealBaseModel
 
 
+class CacheSchema(BaseOrmModel):
+    id: uuid.UUID
+    created: datetime
+    updated: datetime
+    cache_id: str
+    cache_unique_id: str
+    file_size: int
+    date_timestamp: datetime
+
+
 class FileSimpleSchema(BaseOrmModel):
     id: uuid.UUID
     created: datetime
     updated: datetime
+    title: Optional[str]
     name: Optional[str]
-    ext: Optional[str]
+    cache: Optional[CacheSchema] = ...
 
 
 class FileSchema(FileSimpleSchema):
@@ -23,13 +34,14 @@ class FileSchema(FileSimpleSchema):
 
 class TaskSimpleSchema(BaseOrmModel):
     id: uuid.UUID
-    status: TaskStatus
-    url: str
-    source: TaskSource
     added_at: datetime
     created: datetime
     updated: datetime
+    status: TaskStatus
+    url: str
+    source: TaskSource
     message_id: Optional[int]
+    yt_dlp_version: Optional[str]
     error: Optional[str]
     file: Optional[FileSimpleSchema]
 

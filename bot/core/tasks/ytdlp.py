@@ -2,10 +2,10 @@ import asyncio
 import datetime
 from typing import TYPE_CHECKING
 
-from aiogram.types import ParseMode
+from pyrogram.enums import ParseMode
 
 from core.tasks.abstract import AbstractTask
-from core.utils.utils import bold, code
+from core.utils import bold, code
 from yt_shared.config import YTDLP_VERSION_CHECK_INTERVAL
 from yt_shared.db import get_db
 from yt_shared.emoji import INFORMATION_EMOJI
@@ -17,7 +17,6 @@ if TYPE_CHECKING:
 
 
 class YtdlpNewVersionNotifyTask(AbstractTask):
-
     def __init__(self, bot: 'VideoBot') -> None:
         super().__init__()
         self._bot = bot
@@ -33,14 +32,16 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
                 self._log.exception('Failed check new yt-dlp version')
             self._log.info(
                 'Next yt-dlp version check planned at %s',
-                self._get_next_check_datetime().isoformat(' '))
+                self._get_next_check_datetime().isoformat(' '),
+            )
             await asyncio.sleep(YTDLP_VERSION_CHECK_INTERVAL)
 
     @staticmethod
     def _get_next_check_datetime() -> datetime.datetime:
-        return (datetime.datetime.now() +
-                datetime.timedelta(seconds=YTDLP_VERSION_CHECK_INTERVAL)) \
-            .replace(microsecond=0)
+        return (
+            datetime.datetime.now()
+            + datetime.timedelta(seconds=YTDLP_VERSION_CHECK_INTERVAL)
+        ).replace(microsecond=0)
 
     async def _notify_if_new_version(self) -> None:
         async for db in get_db():
@@ -61,10 +62,13 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
 
     async def _notify_up_to_date(self, ctx: VersionContext) -> None:
         """Send startup message that yt-dlp version is up to date."""
-        text = f'{INFORMATION_EMOJI} Your {code("yt-dlp")} version ' \
-               f'{bold(ctx.current.version)} is up to date. Have fun.'
+        text = (
+            f'{INFORMATION_EMOJI} Your {code("yt-dlp")} version '
+            f'{bold(ctx.current.version)} is up to date. Have fun.'
+        )
         await self._send_to_chat(text)
 
     async def _send_to_chat(self, text: str) -> None:
-        await self._bot.send_message(chat_id=self._bot.user_ids[0], text=text,
-                                     parse_mode=ParseMode.HTML)
+        await self._bot.send_message(
+            chat_id=self._bot.user_ids[0], text=text, parse_mode=ParseMode.HTML
+        )

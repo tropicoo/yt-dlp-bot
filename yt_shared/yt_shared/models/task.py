@@ -2,13 +2,14 @@ import uuid
 from datetime import datetime
 
 import sqlalchemy as sa
-from sqlalchemy import Index
+from sqlalchemy import Index, select
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_utils import Timestamp, UUIDType
 
 from yt_shared.constants import TaskSource, TaskStatus
 from yt_shared.db import Base
+from yt_shared.models.yt_dlp import YTDLP
 
 
 class Task(Base, Timestamp):
@@ -35,11 +36,17 @@ class Task(Base, Timestamp):
     added_at = sa.Column(sa.DateTime, nullable=False)
     message_id = sa.Column(sa.Integer, nullable=True)
     error = sa.Column(sa.String, nullable=True)
+    yt_dlp_version = sa.Column(
+        sa.String, nullable=True, default=select(YTDLP.current_version)
+    )
 
     @validates('added_at')
     def validate_added_at(self, key: str, added_at: datetime) -> datetime:
         """Remove UTC timezone from aware datetime before saving."""
         return added_at.replace(tzinfo=None)
+
+    # Fetch the value of server-generated default values like 'yt_dlp_version'.
+    __mapper_args__ = {'eager_defaults': True}
 
 
 task_created_at_index = Index('task_created_at_idx', Task.created)
@@ -47,8 +54,8 @@ task_created_at_index = Index('task_created_at_idx', Task.created)
 
 class File(Base, Timestamp):
     id = sa.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
+    title = sa.Column(sa.String, nullable=True)
     name = sa.Column(sa.String, nullable=True)
-    ext = sa.Column(sa.String, nullable=True)
     meta = sa.Column(JSONB, nullable=True)
     task_id = sa.Column(
         UUIDType(binary=False),
@@ -56,4 +63,10 @@ class File(Base, Timestamp):
         nullable=False,
         unique=True,
         index=True,
+    )
+    cache = relationship(
+        'Cache',
+        backref='file',
+        uselist=False,
+        cascade='all, delete-orphan',
     )

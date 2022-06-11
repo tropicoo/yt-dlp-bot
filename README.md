@@ -57,10 +57,11 @@ If your URL can't be downloaded for some reason, you will see this
 
 ## API
 By default, API service will run on your `localhost` and `1984` port.
+API endpoint documentations lives at `http://127.0.0.1:1984/docs`.
 
 | Endpoint | Method| Description|
 |---|---|---|
-| `/status` | `GET` | Get API healthcheck status, usually response is `{"message": "OK"}` |
+| `/status` | `GET` | Get API healthcheck status, usually response is `{"status": "OK"}` |
 | `/v1/yt-dlp` | `GET` | Get latest and currently installed `yt-dlp` version |
 |`/v1/tasks/?include_meta=False&status=DONE`| `GET` | Get all tasks with filtering options like to include large file metadata and by task status: `PENDING`, `PROCESSING`, `FAILED` and `DONE`. |
 | `/v1/tasks/f828714a-5c50-45de-87c0-3b51b7e04039?include_meta=True` | `GET` | Get info about task by ID |

@@ -12,7 +12,11 @@ from core.exceptions import InvalidBodyError
 from core.tasks.abstract import AbstractTask
 from core.tasks.upload import UploadTask
 from core.utils import bold
-from yt_shared.config import TMP_DOWNLOAD_PATH, UPLOAD_VIDEO_FILE
+from yt_shared.config import (
+    MAX_UPLOAD_VIDEO_FILE_SIZE,
+    TMP_DOWNLOAD_PATH,
+    UPLOAD_VIDEO_FILE,
+)
 from yt_shared.emoji import SUCCESS_EMOJI
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.rabbit.rabbit_config import ERROR_QUEUE, SUCCESS_QUEUE
@@ -84,24 +88,26 @@ class SuccessResultWorkerTask(AbstractResultWorkerTask):
 
     async def _process_body(self, body: SuccessPayload) -> None:
         process_coros = [self._send_success_text(body)]
-        if self._eligible_for_upload(body):
+        filepath: str = os.path.join(TMP_DOWNLOAD_PATH, body.filename)
+        if self._eligible_for_upload(filepath):
             process_coros.append(self._create_upload_task(body))
-        await asyncio.gather(*process_coros)
-        self._cleanup(body.filename)
+        else:
+            self._log.warning('File %s will not be uploaded to Telegram', body.filename)
+        await asyncio.gather(*process_coros, return_exceptions=True)
+        self._cleanup(filepath)
 
-    def _cleanup(self, filename: str) -> None:
-        filepath = os.path.join(TMP_DOWNLOAD_PATH, filename)
+    def _cleanup(self, filepath: str) -> None:
         try:
             os.remove(filepath)
         except Exception:
             self._log.exception('Failed to remove "%s" during cleanup', filepath)
 
     @staticmethod
-    def _eligible_for_upload(body: SuccessPayload) -> bool:
-        # TODO: Also validate file size.
-        if UPLOAD_VIDEO_FILE:
-            return True
-        return False
+    def _eligible_for_upload(filepath: str) -> bool:
+        return (
+            UPLOAD_VIDEO_FILE
+            and os.stat(filepath).st_size <= MAX_UPLOAD_VIDEO_FILE_SIZE
+        )
 
     async def _create_upload_task(self, body: SuccessPayload) -> None:
         """Upload video to Telegram chat."""

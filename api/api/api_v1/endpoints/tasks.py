@@ -86,8 +86,3 @@ async def delete_task(task_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
         await TaskService(db).delete_task(task_id)
     except NoResultFound:
         raise TaskNotFoundHTTPError
-
-
-@router.post('/error', status_code=400)
-async def post_and_get_error():
-    return {'error_key': 'error data'}

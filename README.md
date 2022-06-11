@@ -11,16 +11,17 @@ Simple and reliable YouTube Download Telegram Bot.
 * Everything is run in Docker containers
 
 ## ⚙ Quick Setup
-1. Create Telegram bot using [BotFather](https://t.me/BotFather) and get your token.
-2. Find your Telegram User ID [here](https://stackoverflow.com/questions/32683992/find-out-my-own-user-id-for-sending-a-message-with-telegram-api).
-3. Copy `bot/config-example.yml` to `bot/config.yml`.
-4. Write both token and User ID to `bot/config.yaml` by changing respective placeholders.
-5. Check the default environment variables in `envs` directory and change if needed (especially default credentials)..
-6. Video storage path (`STORAGE_PATH` environment variable) is located in `envs/.env_common` file.
+1. Create Telegram bot using [BotFather](https://t.me/BotFather) and get your `token`.
+2. [Get your own Telegram API key](https://my.telegram.org/apps) (`api_id` and `api_hash`)
+3. Find your Telegram User ID [here](https://stackoverflow.com/questions/32683992/find-out-my-own-user-id-for-sending-a-message-with-telegram-api).
+4. Copy `bot/config-example.yml` to `bot/config.yml`.
+5. Write `token`, `api_id`, `api_hash` and your User ID to `bot/config.yaml` by changing respective placeholders.
+6. Check the default environment variables in `envs` directory and change if needed (especially default credentials).
+7. Video storage path (`STORAGE_PATH` environment variable) is located in `envs/.env_common` file.
 By default, it's `/filestorage` path inside the container. What you want is to map the real path to this inside the `docker-compose.yml` file for `worker` service e.g.
 if you're on Windows, next strings mean container path `/filestorage` is mapped to
 real `D:/Videos` so your videos will be saved to your `Videos` folder.
-7. If you want your downloaded video to be uploaded back to Telegram, set `UPLOAD_VIDEO_FILE`
+8. If you want your downloaded video to be uploaded back to Telegram, set `UPLOAD_VIDEO_FILE`
 environment variable in `.env_common` file to `True`.
 ```yml
   worker:

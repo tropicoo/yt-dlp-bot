@@ -25,7 +25,6 @@ class VideoDownloader:
             try:
                 ytdl.download(url)
             except yt_dlp.utils.MaxDownloadsReached as err:
-                print('asdasd')
                 self._log.warning(
                     'Check video URL %s. Looks like a page with videos. Stopped on %d: %s',
                     url,
@@ -35,9 +34,6 @@ class VideoDownloader:
 
         self._log.info('Finished downloading %s', url)
         filepath = ytdl.prepare_filename(meta)
-        filepath.rsplit(
-            '/',
-        )
         return DownVideo(
             title=meta['title'],
             name=filepath.rsplit('/', maxsplit=1)[-1],

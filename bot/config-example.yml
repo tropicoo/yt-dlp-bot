@@ -1,5 +1,8 @@
 telegram:
+  api_id: 123456789
+  api_hash: "<PASTE-HERE-TELEGRAM-API-HASH>"
   token: "<PASTE-HERE-TELEGRAM-TOKEN>"
   allowed_user_ids:
     - 123456789
+  lang_code: en
 log_level: "INFO"

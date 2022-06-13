@@ -5,6 +5,7 @@ from pyrogram import Client
 from core.config.config import get_main_config
 from core.tasks.manager import RabbitWorkerManager
 from core.tasks.ytdlp import YtdlpNewVersionNotifyTask
+from core.utils import bold
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.task_utils.tasks import create_task
 
@@ -43,7 +44,7 @@ class VideoBot(Client):
         """Send welcome message after bot launch."""
         self._log.info('Sending welcome message')
         await self.send_message_all(
-            f'{(await self.get_me()).first_name} bot started, paste video URL to '
+            f'✨ {bold((await self.get_me()).first_name)} started, paste video URL to '
             f'start download'
         )
 

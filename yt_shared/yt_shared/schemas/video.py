@@ -10,6 +10,7 @@ from yt_shared.schemas.base import RealBaseModel
 
 class VideoPayload(RealBaseModel):
     id: Optional[uuid.UUID]
+    from_user_id: Optional[int]
     message_id: Optional[int]
     url: StrictStr
     source: TaskSource

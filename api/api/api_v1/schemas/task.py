@@ -40,6 +40,7 @@ class TaskSimpleSchema(BaseOrmModel):
     status: TaskStatus
     url: str
     source: TaskSource
+    from_user_id: Optional[int]
     message_id: Optional[int]
     yt_dlp_version: Optional[str]
     error: Optional[str]

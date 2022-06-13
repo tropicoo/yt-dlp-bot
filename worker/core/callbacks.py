@@ -7,7 +7,7 @@ from yt_shared.db import get_db
 from yt_shared.schemas.video import VideoPayload
 
 
-class _Callbacks:
+class _RMQCallbacks:
     """RabbitMQ callbacks."""
 
     def __init__(self) -> None:
@@ -35,4 +35,4 @@ class _Callbacks:
         await message.reject(requeue=False)
 
 
-callbacks = _Callbacks()
+rmq_callbacks = _RMQCallbacks()

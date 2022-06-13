@@ -75,7 +75,12 @@ class VideoService:
         )
 
     async def _send_finished_task(self, task: Task) -> None:
-        success_payload = SuccessPayload(task_id=task.id, filename=task.file.name)
+        success_payload = SuccessPayload(
+            task_id=task.id,
+            filename=task.file.name,
+            message_id=task.message_id,
+            from_user_id=task.from_user_id,
+        )
         await self._publisher.send_download_finished(success_payload)
 
     async def _send_failed_task(
@@ -88,6 +93,7 @@ class VideoService:
         err_payload = ErrorPayload(
             task_id=task.id,
             message_id=task.message_id,
+            from_user_id=video_payload.from_user_id,
             message='Download error',
             url=task.url,
             original_body=video_payload.dict(),

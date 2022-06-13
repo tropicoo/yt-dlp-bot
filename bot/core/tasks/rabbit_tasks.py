@@ -87,13 +87,12 @@ class SuccessResultWorkerTask(AbstractResultWorkerTask):
     SCHEMA_CLS = SuccessPayload
 
     async def _process_body(self, body: SuccessPayload) -> None:
-        process_coros = [self._send_success_text(body)]
+        await self._send_success_text(body)
         filepath: str = os.path.join(TMP_DOWNLOAD_PATH, body.filename)
         if self._eligible_for_upload(filepath):
-            process_coros.append(self._create_upload_task(body))
+            await self._create_upload_task(body)
         else:
             self._log.warning('File %s will not be uploaded to Telegram', body.filename)
-        await asyncio.gather(*process_coros, return_exceptions=True)
         self._cleanup(filepath)
 
     def _cleanup(self, filepath: str) -> None:

@@ -6,6 +6,7 @@ from pyrogram.types import Message
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from core.tasks.abstract import AbstractTask
+from core.utils import bold
 from yt_shared.config import TMP_DOWNLOAD_PATH
 from yt_shared.db import get_db
 from yt_shared.repositories.task import TaskRepository
@@ -25,30 +26,30 @@ class UploadTask(AbstractTask):
         self._bot = bot
 
     async def run(self) -> None:
-        tg_msg = f'Uploading {self.filename}'
+        tg_msg = f'⬆️ {bold("Uploading")} {self.filename}'
         self._log.info(tg_msg)
         try:
-            await self._bot.send_message(self._bot.user_ids[0], tg_msg)
+            await self._bot.send_message(self._body.from_user_id, tg_msg)
             message = await self._upload_video_file()
             if message:
                 await self._save_cache(message)
         except Exception:
-            self._log.exception('Something went wrong during video file upload.')
+            self._log.exception('Something went wrong during video file upload')
 
     @retry(wait=wait_fixed(10), stop=stop_after_attempt(10), reraise=True)
     async def _upload_video_file(self) -> Optional[Message]:
+        user_id = self._body.from_user_id
         try:
-            await self._bot.send_chat_action(
-                self._bot.user_ids[0], action=ChatAction.UPLOAD_VIDEO
-            )
+            self._log.info('Uploading for user id %s', user_id)
+            await self._bot.send_chat_action(user_id, action=ChatAction.UPLOAD_VIDEO)
             return await self._bot.send_video(
-                chat_id=self._bot.user_ids[0],
+                chat_id=user_id,
                 file_name=self.filename,
                 video=self.filepath,
-                reply_to_message_id=self._body.message_id,
             )
         except Exception:
             self._log.exception('Failed to upload %s', self.filename)
+            raise
 
     async def _save_cache(self, message: Message) -> None:
         self._log.debug('Saving telegram file cache - %s', message)

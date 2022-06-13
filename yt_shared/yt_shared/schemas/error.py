@@ -8,6 +8,7 @@ from yt_shared.schemas.base import RealBaseModel
 
 class ErrorPayload(RealBaseModel):
     task_id: uuid.UUID
+    from_user_id: Optional[int]
     message_id: Optional[int]
     message: StrictStr
     url: StrictStr

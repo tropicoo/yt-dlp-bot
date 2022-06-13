@@ -3,7 +3,7 @@ import logging
 
 from yt_dlp import version as ytdlp_version
 
-from core.callbacks import callbacks as cb
+from core.callbacks import rmq_callbacks as cb
 from yt_shared.config import MAX_SIMULTANEOUS_DOWNLOADS
 from yt_shared.db import get_db
 from yt_shared.rabbit import get_rabbitmq

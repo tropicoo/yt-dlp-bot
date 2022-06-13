@@ -64,7 +64,7 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
         """Send startup message that yt-dlp version is up to date."""
         text = (
             f'{INFORMATION_EMOJI} Your {code("yt-dlp")} version '
-            f'{bold(ctx.current.version)} is up to date. Have fun.'
+            f'{bold(ctx.current.version)} is up to date, have fun'
         )
         await self._send_to_chat(text)
 

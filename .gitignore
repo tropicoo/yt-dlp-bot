@@ -1,6 +1,7 @@
 # Byte-compiled / optimized / DLL files
 
 *.session
+*.session-journal
 config.yml
 config.yaml
 

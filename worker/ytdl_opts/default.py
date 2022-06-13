@@ -9,5 +9,4 @@ YTDL_OPTS = {
     'noplaylist': True,
     'max_downloads': 1,
     'concurrent_fragment_downloads': 2,
-    'restrictfilenames': True,
 }

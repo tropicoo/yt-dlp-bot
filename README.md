@@ -34,7 +34,7 @@ environment variable in `.env_common` file to `True`.
 Simple as `docker-compose up -d`. 
 
 Your telegram bot should send you a startup message:
-`<YOUR_BOT_NAME> bot started, paste video URL to start download` and that's it.
+`<YOUR_BOT_NAME> started, paste video URL to start download` and that's it.
 After pasting video URL bot will send you appropriate message whether it was downloaded or something went wrong.
 
 

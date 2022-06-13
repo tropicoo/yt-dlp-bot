@@ -10,6 +10,8 @@ from core.config.config import get_main_config
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.task_utils.tasks import create_task
 
+REGEX_NOT_START_WITH_SLASH = r'^[^/]'
+
 
 class BotLauncher:
     """Bot launcher which parses configuration file, creates bot with
@@ -33,8 +35,18 @@ class BotLauncher:
         cb = TelegramCallback()
         self._bot.add_handler(
             MessageHandler(
+                cb.on_start,
+                filters=filters.user(self._bot.user_ids)
+                & filters.private
+                & filters.command(['start', 'help']),
+            ),
+        )
+        self._bot.add_handler(
+            MessageHandler(
                 cb.on_message,
-                filters=filters.user(self._bot.user_ids) & filters.private,
+                filters=filters.user(self._bot.user_ids)
+                & filters.private
+                & filters.regex(REGEX_NOT_START_WITH_SLASH),
             ),
         )
 

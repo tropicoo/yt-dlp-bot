@@ -25,6 +25,10 @@ class FileSimpleSchema(BaseOrmModel):
     updated: datetime
     title: Optional[str]
     name: Optional[str]
+    thumb_name: Optional[str]
+    duration: Optional[int]
+    width: Optional[int]
+    height: Optional[int]
     cache: Optional[CacheSchema] = ...
 
 

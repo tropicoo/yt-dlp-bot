@@ -88,24 +88,26 @@ class SuccessResultWorkerTask(AbstractResultWorkerTask):
 
     async def _process_body(self, body: SuccessPayload) -> None:
         await self._send_success_text(body)
-        filepath: str = os.path.join(TMP_DOWNLOAD_PATH, body.filename)
-        if self._eligible_for_upload(filepath):
+        video_path: str = os.path.join(TMP_DOWNLOAD_PATH, body.filename)
+        thumb_path: str = os.path.join(TMP_DOWNLOAD_PATH, body.thumb_name)
+        if self._eligible_for_upload(video_path):
             await self._create_upload_task(body)
         else:
             self._log.warning('File %s will not be uploaded to Telegram', body.filename)
-        self._cleanup(filepath)
+        self._cleanup([video_path, thumb_path])
 
-    def _cleanup(self, filepath: str) -> None:
-        try:
-            os.remove(filepath)
-        except Exception:
-            self._log.exception('Failed to remove "%s" during cleanup', filepath)
+    def _cleanup(self, file_paths: list[str]) -> None:
+        for file_path in file_paths:
+            try:
+                os.remove(file_path)
+            except Exception:
+                self._log.exception('Failed to remove "%s" during cleanup', file_path)
 
     @staticmethod
-    def _eligible_for_upload(filepath: str) -> bool:
+    def _eligible_for_upload(video_path: str) -> bool:
         return (
             UPLOAD_VIDEO_FILE
-            and os.stat(filepath).st_size <= MAX_UPLOAD_VIDEO_FILE_SIZE
+            and os.stat(video_path).st_size <= MAX_UPLOAD_VIDEO_FILE_SIZE
         )
 
     async def _create_upload_task(self, body: SuccessPayload) -> None:
@@ -122,7 +124,7 @@ class SuccessResultWorkerTask(AbstractResultWorkerTask):
     async def _send_success_text(self, body: SuccessPayload) -> None:
         text = f'{SUCCESS_EMOJI} Downloaded {bold(body.filename)}'
         await self._bot.send_message(
-            chat_id=self._bot.user_ids[0],
+            chat_id=body.from_user_id,
             reply_to_message_id=body.message_id,
             text=text,
             parse_mode=ParseMode.HTML,
@@ -148,7 +150,7 @@ class ErrorResultWorkerTask(AbstractResultWorkerTask):
 
     async def _send_error_text(self, body: ErrorPayload) -> None:
         await self._bot.send_message(
-            chat_id=self._bot.user_ids[0],
+            chat_id=body.from_user_id,
             reply_to_message_id=body.message_id,
             text=self._format_error_message(body),
             parse_mode=ParseMode.HTML,

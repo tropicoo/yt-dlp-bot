@@ -23,6 +23,7 @@ class UploadTask(AbstractTask):
         self._body = body
         self.filename = body.filename
         self.filepath = os.path.join(TMP_DOWNLOAD_PATH, self.filename)
+        self.thumb_path = os.path.join(TMP_DOWNLOAD_PATH, body.thumb_name)
         self._bot = bot
 
     async def run(self) -> None:
@@ -44,8 +45,14 @@ class UploadTask(AbstractTask):
             await self._bot.send_chat_action(user_id, action=ChatAction.UPLOAD_VIDEO)
             return await self._bot.send_video(
                 chat_id=user_id,
+                caption=self.filename,
                 file_name=self.filename,
                 video=self.filepath,
+                duration=self._body.duration or 0,
+                height=self._body.height or 0,
+                width=self._body.width or 0,
+                thumb=self.thumb_path,
+                supports_streaming=True,
             )
         except Exception:
             self._log.exception('Failed to upload %s', self.filename)

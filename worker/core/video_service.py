@@ -7,6 +7,8 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.downloader import VideoDownloader
+from core.tasks.ffprobe_context import GetFfprobeContextTask
+from core.tasks.thumbnail import MakeThumbnailTask
 from yt_shared.config import SAVE_VIDEO_FILE, STORAGE_PATH, TMP_DOWNLOAD_PATH
 from yt_shared.constants import TaskStatus
 from yt_shared.models import Task
@@ -37,13 +39,33 @@ class VideoService:
     async def _post_process_file(
         self, video: DownVideo, task: Task, db: AsyncSession
     ) -> None:
-        post_process_coros = [self._repository.save_as_done(db, task, video)]
+        file_path = os.path.join(TMP_DOWNLOAD_PATH, video.name)
+        thumb_path = os.path.join(TMP_DOWNLOAD_PATH, video.thumb_name)
+
+        post_process_coros = [
+            self._set_probe_ctx(file_path, video),
+            MakeThumbnailTask(thumb_path, file_path).run(),
+        ]
 
         if SAVE_VIDEO_FILE:
             post_process_coros.append(self._copy_file_to_storage(video))
 
         await asyncio.gather(*post_process_coros)
-        await self._send_finished_task(task)
+        await self._repository.save_as_done(db, task, video),
+        await self._send_finished_task(task, video)
+
+    @staticmethod
+    async def _set_probe_ctx(file_path: str, video: DownVideo) -> None:
+        probe_ctx = await GetFfprobeContextTask(file_path).run()
+        if not probe_ctx:
+            return
+        video_streams = [
+            stream for stream in probe_ctx['streams'] if stream['codec_type'] == 'video'
+        ]
+
+        video.duration = int(float(probe_ctx['format']['duration']))
+        video.width = video_streams[0]['width']
+        video.height = video_streams[0]['height']
 
     @staticmethod
     async def _copy_file_to_storage(video: DownVideo) -> None:
@@ -74,10 +96,14 @@ class VideoService:
             err=err,
         )
 
-    async def _send_finished_task(self, task: Task) -> None:
+    async def _send_finished_task(self, task: Task, video: DownVideo) -> None:
         success_payload = SuccessPayload(
             task_id=task.id,
             filename=task.file.name,
+            thumb_name=video.thumb_name,
+            duration=video.duration,
+            width=video.width,
+            height=video.height,
             message_id=task.message_id,
             from_user_id=task.from_user_id,
         )

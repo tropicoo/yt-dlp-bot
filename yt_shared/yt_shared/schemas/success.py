@@ -11,3 +11,7 @@ class SuccessPayload(RealBaseModel):
     from_user_id: Optional[int]
     message_id: Optional[int]
     filename: StrictStr
+    thumb_name: StrictStr
+    duration: Optional[int]
+    width: Optional[int]
+    height: Optional[int]

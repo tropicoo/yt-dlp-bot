@@ -18,6 +18,14 @@ class TelegramCallback:
         self._log = logging.getLogger(self.__class__.__name__)
         self._url_service = URLService()
 
+    @staticmethod
+    async def on_start(client: VideoBot, message: Message) -> None:
+        await message.reply(
+            bold('Send video URL to start processing'),
+            parse_mode=ParseMode.HTML,
+            reply_to_message_id=message.id,
+        )
+
     async def on_message(self, client: VideoBot, message: Message) -> None:
         """Receive video URL and send to the download worker."""
         url = URL(

@@ -57,6 +57,10 @@ class File(Base, Timestamp):
     id = sa.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     title = sa.Column(sa.String, nullable=True)
     name = sa.Column(sa.String, nullable=True)
+    thumb_name = sa.Column(sa.String, nullable=True)
+    duration = sa.Column(sa.Integer, nullable=True)
+    width = sa.Column(sa.Integer, nullable=True)
+    height = sa.Column(sa.Integer, nullable=True)
     meta = sa.Column(JSONB, nullable=True)
     task_id = sa.Column(
         UUIDType(binary=False),

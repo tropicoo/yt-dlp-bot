@@ -44,7 +44,16 @@ class DatabaseRepository:
     @staticmethod
     def _load_file_cols(include_meta: bool) -> list:
         """Load 'File' model columns depending on 'include_meta' bool variable."""
-        load_cols = [File.created, File.updated, File.name, File.title]
+        load_cols = [
+            File.created,
+            File.updated,
+            File.name,
+            File.thumb_name,
+            File.duration,
+            File.width,
+            File.height,
+            File.title,
+        ]
         if include_meta:
             load_cols.append(File.meta)
         return load_cols

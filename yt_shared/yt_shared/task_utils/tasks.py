@@ -52,16 +52,3 @@ def _handle_task_result(
         pass
     except Exception:
         logger.exception(exception_message, *exception_message_args)
-
-
-def wrap(func):
-    """Run sync code in executor."""
-
-    @wraps(func)
-    async def run(*args, loop=None, executor=None, **kwargs):
-        if loop is None:
-            loop = asyncio.get_event_loop()
-        pfunc = partial(func, *args, **kwargs)
-        return await loop.run_in_executor(executor, pfunc)
-
-    return run

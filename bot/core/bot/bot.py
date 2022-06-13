@@ -1,6 +1,7 @@
 import logging
 
 from pyrogram import Client
+from pyrogram.enums import ParseMode
 
 from core.config.config import get_main_config
 from core.tasks.manager import RabbitWorkerManager
@@ -48,12 +49,14 @@ class VideoBot(Client):
             f'start download'
         )
 
-    async def send_message_all(self, msg: str) -> None:
+    async def send_message_all(
+        self, text: str, parse_mode: ParseMode = ParseMode.HTML
+    ) -> None:
         """Send message to all defined user IDs in config.json."""
         for user_id in self.user_ids:
             try:
-                await self.send_message(user_id, msg)
+                await self.send_message(user_id, text, parse_mode=parse_mode)
             except Exception:
                 self._log.exception(
-                    'Failed to send message "%s" to user ID ' '%s', msg, user_id
+                    'Failed to send message "%s" to user ID ' '%s', text, user_id
                 )

@@ -69,6 +69,4 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
         await self._send_to_chat(text)
 
     async def _send_to_chat(self, text: str) -> None:
-        await self._bot.send_message(
-            chat_id=self._bot.user_ids[0], text=text, parse_mode=ParseMode.HTML
-        )
+        await self._bot.send_message_all(text)

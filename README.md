@@ -15,8 +15,8 @@ Simple and reliable YouTube Download Telegram Bot.
 2. [Get your own Telegram API key](https://my.telegram.org/apps) (`api_id` and `api_hash`)
 3. Find your Telegram User ID [here](https://stackoverflow.com/questions/32683992/find-out-my-own-user-id-for-sending-a-message-with-telegram-api).
 4. Copy `bot/config-example.yml` to `bot/config.yml`.
-5. Write `token`, `api_id`, `api_hash` and your User ID to `bot/config.yaml` by changing respective placeholders.
-6. Check the default environment variables in `envs` directory and change if needed (especially default credentials).
+5. Write `token`, `api_id`, `api_hash` and your User ID to `bot/config.yml` by changing respective placeholders.
+6. Check the default environment variables in `envs/.env_common` and change if needed.
 7. Video storage path (`STORAGE_PATH` environment variable) is located in `envs/.env_common` file.
 By default, it's `/filestorage` path inside the container. What you want is to map the real path to this inside the `docker-compose.yml` file for `worker` service e.g.
 if you're on Windows, next strings mean container path `/filestorage` is mapped to

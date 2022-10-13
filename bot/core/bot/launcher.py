@@ -1,12 +1,13 @@
 import logging
 
+from core.config.config import get_main_config
 from pyrogram import filters
 from pyrogram.handlers import MessageHandler
 
 from core.bot import VideoBot
 from core.callbacks import TelegramCallback
-from core.config.config import get_main_config
 from core.tasks.manager import RabbitWorkerManager
+from core.tasks.ytdlp import YtdlpNewVersionNotifyTask
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.task_utils.tasks import create_task
 
@@ -64,11 +65,20 @@ class BotLauncher:
     async def _start_tasks(self):
         await self._rabbit_worker_manager.start_worker_tasks()
 
+        task_name = YtdlpNewVersionNotifyTask.__class__.__name__
+        create_task(
+            YtdlpNewVersionNotifyTask(bot=self._bot).run(),
+            task_name=task_name,
+            logger=self._log,
+            exception_message='Task %s raised an exception',
+            exception_message_args=(task_name,),
+        )
+
     async def _start_bot(self) -> None:
         """Start telegram bot and related processes."""
         await self._bot.start()
 
         self._log.info('Starting %s bot', (await self._bot.get_me()).first_name)
-        await self._start_tasks()
         await self._bot.send_startup_message()
+        await self._start_tasks()
         await self._bot.run_forever()

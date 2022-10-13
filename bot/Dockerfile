@@ -1,21 +1,28 @@
-FROM python:3.10-slim-buster
+FROM python:3.10-alpine
 
-RUN apt update \
-    && apt install --yes --no-install-recommends \
-        bash htop net-tools iputils-ping procps netcat \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache \
+        tzdata \
+        htop \
+        bash \
+        netcat-openbsd
 
 COPY ./bot/requirements.txt ./yt_shared/requirements_shared.txt /app/
 
 WORKDIR /app
 
-RUN apt update \
-    && apt install --yes gcc g++ libffi-dev libjpeg-dev zlib1g-dev python3-dev build-essential libtool automake \
+RUN apk add --no-cache --virtual .build-deps \
+        linux-headers \
+        libffi-dev \
+        zlib-dev \
+        build-base \
+        musl-dev \
+        openssl-dev \
+        python3-dev  \
     && pip install --upgrade pip setuptools wheel \
+    && MAKEFLAGS="-j$(nproc)" \
     && pip install --no-cache-dir -r requirements.txt -r requirements_shared.txt \
-    && apt-get autoremove --yes gcc g++ libffi-dev libjpeg-dev zlib1g-dev python3-dev build-essential libtool automake \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm requirements_shared.txt
+    && rm requirements_shared.txt \
+    && apk --purge del .build-deps
 
 COPY ./bot /app
 

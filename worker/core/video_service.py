@@ -6,10 +6,10 @@ from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.config import settings
 from core.downloader import VideoDownloader
 from core.tasks.ffprobe_context import GetFfprobeContextTask
 from core.tasks.thumbnail import MakeThumbnailTask
-from yt_shared.config import SAVE_VIDEO_FILE, STORAGE_PATH, TMP_DOWNLOAD_PATH
 from yt_shared.constants import TaskStatus
 from yt_shared.models import Task
 from yt_shared.rabbit.publisher import Publisher
@@ -39,15 +39,15 @@ class VideoService:
     async def _post_process_file(
         self, video: DownVideo, task: Task, db: AsyncSession
     ) -> None:
-        file_path = os.path.join(TMP_DOWNLOAD_PATH, video.name)
-        thumb_path = os.path.join(TMP_DOWNLOAD_PATH, video.thumb_name)
+        file_path = os.path.join(settings.TMP_DOWNLOAD_PATH, video.name)
+        thumb_path = os.path.join(settings.TMP_DOWNLOAD_PATH, video.thumb_name)
 
         post_process_coros = [
             self._set_probe_ctx(file_path, video),
             MakeThumbnailTask(thumb_path, file_path).run(),
         ]
 
-        if SAVE_VIDEO_FILE:
+        if settings.SAVE_VIDEO_FILE:
             post_process_coros.append(self._copy_file_to_storage(video))
 
         await asyncio.gather(*post_process_coros)
@@ -69,8 +69,8 @@ class VideoService:
 
     @staticmethod
     async def _copy_file_to_storage(video: DownVideo) -> None:
-        src = os.path.join(TMP_DOWNLOAD_PATH, video.name)
-        dst = os.path.join(STORAGE_PATH, video.name)
+        src = os.path.join(settings.TMP_DOWNLOAD_PATH, video.name)
+        dst = os.path.join(settings.STORAGE_PATH, video.name)
         await asyncio.to_thread(shutil.copy2, src, dst)
 
     async def _start_download(

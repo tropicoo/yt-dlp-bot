@@ -1,11 +1,12 @@
-import aioredis
 from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
+from redis import asyncio as aioredis
 
 from api.api_v1.urls import v1_router
 from api.root.endpoints.healthcheck import healthcheck_router
+from core.config import settings
 from core.constants import GZIP_MIN_SIZE
 from yt_shared.rabbit import get_rabbitmq
 
@@ -28,7 +29,7 @@ app = create_app()
 @app.on_event('startup')
 async def startup_event():
     redis = aioredis.from_url(
-        'redis://yt_redis', encoding='utf8', decode_responses=True
+        settings.REDIS_URL, encoding='utf8', decode_responses=True
     )
     FastAPICache.init(RedisBackend(redis), prefix='fastapi-cache')
     await get_rabbitmq().register()

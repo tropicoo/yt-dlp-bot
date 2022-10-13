@@ -4,7 +4,7 @@ import logging
 from yt_dlp import version as ytdlp_version
 
 from core.callbacks import rmq_callbacks as cb
-from yt_shared.config import MAX_SIMULTANEOUS_DOWNLOADS
+from core.config import settings
 from yt_shared.db import get_db
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.rabbit.rabbit_config import INPUT_QUEUE
@@ -26,12 +26,17 @@ class WorkerLauncher:
             loop.run_until_complete(self.stop())
 
     async def _start(self) -> None:
+        await self._perform_setup()
+
+    async def _perform_setup(self) -> None:
         await asyncio.gather(self._setup_rabbit(), self._set_yt_dlp_version())
 
     async def _setup_rabbit(self) -> None:
         self._log.info('Setting up RabbitMQ connection')
         await self._rabbit_mq.register()
-        await self._rabbit_mq.channel.set_qos(prefetch_count=MAX_SIMULTANEOUS_DOWNLOADS)
+        await self._rabbit_mq.channel.set_qos(
+            prefetch_count=settings.MAX_SIMULTANEOUS_DOWNLOADS
+        )
         await self._rabbit_mq.queues[INPUT_QUEUE].consume(cb.on_input_message)
 
     async def _set_yt_dlp_version(self):

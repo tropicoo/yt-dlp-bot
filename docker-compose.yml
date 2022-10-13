@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 
 services:
   api:
@@ -56,7 +56,7 @@ services:
       - "shared-tmpfs:/tmp/download_tmpfs"
   postgres:
     container_name: yt_postgres
-    image: postgres:14
+    image: "postgres:14"
     env_file:
       - envs/.env_common
     ports:

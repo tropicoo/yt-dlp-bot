@@ -12,18 +12,13 @@ from sqlalchemy.orm import (
 )
 from sqlalchemy_utils import UUIDType
 
-from yt_shared.config import (
-    APPLICATION_NAME,
-    SQLALCHEMY_DATABASE_URI_ASYNC,
-    SQLALCHEMY_ECHO,
-    SQLALCHEMY_EXPIRE_ON_COMMIT,
-)
+from yt_shared.config import settings
 
 engine = create_async_engine(
-    SQLALCHEMY_DATABASE_URI_ASYNC,
-    echo=SQLALCHEMY_ECHO,
+    settings.SQLALCHEMY_DATABASE_URI_ASYNC,
+    echo=settings.SQLALCHEMY_ECHO,
     pool_pre_ping=True,
-    connect_args={'server_settings': {'application_name': APPLICATION_NAME}},
+    connect_args={'server_settings': {'application_name': settings.APPLICATION_NAME}},
 )
 
 metadata = MetaData()
@@ -31,7 +26,7 @@ metadata.bind = engine
 AsyncSessionLocal = sessionmaker(
     engine,
     class_=AsyncSession,
-    expire_on_commit=SQLALCHEMY_EXPIRE_ON_COMMIT,
+    expire_on_commit=settings.SQLALCHEMY_EXPIRE_ON_COMMIT,
 )
 
 

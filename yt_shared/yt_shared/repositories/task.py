@@ -2,6 +2,7 @@ import logging
 from uuid import UUID
 
 from sqlalchemy import insert, select
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from yt_shared.constants import TaskStatus
@@ -22,7 +23,10 @@ class TaskRepository:
 
         stmt = select(Task).filter_by(id=video_payload.id)
         task = await db.execute(stmt)
-        return task.scalar_one()
+        try:
+            return task.scalar_one()
+        except NoResultFound:
+            return await self._create_task(db, video_payload)
 
     @staticmethod
     async def _create_task(db: AsyncSession, video_payload: VideoPayload) -> Task:

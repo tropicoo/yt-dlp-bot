@@ -10,6 +10,7 @@ from pydantic import ValidationError
 
 from core.config.schema import ConfigSchema
 from core.exceptions import ConfigError
+from yt_shared.config import Settings
 
 
 class ConfigLoader:
@@ -58,3 +59,13 @@ _CONF_MAIN = config_loader.load_config()
 
 def get_main_config() -> ConfigSchema:
     return _CONF_MAIN
+
+
+class BotSettings(Settings):
+    YTDLP_VERSION_CHECK_INTERVAL: int
+
+    UPLOAD_VIDEO_FILE: bool
+    MAX_UPLOAD_VIDEO_FILE_SIZE: int
+
+
+settings = BotSettings()

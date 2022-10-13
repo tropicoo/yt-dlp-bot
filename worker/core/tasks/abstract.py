@@ -1,19 +1,18 @@
-import abc
 import asyncio
-import logging
 import os
 import signal
 from typing import Optional
 
+from yt_shared.task_utils.abstract import AbstractTask
 from yt_shared.utils import wrap
 
 
-class AbstractFfBinaryTask(metaclass=abc.ABCMeta):
+class AbstractFfBinaryTask(AbstractTask):
     _CMD: Optional[str] = None
     _CMD_TIMEOUT = 10
 
     def __init__(self, file_path: str) -> None:
-        self._log = logging.getLogger(self.__class__.__name__)
+        super().__init__()
         self._file_path = file_path
         self._killpg = wrap(os.killpg)
 
@@ -37,8 +36,3 @@ class AbstractFfBinaryTask(metaclass=abc.ABCMeta):
     async def _get_stdout_stderr(proc: asyncio.subprocess.Process) -> tuple[str, str]:
         stdout, stderr = await proc.stdout.read(), await proc.stderr.read()
         return stdout.decode().strip(), stderr.decode().strip()
-
-    @abc.abstractmethod
-    async def run(self) -> None:
-        """Main entry point."""
-        pass

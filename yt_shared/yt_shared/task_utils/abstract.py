@@ -8,4 +8,5 @@ class AbstractTask(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     async def run(self) -> None:
+        """Main entry point."""
         pass

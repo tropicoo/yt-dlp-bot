@@ -8,27 +8,26 @@ Simple and reliable YouTube Download Telegram Bot.
 * Trigger video download by sending link to the Telegram bot or by API call
 * Upload downloaded videos to Telegram
 * Track download tasks in the database or API
-* Everything is run in Docker containers
 
 ## ⚙ Quick Setup
-1. Create Telegram bot using [BotFather](https://t.me/BotFather) and get your `token`.
-2. [Get your own Telegram API key](https://my.telegram.org/apps) (`api_id` and `api_hash`)
-3. Find your Telegram User ID [here](https://stackoverflow.com/questions/32683992/find-out-my-own-user-id-for-sending-a-message-with-telegram-api).
-4. Copy `bot/config-example.yml` to `bot/config.yml`.
-5. Write `token`, `api_id`, `api_hash` and your User ID to `bot/config.yml` by changing respective placeholders.
-6. Check the default environment variables in `envs/.env_common` and change if needed.
-7. Video storage path (`STORAGE_PATH` environment variable) is located in `envs/.env_common` file.
+1. Create Telegram bot using [BotFather](https://t.me/BotFather) and get your `token`
+2. [Get own Telegram API key](https://my.telegram.org/apps) (`api_id` and `api_hash`)
+3. [Find your Telegram User ID](https://stackoverflow.com/questions/32683992/find-out-my-own-user-id-for-sending-a-message-with-telegram-api)
+4. Copy `bot/config-example.yml` to `bot/config.yml`
+5. Write `token`, `api_id`, `api_hash` and your User ID to `bot/config.yml` by changing respective placeholders
+6. Check the default environment variables in `envs/.env_common` and change if needed
+7. Video storage path (`STORAGE_PATH` environment variable) is located in the `envs/.env_worker` file
 By default, it's `/filestorage` path inside the container. What you want is to map the real path to this inside the `docker-compose.yml` file for `worker` service e.g.
 if you're on Windows, next strings mean container path `/filestorage` is mapped to
 real `D:/Videos` so your videos will be saved to your `Videos` folder.
+   ```yml
+     worker:
+       ...
+       volumes:
+         - "D:/Videos:/filestorage"
+   ```
 8. If you want your downloaded video to be uploaded back to Telegram, set `UPLOAD_VIDEO_FILE`
-environment variable in `.env_common` file to `True`.
-```yml
-  worker:
-    ...
-    volumes:
-      - "D:/Videos:/filestorage"
-```
+environment variable in the `.env_bot` file to `True`
 
 ## 🏃 Run
 Simple as `docker-compose up -d`. 
@@ -39,7 +38,6 @@ After pasting video URL bot will send you appropriate message whether it was dow
 
 
 ## Advanced setup
-
 1. If you want to change `yt-dlp` download options, go to the `worker/ytdl_opts`
 directory, copy content from `default.py` to `user.py` and modify as you wish 
 by checking [official documentation](https://github.com/timethrow/yt-dlp/blob/patch-1/README.md#embedding-yt-dlp).

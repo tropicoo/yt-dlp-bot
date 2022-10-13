@@ -2,14 +2,13 @@ import asyncio
 import datetime
 from typing import TYPE_CHECKING
 
-from pyrogram.enums import ParseMode
-
-from core.tasks.abstract import AbstractTask
 from core.utils import bold, code
-from yt_shared.config import YTDLP_VERSION_CHECK_INTERVAL
+
+from core.config import settings
 from yt_shared.db import get_db
 from yt_shared.emoji import INFORMATION_EMOJI
 from yt_shared.schemas.ytdlp import VersionContext
+from yt_shared.task_utils.abstract import AbstractTask
 from yt_shared.ytdlp.version_checker import VersionChecker
 
 if TYPE_CHECKING:
@@ -34,13 +33,13 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
                 'Next yt-dlp version check planned at %s',
                 self._get_next_check_datetime().isoformat(' '),
             )
-            await asyncio.sleep(YTDLP_VERSION_CHECK_INTERVAL)
+            await asyncio.sleep(settings.YTDLP_VERSION_CHECK_INTERVAL)
 
     @staticmethod
     def _get_next_check_datetime() -> datetime.datetime:
         return (
             datetime.datetime.now()
-            + datetime.timedelta(seconds=YTDLP_VERSION_CHECK_INTERVAL)
+            + datetime.timedelta(seconds=settings.YTDLP_VERSION_CHECK_INTERVAL)
         ).replace(microsecond=0)
 
     async def _notify_if_new_version(self) -> None:

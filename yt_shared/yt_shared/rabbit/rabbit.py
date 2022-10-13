@@ -5,7 +5,7 @@ import aio_pika
 from aio_pika import RobustChannel, RobustConnection
 from aio_pika.abc import AbstractRobustExchange, AbstractRobustQueue
 
-from yt_shared.config import RABBITMQ_URI
+from yt_shared.config import settings
 from yt_shared.rabbit.rabbit_config import get_rabbit_config
 
 
@@ -30,7 +30,7 @@ class RabbitMQ:
 
     async def _set_connection(self):
         self.connection = await aio_pika.connect_robust(
-            RABBITMQ_URI,
+            settings.RABBITMQ_URI,
             loop=get_running_loop(),
             reconnect_interval=self.RABBITMQ_RECONNECT_INTERVAL,
         )

@@ -1,40 +1,42 @@
-import os
+from pydantic import BaseSettings, Field
 
-from yt_shared.utils import get_env_bool
 
-APPLICATION_NAME = os.getenv('APPLICATION_NAME', 'APPLICATION_NAME_NOT_SET')
+class Settings(BaseSettings):
+    APPLICATION_NAME: str
 
-POSTGRES_USER = os.getenv('POSTGRES_USER', 'yt')
-POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', 'yt')
-POSTGRES_HOST = os.getenv('POSTGRES_HOST', 'localhost')
-POSTGRES_PORT = os.getenv('POSTGRES_PORT', 5432)
-POSTGRES_DB = os.getenv('POSTGRES_DB', 'yt')
-POSTGRES_TEST_DB = os.getenv('POSTGRES_TEST_DB', 'yt_test')
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int
+    POSTGRES_DB: str
+    POSTGRES_TEST_DB: str = Field(default='yt_test')
 
-SQLALCHEMY_DATABASE_URI_ASYNC = f'postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
-SQLALCHEMY_ECHO = get_env_bool(os.getenv('SQLALCHEMY_ECHO', False))
-SQLALCHEMY_EXPIRE_ON_COMMIT = get_env_bool(
-    os.getenv('SQLALCHEMY_EXPIRE_ON_COMMIT', False)
-)
+    @property
+    def SQLALCHEMY_DATABASE_URI_ASYNC(self) -> str:
+        return f'postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}'
 
-RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')
-RABBITMQ_PASSWORD = os.getenv('RABBITMQ_PASSWORD', 'guest')
-RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'localhost')
-RABBITMQ_PORT = os.getenv('RABBITMQ_PORT', 5672)
-RABBITMQ_URI = (
-    f'amqp://{RABBITMQ_USER}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}:{RABBITMQ_PORT}/'
-)
+    SQLALCHEMY_ECHO: bool
+    SQLALCHEMY_EXPIRE_ON_COMMIT: bool
 
-CONSUMER_NUMBER_OF_RETRY = os.getenv('CONSUMER_NUMBER_OF_RETRY', 2)
-RESEND_DELAY_MS = os.getenv('RESEND_DELAY_MS', 60000)
+    RABBITMQ_USER: str
+    RABBITMQ_PASSWORD: str
+    RABBITMQ_HOST: str
+    RABBITMQ_PORT: int
 
-REDIS_HOST = os.getenv('REDIS_HOST', 'yt_redis')
+    @property
+    def RABBITMQ_URI(self) -> str:
+        return f'amqp://{self.RABBITMQ_USER}:{self.RABBITMQ_PASSWORD}@{self.RABBITMQ_HOST}:{self.RABBITMQ_PORT}/'
 
-TMP_DOWNLOAD_PATH = os.getenv('TMP_DOWNLOAD_PATH', '/tmp/download_tmpfs')
-STORAGE_PATH = os.getenv('STORAGE_PATH', '/')
-MAX_SIMULTANEOUS_DOWNLOADS = int(os.getenv('MAX_SIMULTANEOUS_DOWNLOADS', 10))
-YTDLP_VERSION_CHECK_INTERVAL = int(os.getenv('YTDLP_VERSION_CHECK_INTERVAL', 86400))
+    CONSUMER_NUMBER_OF_RETRY: int = Field(default=2)
+    RESEND_DELAY_MS: int = Field(default=60000)
 
-SAVE_VIDEO_FILE = get_env_bool(os.getenv('SAVE_VIDEO_FILE', True))
-UPLOAD_VIDEO_FILE = get_env_bool(os.getenv('UPLOAD_VIDEO_FILE', False))
-MAX_UPLOAD_VIDEO_FILE_SIZE = int(os.getenv('MAX_UPLOAD_VIDEO_FILE_SIZE', 2147483648))
+    REDIS_HOST: str
+
+    @property
+    def REDIS_URL(self) -> str:
+        return f'redis://{self.REDIS_HOST}'
+
+    TMP_DOWNLOAD_PATH: str
+
+
+settings = Settings()

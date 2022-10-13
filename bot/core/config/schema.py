@@ -5,7 +5,7 @@ from yt_shared.schemas.base import RealBaseModel
 _LOG_LEVELS = {'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'}
 
 _LANG_CODE_LEN = 2
-_LANG_CODE_REGEX = fr'^[a-z]{{{_LANG_CODE_LEN}}}$'
+_LANG_CODE_REGEX = rf'^[a-z]{{{_LANG_CODE_LEN}}}$'
 
 
 class TelegramSchema(RealBaseModel):

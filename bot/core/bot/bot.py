@@ -1,14 +1,11 @@
+import asyncio
 import logging
 
 from pyrogram import Client
 from pyrogram.enums import ParseMode
 
 from core.config.config import get_main_config
-from core.tasks.manager import RabbitWorkerManager
-from core.tasks.ytdlp import YtdlpNewVersionNotifyTask
 from core.utils import bold
-from yt_shared.rabbit import get_rabbitmq
-from yt_shared.task_utils.tasks import create_task
 
 
 class VideoBot(Client):
@@ -26,20 +23,12 @@ class VideoBot(Client):
         self._log.info('Initializing bot client')
 
         self.user_ids: list[int] = conf.telegram.allowed_user_ids
-        self.rabbit_mq = get_rabbitmq()
-        self.rabbit_worker_manager = RabbitWorkerManager(bot=self)
 
-    async def start_tasks(self):
-        await self.rabbit_worker_manager.start_worker_tasks()
-
-        task_name = YtdlpNewVersionNotifyTask.__class__.__name__
-        create_task(
-            YtdlpNewVersionNotifyTask(bot=self).run(),
-            task_name=task_name,
-            logger=self._log,
-            exception_message='Task %s raised an exception',
-            exception_message_args=(task_name,),
-        )
+    @staticmethod
+    async def run_forever() -> None:
+        """Firstly 'await bot.start()' should be called."""
+        while True:
+            await asyncio.sleep(86400)
 
     async def send_startup_message(self) -> None:
         """Send welcome message after bot launch."""
@@ -58,5 +47,5 @@ class VideoBot(Client):
                 await self.send_message(user_id, text, parse_mode=parse_mode)
             except Exception:
                 self._log.exception(
-                    'Failed to send message "%s" to user ID ' '%s', text, user_id
+                    'Failed to send message "%s" to user ID %s', text, user_id
                 )

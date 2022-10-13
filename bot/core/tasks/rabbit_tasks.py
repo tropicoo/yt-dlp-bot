@@ -1,5 +1,4 @@
 import abc
-import asyncio
 import enum
 import os
 from typing import Optional, TYPE_CHECKING, Type
@@ -8,20 +7,16 @@ from aio_pika import IncomingMessage
 from pydantic import BaseModel
 from pyrogram.enums import ParseMode
 
+from core.config import settings
 from core.exceptions import InvalidBodyError
-from core.tasks.abstract import AbstractTask
 from core.tasks.upload import UploadTask
 from core.utils import bold
-from yt_shared.config import (
-    MAX_UPLOAD_VIDEO_FILE_SIZE,
-    TMP_DOWNLOAD_PATH,
-    UPLOAD_VIDEO_FILE,
-)
 from yt_shared.emoji import SUCCESS_EMOJI
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.rabbit.rabbit_config import ERROR_QUEUE, SUCCESS_QUEUE
 from yt_shared.schemas.error import ErrorPayload
 from yt_shared.schemas.success import SuccessPayload
+from yt_shared.task_utils.abstract import AbstractTask
 from yt_shared.task_utils.tasks import create_task
 
 if TYPE_CHECKING:
@@ -88,8 +83,8 @@ class SuccessResultWorkerTask(AbstractResultWorkerTask):
 
     async def _process_body(self, body: SuccessPayload) -> None:
         await self._send_success_text(body)
-        video_path: str = os.path.join(TMP_DOWNLOAD_PATH, body.filename)
-        thumb_path: str = os.path.join(TMP_DOWNLOAD_PATH, body.thumb_name)
+        video_path: str = os.path.join(settings.TMP_DOWNLOAD_PATH, body.filename)
+        thumb_path: str = os.path.join(settings.TMP_DOWNLOAD_PATH, body.thumb_name)
         if self._eligible_for_upload(video_path):
             await self._create_upload_task(body)
         else:
@@ -106,8 +101,8 @@ class SuccessResultWorkerTask(AbstractResultWorkerTask):
     @staticmethod
     def _eligible_for_upload(video_path: str) -> bool:
         return (
-            UPLOAD_VIDEO_FILE
-            and os.stat(video_path).st_size <= MAX_UPLOAD_VIDEO_FILE_SIZE
+            settings.UPLOAD_VIDEO_FILE
+            and os.stat(video_path).st_size <= settings.MAX_UPLOAD_VIDEO_FILE_SIZE
         )
 
     async def _create_upload_task(self, body: SuccessPayload) -> None:
@@ -123,12 +118,16 @@ class SuccessResultWorkerTask(AbstractResultWorkerTask):
 
     async def _send_success_text(self, body: SuccessPayload) -> None:
         text = f'{SUCCESS_EMOJI} Downloaded {bold(body.filename)}'
-        await self._bot.send_message(
-            chat_id=body.from_user_id,
-            reply_to_message_id=body.message_id,
-            text=text,
-            parse_mode=ParseMode.HTML,
-        )
+        kwargs = {
+            'text': text,
+            'parse_mode': ParseMode.HTML,
+        }
+        if body.from_user_id:
+            kwargs['chat_id'] = body.from_user_id
+        if body.message_id:
+            kwargs['reply_to_message_id'] = body.message_id
+
+        await self._bot.send_message(**kwargs)
 
 
 class ErrorResultWorkerTask(AbstractResultWorkerTask):

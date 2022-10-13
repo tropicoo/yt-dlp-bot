@@ -64,7 +64,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
   rabbitmq:
-    image: "rabbitmq:3.6-management-alpine"
+    image: "rabbitmq:3.11-management-alpine"
     container_name: yt_rabbitmq
     ports:
       - "25672:5672"

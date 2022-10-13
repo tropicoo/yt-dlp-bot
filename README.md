@@ -48,10 +48,10 @@ If your URL can't be downloaded for some reason, you will see this
 ![frames](assets/download_failed.png)
 
 ## Access
- - API: default port `1984` and no auth. Port can be changed in `docker-compose-yml`
- - RabbitMQ: default creds are located in `envs/.env_common`
- - PostgreSQL: default creds are located in `envs/.env_common`. Same creds are stored for Alembic in `alembic.ini`.
- - PGAdmin: default creds are located in `docker-compose.yml`
+ - **API**: default port `1984` and no auth. Port can be changed in `docker-compose.yml`
+ - **RabbitMQ**: default creds are located in `envs/.env_common`
+ - **PostgreSQL**: default creds are located in `envs/.env_common`. Same creds are stored for Alembic in `alembic.ini`.
+ - **PGAdmin**: default creds are located in `docker-compose.yml`
 
 ## API
 By default, API service will run on your `localhost` and `1984` port.

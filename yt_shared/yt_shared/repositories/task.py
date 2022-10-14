@@ -44,7 +44,7 @@ class TaskRepository:
             cache_unique_id=cache.cache_unique_id,
             file_size=cache.file_size,
             date_timestamp=cache.date_timestamp,
-            file_id=(select(File.id).filter_by(task_id=task_id)),
+            file_id=(select(File.id).filter_by(task_id=task_id).scalar_subquery()),
         )
         await db.execute(stmt)
         await db.commit()

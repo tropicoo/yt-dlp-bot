@@ -27,7 +27,7 @@ real `D:/Videos` so your videos will be saved to your `Videos` folder.
          - "D:/Videos:/filestorage"
    ```
 8. If you want your downloaded video to be uploaded back to Telegram, set `UPLOAD_VIDEO_FILE`
-environment variable in the `.env_bot` file to `True`
+environment variable in the `envs/.env_bot` file to `True`
 
 ## 🏃 Run
 Simple as `docker-compose up -d`. 

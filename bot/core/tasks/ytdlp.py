@@ -9,7 +9,7 @@ from yt_shared.db import get_db
 from yt_shared.emoji import INFORMATION_EMOJI
 from yt_shared.schemas.ytdlp import VersionContext
 from yt_shared.task_utils.abstract import AbstractTask
-from yt_shared.ytdlp.version_checker import VersionChecker
+from yt_shared.ytdlp.version_checker import YtdlpVersionChecker
 
 if TYPE_CHECKING:
     from core.bot import VideoBot
@@ -19,7 +19,7 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
     def __init__(self, bot: 'VideoBot') -> None:
         super().__init__()
         self._bot = bot
-        self._version_checker = VersionChecker()
+        self._version_checker = YtdlpVersionChecker()
         self._startup_message_sent = False
 
     async def run(self) -> None:

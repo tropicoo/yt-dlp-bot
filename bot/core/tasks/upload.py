@@ -38,6 +38,7 @@ class UploadTask(AbstractTask):
             )
             message = await self._upload_video_file()
             if message:
+                self._log.info(message)
                 await self._save_cache(message)
         except Exception:
             self._log.exception('Something went wrong during video file upload')
@@ -72,11 +73,12 @@ class UploadTask(AbstractTask):
 
     async def _save_cache(self, message: Message) -> None:
         self._log.debug('Saving telegram file cache - %s', message)
+        video = message.video or message.animation
         cache = CacheSchema(
-            cache_id=message.video.file_id,
-            cache_unique_id=message.video.file_unique_id,
-            file_size=message.video.file_size,
-            date_timestamp=message.video.date,
+            cache_id=video.file_id,
+            cache_unique_id=video.file_unique_id,
+            file_size=video.file_size,
+            date_timestamp=video.date,
         )
 
         async for db in get_db():

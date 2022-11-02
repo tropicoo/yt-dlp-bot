@@ -1,19 +1,32 @@
 import uuid
-from typing import Optional
 
-from pydantic import StrictStr
+from pydantic import StrictInt, StrictStr
+from pydantic.types import ClassVar
 
-from yt_shared.schemas.base import RealBaseModel
+from yt_shared.enums import RabbitPayloadType, TelegramChatType
+from yt_shared.schemas.base import BaseRabbitPayloadModel
 from yt_shared.schemas.video import VideoPayload
 
 
-class ErrorPayload(RealBaseModel):
-    task_id: uuid.UUID
-    from_user_id: Optional[int]
-    message_id: Optional[int]
+class ErrorGeneralPayload(BaseRabbitPayloadModel):
+    _TYPE: ClassVar = RabbitPayloadType.GENERAL_ERROR
+
+    type: RabbitPayloadType = _TYPE
+    task_id: uuid.UUID | StrictStr | None
+    from_chat_id: StrictInt | None
+    from_chat_type: TelegramChatType | None
+    from_user_id: StrictInt | None
+    message_id: StrictInt | None
     message: StrictStr
     url: StrictStr
-    original_body: VideoPayload
+    context: VideoPayload
     exception_msg: StrictStr
     exception_type: StrictStr
-    yt_dlp_version: Optional[StrictStr]
+    yt_dlp_version: StrictStr | None
+
+
+class ErrorDownloadPayload(ErrorGeneralPayload):
+    _TYPE: ClassVar = RabbitPayloadType.DOWNLOAD_ERROR
+
+    type: RabbitPayloadType = _TYPE
+    task_id: uuid.UUID

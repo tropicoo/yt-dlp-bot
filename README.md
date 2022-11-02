@@ -5,8 +5,8 @@ Simple and reliable YouTube Download Telegram Bot.
 
 ## 😂 Features 
 * Download videos from any [yt-dlp](https://github.com/yt-dlp/yt-dlp) supported website
-* Trigger video download by sending link to the Telegram bot or by API call
-* Upload downloaded videos to Telegram
+* Upload downloaded videos to the Telegram chat
+* Additionally, trigger video download by sending link to API call
 * Track download tasks in the database or API
 
 ## ⚙ Quick Setup
@@ -14,10 +14,11 @@ Simple and reliable YouTube Download Telegram Bot.
 2. [Get own Telegram API key](https://my.telegram.org/apps) (`api_id` and `api_hash`)
 3. [Find your Telegram User ID](https://stackoverflow.com/questions/32683992/find-out-my-own-user-id-for-sending-a-message-with-telegram-api)
 4. Copy `bot/config-example.yml` to `bot/config.yml`
-5. Write `token`, `api_id`, `api_hash` and your User ID to `bot/config.yml` by changing respective placeholders
-6. Check the default environment variables in `envs/.env_common` and change if needed
-7. Video storage path (`STORAGE_PATH` environment variable) is located in the `envs/.env_worker` file
-By default, it's `/filestorage` path inside the container. What you want is to map the real path to this inside the `docker-compose.yml` file for `worker` service e.g.
+5. Write `token`, `api_id`, `api_hash` to `bot/config.yml` by changing respective placeholders
+6. Write your Telegram user id to the `allowed_users` -> `id` by replacing dummy value and change or remove `forward_group_id` value (if you want to forward the video to some group when upload is enabled)
+7. Check the default environment variables in `envs/.env_common` and change if needed
+8. Video storage path (`STORAGE_PATH` environment variable) is located in the `envs/.env_worker` file
+By default, it's `/filestorage` path inside the container. What you want is to map the real path to this inside the `docker-compose.yml` file for `worker` service, e.g.
 if you're on Windows, next strings mean container path `/filestorage` is mapped to
 real `D:/Videos` so your videos will be saved to your `Videos` folder.
    ```yml
@@ -26,15 +27,21 @@ real `D:/Videos` so your videos will be saved to your `Videos` folder.
        volumes:
          - "D:/Videos:/filestorage"
    ```
-8. If you want your downloaded video to be uploaded back to Telegram, set `UPLOAD_VIDEO_FILE`
-environment variable in the `envs/.env_bot` file to `True`
+9. If you want your downloaded video to be uploaded back to Telegram, set `upload_vide_file`
+config variable for your user in the `config.yml` to `True`
 
 ## 🏃 Run
-Simple as `docker-compose up -d`. 
+```bash
+# Build base image
+docker compose build base-image
+
+# Build and run all services in detached mode
+docker compose up --build -d -t 0 && docker compose logs --tail 100 -f
+```
 
 Your telegram bot should send you a startup message:
-`<YOUR_BOT_NAME> started, paste video URL to start download` and that's it.
-After pasting video URL bot will send you appropriate message whether it was downloaded or something went wrong.
+`✨ <YOUR_BOT_NAME> started, paste video URL to start download` and that's it.
+After pasting video URL(s) bot will send you appropriate message whether they were downloaded or something went wrong.
 
 
 ## Advanced setup

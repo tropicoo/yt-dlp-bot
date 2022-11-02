@@ -5,7 +5,7 @@ from sqlalchemy import insert, select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from yt_shared.constants import TaskStatus
+from yt_shared.enums import TaskStatus
 from yt_shared.models import Cache, File, Task
 from yt_shared.schemas.cache import CacheSchema
 from yt_shared.schemas.video import DownVideo, VideoPayload
@@ -30,7 +30,14 @@ class TaskRepository:
 
     @staticmethod
     async def _create_task(db: AsyncSession, video_payload: VideoPayload) -> Task:
-        task = Task(**video_payload.dict())
+        task = Task(
+            id=video_payload.id,
+            url=video_payload.url,
+            source=video_payload.source,
+            from_user_id=video_payload.from_user_id,
+            message_id=video_payload.message_id,
+            added_at=video_payload.added_at,
+        )
         db.add(task)
         await db.commit()
         return task

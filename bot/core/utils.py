@@ -1,6 +1,5 @@
 """Utils module."""
 import asyncio
-import logging
 import random
 import string
 from datetime import datetime
@@ -52,15 +51,3 @@ def build_command_presentation(commands: dict[str, list]) -> str:
     for desc, cmds in commands.items():
         groups.append('{0}\n{1}'.format(desc, '\n'.join(['/' + c for c in cmds])))
     return '\n\n'.join(groups)
-
-
-def setup_logging(suppress_asyncio: bool = True, suppress_urllib3: bool = True) -> None:
-    log_format = '%(asctime)s - [%(levelname)s] - [%(name)s:%(lineno)s] - %(message)s'
-    logging.basicConfig(format=log_format)
-    if suppress_asyncio:
-        logging.getLogger('asyncio').setLevel(logging.WARNING)
-
-    if suppress_urllib3:
-        logging.getLogger('urllib3').setLevel(logging.WARNING)
-
-    logging.getLogger('pyrogram').setLevel(logging.WARNING)

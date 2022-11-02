@@ -3,7 +3,6 @@ import functools
 import logging
 from typing import Any, Awaitable, Tuple, TypeVar
 
-
 T = TypeVar('T')
 
 
@@ -51,3 +50,4 @@ def _handle_task_result(
         pass
     except Exception:
         logger.exception(exception_message, *exception_message_args)
+        raise

@@ -1,6 +1,13 @@
 version: "3.8"
 
 services:
+  base-image:
+    image: yt-base-image
+    build:
+      dockerfile: Dockerfile.base
+    deploy:
+      mode: replicated
+      replicas: 0
   api:
     container_name: yt_api
     build:
@@ -12,7 +19,7 @@ services:
     restart: unless-stopped
     ports:
       - "1984:8000"
-    command: bash -c "/app/start.sh && uvicorn main:app --host 0.0.0.0 --port 8000"
+    command: bash -c "./start.sh && uvicorn main:app --host 0.0.0.0 --port 8000"
     depends_on:
       - postgres
       - rabbitmq
@@ -29,7 +36,7 @@ services:
       - envs/.env_bot
     restart: unless-stopped
     command: >
-      sh -c "/app/start.sh && python main.py"
+      bash -c "./start.sh && python main.py"
     depends_on:
       - postgres
       - rabbitmq
@@ -47,7 +54,7 @@ services:
       - envs/.env_worker
     restart: unless-stopped
     command: >
-      sh -c "alembic upgrade head && /app/start.sh && python main.py"
+      bash -c "alembic upgrade head && ./start.sh && python main.py"
     depends_on:
       - postgres
       - rabbitmq
@@ -61,6 +68,7 @@ services:
       - envs/.env_common
     ports:
       - "5435:5432"
+    restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
   rabbitmq:
@@ -69,9 +77,11 @@ services:
     ports:
       - "25672:5672"
       - "15672:15672"
+    restart: unless-stopped
   redis:
     image: "redis:alpine"
     container_name: yt_redis
+    restart: unless-stopped
   pgadmin:
     container_name: yt_pgadmin
     image: dpage/pgadmin4:6

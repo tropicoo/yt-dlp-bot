@@ -1,5 +1,4 @@
 import uuid
-from typing import Optional
 
 from sqlalchemy import delete, desc, distinct, func, select
 from sqlalchemy.engine import CursorResult
@@ -8,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import count
 
-from yt_shared.constants import TaskStatus
+from yt_shared.enums import TaskStatus
 from yt_shared.models import File, Task
 
 
@@ -19,7 +18,7 @@ class DatabaseRepository:
     async def get_all_tasks(
         self,
         include_meta: bool,
-        status: Optional[list[TaskStatus]],
+        status: list[TaskStatus] | None,
         limit: int,
         offset: int,
     ) -> list[Task]:
@@ -27,7 +26,7 @@ class DatabaseRepository:
             select(Task)
             .options(
                 joinedload(Task.file)
-                .load_only(*self._load_file_cols(include_meta))
+                .load_only(*self._get_load_file_cols(include_meta))
                 .options(joinedload(File.cache))
             )
             .order_by(desc(Task.created))
@@ -42,7 +41,7 @@ class DatabaseRepository:
         return tasks.scalars().all()
 
     @staticmethod
-    def _load_file_cols(include_meta: bool) -> list:
+    def _get_load_file_cols(include_meta: bool) -> list:
         """Load 'File' model columns depending on 'include_meta' bool variable."""
         load_cols = [
             File.created,
@@ -63,7 +62,7 @@ class DatabaseRepository:
             select(Task)
             .options(
                 joinedload(Task.file)
-                .load_only(*self._load_file_cols(include_meta))
+                .load_only(*self._get_load_file_cols(include_meta))
                 .options(joinedload(File.cache))
             )
             .filter(Task.id == id)
@@ -77,7 +76,7 @@ class DatabaseRepository:
             .order_by(desc(Task.created))
             .options(
                 joinedload(Task.file)
-                .load_only(*self._load_file_cols(include_meta))
+                .load_only(*self._get_load_file_cols(include_meta))
                 .options(joinedload(File.cache))
             )
             .limit(1)

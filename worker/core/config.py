@@ -6,6 +6,7 @@ class WorkerSettings(Settings):
     MAX_SIMULTANEOUS_DOWNLOADS: int
     SAVE_VIDEO_FILE: bool
     STORAGE_PATH: str
+    THUMBNAIL_FRAME_SECOND: float
 
 
 settings = WorkerSettings()

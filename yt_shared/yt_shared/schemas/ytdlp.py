@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 from pydantic import Field, StrictStr, validator
 
@@ -34,7 +33,7 @@ class CurrentVersion(RealBaseModel):
 class VersionContext(RealBaseModel):
     latest: LatestVersion
     current: CurrentVersion
-    has_new_version: Optional[bool]
+    has_new_version: bool | None
 
     @validator('has_new_version', always=True)
     def check_new_version(cls, value, values: dict) -> bool:

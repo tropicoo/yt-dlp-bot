@@ -1,7 +1,9 @@
 import uuid
 from datetime import datetime, timezone
-from typing import Optional, Type
+from typing import Type
 
+from core.exceptions import TaskServiceError
+from core.repository import DatabaseRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.api_v1.schemas.task import (
@@ -11,9 +13,7 @@ from api.api_v1.schemas.task import (
     TaskSimpleSchema,
     TasksStatsSchema,
 )
-from core.exceptions import TaskServiceError
-from core.repository import DatabaseRepository
-from yt_shared.constants import TaskSource, TaskStatus
+from yt_shared.enums import TaskSource, TaskStatus
 from yt_shared.models import Task
 from yt_shared.rabbit.publisher import Publisher
 from yt_shared.schemas.video import VideoPayload
@@ -48,7 +48,7 @@ class TaskService:
     async def get_all_tasks(
         self,
         include_meta: bool,
-        status: Optional[list[TaskStatus]] = None,
+        status: list[TaskStatus] | None = None,
         limit: int = 100,
         offset: int = 0,
     ) -> list[Task]:

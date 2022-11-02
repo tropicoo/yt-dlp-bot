@@ -1,0 +1,13 @@
+.github
+.gitignore
+.dockerignore
+Dockerfile.base
+LICENSE
+README.md
+assets
+docker-compose.yml
+pyproject.toml
+
+api/Dockerfile
+bot/Dockerfile
+worker/Dockerfile

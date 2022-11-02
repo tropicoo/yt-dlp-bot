@@ -1,15 +1,14 @@
 import logging
 
-from core.config.config import get_main_config
 from pyrogram import filters
 from pyrogram.handlers import MessageHandler
 
 from core.bot import VideoBot
 from core.callbacks import TelegramCallback
-from core.tasks.manager import RabbitWorkerManager
 from core.tasks.ytdlp import YtdlpNewVersionNotifyTask
+from core.workers.manager import RabbitWorkerManager
 from yt_shared.rabbit import get_rabbitmq
-from yt_shared.task_utils.tasks import create_task
+from yt_shared.utils.tasks.tasks import create_task
 
 REGEX_NOT_START_WITH_SLASH = r'^[^/]'
 
@@ -22,7 +21,6 @@ class BotLauncher:
     def __init__(self) -> None:
         """Constructor."""
         self._log = logging.getLogger(self.__class__.__name__)
-        logging.getLogger().setLevel(get_main_config().log_level)
         self._bot = VideoBot()
         self._rabbit_mq = get_rabbitmq()
         self._rabbit_worker_manager = RabbitWorkerManager(bot=self._bot)
@@ -38,16 +36,15 @@ class BotLauncher:
         self._bot.add_handler(
             MessageHandler(
                 cb.on_start,
-                filters=filters.user(self._bot.user_ids)
-                & filters.private
+                filters=filters.user(list(self._bot.allowed_users.keys()))
                 & filters.command(['start', 'help']),
             ),
         )
         self._bot.add_handler(
             MessageHandler(
                 cb.on_message,
-                filters=filters.user(self._bot.user_ids)
-                & filters.private
+                filters=filters.user(list(self._bot.allowed_users.keys()))
+                & filters.chat(list(self._bot.allowed_users.keys()))
                 & filters.regex(REGEX_NOT_START_WITH_SLASH),
             ),
         )

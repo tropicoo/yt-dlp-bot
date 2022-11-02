@@ -10,7 +10,7 @@ setup_requirements = []
 
 
 def get_requirements() -> list[str]:
-    """This hack is needed to actually install deps in Docker."""
+    """This hack is needed to actually install deps in the Docker."""
     with open('requirements_shared.txt') as f_in:
         return f_in.read().splitlines()
 
@@ -24,10 +24,11 @@ setup(
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
     ],
     description='Common shared utils for yt downloader bot',
     install_requires=get_requirements(),

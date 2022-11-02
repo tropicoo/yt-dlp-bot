@@ -1,5 +1,4 @@
 from asyncio import get_running_loop
-from typing import Optional
 
 import aio_pika
 from aio_pika import RobustChannel, RobustConnection
@@ -17,8 +16,8 @@ class RabbitMQ:
     def __init__(self) -> None:
         self._config = get_rabbit_config()
 
-        self.connection: Optional[RobustConnection] = None
-        self.channel: Optional[RobustChannel] = None
+        self.connection: RobustConnection = None
+        self.channel: RobustChannel = None
         self.exchanges: dict[str, AbstractRobustExchange] = {}
         self.queues: dict[str, AbstractRobustQueue] = {}
 

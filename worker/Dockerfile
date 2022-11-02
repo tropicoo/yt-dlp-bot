@@ -1,33 +1,15 @@
-FROM python:3.10-alpine
+FROM yt-base-image
 
-RUN apk add --no-cache \
-        tzdata \
-        htop \
-        bash \
-        netcat-openbsd \
-        ffmpeg
+RUN apk add --no-cache ffmpeg
 
-COPY ./worker/requirements.txt ./yt_shared/requirements_shared.txt /app/
-
-WORKDIR /app
+COPY ./worker/requirements.txt ./
 
 RUN apk add --no-cache --virtual .build-deps \
-        linux-headers \
-        libffi-dev \
-        zlib-dev \
         build-base \
-    && pip install --upgrade pip setuptools wheel \
-    && MAKEFLAGS="-j$(nproc)" \
-    && pip install --no-cache-dir -r requirements.txt -r requirements_shared.txt \
-    && rm requirements_shared.txt \
+    && MAKEFLAGS="-j$(nproc)" pip install --no-cache-dir -r requirements.txt \
     && apk --purge del .build-deps
 
-COPY ./worker /app
-COPY ./alembic /app/alembic
-COPY ./alembic.ini /app/alembic.ini
-
-COPY ./start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+COPY ./worker ./start.sh ./
 
 COPY yt_shared /app/yt_shared
 RUN pip install -e /app/yt_shared

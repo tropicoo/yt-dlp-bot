@@ -1,8 +1,21 @@
 telegram:
-  api_id: 123456789
+  api_id: 00000000000
   api_hash: "<PASTE-HERE-TELEGRAM-API-HASH>"
   token: "<PASTE-HERE-TELEGRAM-TOKEN>"
-  allowed_user_ids:
-    - 123456789
-  lang_code: en
-log_level: "INFO"
+  lang_code: !!str "en"
+  allowed_users:
+    - id: 00000000000
+      upload:
+        upload_vide_file: !!bool False
+        upload_video_max_file_size: 2147483648
+        forward_to_group: !!bool True
+        forward_group_id: -00000000000
+        silent: !!bool False
+  api:
+    upload_vide_file: !!bool False
+    upload_video_max_file_size: 2147483648
+    upload_to_chat_ids:
+      - 00000000000
+      - -00000000000
+    silent: !!bool False
+ytdlp_version_check_interval: 3600

@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import aio_pika
 from aiormq.abc import ConfirmationFrameType
@@ -14,10 +13,10 @@ from yt_shared.rabbit.rabbit_config import (
     SUCCESS_EXCHANGE,
     SUCCESS_QUEUE,
 )
-from yt_shared.schemas.error import ErrorPayload
+from yt_shared.schemas.error import ErrorDownloadPayload, ErrorGeneralPayload
 from yt_shared.schemas.success import SuccessPayload
 from yt_shared.schemas.video import VideoPayload
-from yt_shared.utils import Singleton
+from yt_shared.utils.common import Singleton
 
 
 class Publisher(metaclass=Singleton):
@@ -26,7 +25,7 @@ class Publisher(metaclass=Singleton):
         self._rabbit_mq = get_rabbitmq()
 
     @staticmethod
-    def _is_sent(confirm: Optional[ConfirmationFrameType]) -> bool:
+    def _is_sent(confirm: ConfirmationFrameType | None) -> bool:
         return isinstance(confirm, Basic.Ack)
 
     async def send_for_download(self, video_payload: VideoPayload) -> bool:
@@ -37,7 +36,9 @@ class Publisher(metaclass=Singleton):
         )
         return self._is_sent(confirm)
 
-    async def send_download_error(self, error_payload: ErrorPayload) -> bool:
+    async def send_download_error(
+        self, error_payload: ErrorDownloadPayload | ErrorGeneralPayload
+    ) -> bool:
         err_exchange = self._rabbit_mq.exchanges[ERROR_EXCHANGE]
         err_message = aio_pika.Message(body=error_payload.json().encode())
         confirm = await err_exchange.publish(

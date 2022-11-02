@@ -18,3 +18,17 @@ class TaskStatus(str, ChoiceEnum):
 class TaskSource(str, ChoiceEnum):
     API = 'API'
     BOT = 'BOT'
+
+
+class RabbitPayloadType(ChoiceEnum):
+    DOWNLOAD_ERROR = 'ERROR_DOWNLOAD'
+    GENERAL_ERROR = 'GENERAL_ERROR'
+    SUCCESS = 'SUCCESS'
+
+
+class TelegramChatType(ChoiceEnum):
+    PRIVATE = 'private'
+    BOT = 'bot'
+    GROUP = 'group'
+    SUPERGROUP = 'supergroup'
+    CHANNEL = 'channel'

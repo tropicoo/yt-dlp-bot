@@ -3,7 +3,6 @@
 import logging
 import sys
 from pathlib import Path
-from typing import Optional
 
 import yaml
 from pydantic import ValidationError
@@ -25,7 +24,7 @@ class ConfigLoader:
             self._process_errors_and_exit(errors)
         return data
 
-    def _load_config(self) -> tuple[Optional[ConfigSchema], Optional[ValidationError]]:
+    def _load_config(self) -> tuple[ConfigSchema | None, ValidationError | None]:
         """Loads telegram and camera configuration from config file."""
         dir_path = Path(__file__).parent.parent.parent
         conf_file_path = dir_path / self._CONF_FILENAME
@@ -62,10 +61,7 @@ def get_main_config() -> ConfigSchema:
 
 
 class BotSettings(Settings):
-    YTDLP_VERSION_CHECK_INTERVAL: int
-
-    UPLOAD_VIDEO_FILE: bool
-    MAX_UPLOAD_VIDEO_FILE_SIZE: int
+    pass
 
 
 settings = BotSettings()

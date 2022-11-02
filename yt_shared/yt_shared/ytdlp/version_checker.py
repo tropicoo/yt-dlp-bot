@@ -6,11 +6,7 @@ import aiohttp
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from yt_shared.repositories.ytdlp import YtdlpRepository
-from yt_shared.schemas.ytdlp import (
-    CurrentVersion,
-    LatestVersion,
-    VersionContext,
-)
+from yt_shared.schemas.ytdlp import CurrentVersion, LatestVersion, VersionContext
 
 
 class YtdlpVersionChecker:

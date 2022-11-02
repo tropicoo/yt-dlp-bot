@@ -1,4 +1,7 @@
-from pydantic import BaseSettings, Field
+import logging
+from typing import KeysView
+
+from pydantic import BaseSettings, validator
 
 
 class Settings(BaseSettings):
@@ -9,7 +12,7 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: int
     POSTGRES_DB: str
-    POSTGRES_TEST_DB: str = Field(default='yt_test')
+    POSTGRES_TEST_DB: str = 'yt_test'
 
     @property
     def SQLALCHEMY_DATABASE_URI_ASYNC(self) -> str:
@@ -27,9 +30,10 @@ class Settings(BaseSettings):
     def RABBITMQ_URI(self) -> str:
         return f'amqp://{self.RABBITMQ_USER}:{self.RABBITMQ_PASSWORD}@{self.RABBITMQ_HOST}:{self.RABBITMQ_PORT}/'
 
-    CONSUMER_NUMBER_OF_RETRY: int = Field(default=2)
-    RESEND_DELAY_MS: int = Field(default=60000)
+    CONSUMER_NUMBER_OF_RETRY: int = 2
+    RESEND_DELAY_MS: int = 60000
 
+    LOG_LEVEL: str
     REDIS_HOST: str
 
     @property
@@ -37,6 +41,13 @@ class Settings(BaseSettings):
         return f'redis://{self.REDIS_HOST}'
 
     TMP_DOWNLOAD_PATH: str
+
+    @validator('LOG_LEVEL')
+    def validate_log_level_value(cls, value):
+        valid_values: KeysView[str] = logging._nameToLevel.keys()  # noqa
+        if value not in valid_values:
+            raise ValueError(f'"LOG_LEVEL" must be one of {valid_values}')
+        return value
 
 
 settings = Settings()

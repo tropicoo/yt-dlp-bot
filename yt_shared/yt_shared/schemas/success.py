@@ -1,20 +1,26 @@
 import uuid
-from typing import Optional
 
-from pydantic import StrictStr
+from pydantic import StrictStr, StrictInt
+from pydantic.types import ClassVar
 
-from yt_shared.schemas.base import RealBaseModel
+from yt_shared.enums import RabbitPayloadType, TelegramChatType
+from yt_shared.schemas.base import BaseRabbitPayloadModel
 from yt_shared.schemas.video import VideoPayload
 
 
-class SuccessPayload(RealBaseModel):
+class SuccessPayload(BaseRabbitPayloadModel):
+    _TYPE: ClassVar = RabbitPayloadType.SUCCESS
+
+    type: RabbitPayloadType = _TYPE
     task_id: uuid.UUID
-    from_user_id: Optional[int]
-    message_id: Optional[int]
+    from_chat_id: StrictInt | None
+    from_chat_type: TelegramChatType | None
+    from_user_id: StrictInt | None
+    message_id: StrictInt | None
     title: StrictStr
     filename: StrictStr
     thumb_name: StrictStr
-    duration: Optional[int]
-    width: Optional[int]
-    height: Optional[int]
+    duration: StrictInt | None
+    width: StrictInt | None
+    height: StrictInt | None
     context: VideoPayload

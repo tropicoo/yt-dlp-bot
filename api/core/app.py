@@ -1,3 +1,5 @@
+from core.config import settings
+from core.constants import GZIP_MIN_SIZE
 from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi_cache import FastAPICache
@@ -6,12 +8,12 @@ from redis import asyncio as aioredis
 
 from api.api_v1.urls import v1_router
 from api.root.endpoints.healthcheck import healthcheck_router
-from core.config import settings
-from core.constants import GZIP_MIN_SIZE
+from core.log import setup_logging
 from yt_shared.rabbit import get_rabbitmq
 
 
 def create_app() -> FastAPI:
+    setup_logging()
     app_ = FastAPI(
         title='YT DLP BOT API',
         description='API for your downloaded videos',

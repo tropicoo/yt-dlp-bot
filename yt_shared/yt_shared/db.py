@@ -5,11 +5,7 @@ from typing import AsyncGenerator
 import sqlalchemy as sa
 from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import (
-    declarative_base,
-    declared_attr,
-    sessionmaker,
-)
+from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
 from sqlalchemy_utils import UUIDType
 
 from yt_shared.config import settings

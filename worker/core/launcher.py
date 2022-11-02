@@ -1,10 +1,10 @@
 import asyncio
 import logging
 
-from yt_dlp import version as ytdlp_version
-
 from core.callbacks import rmq_callbacks as cb
 from core.config import settings
+from yt_dlp import version as ytdlp_version
+
 from yt_shared.db import get_db
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.rabbit.rabbit_config import INPUT_QUEUE

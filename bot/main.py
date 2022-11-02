@@ -3,7 +3,7 @@
 import asyncio
 
 from core.bot import BotLauncher
-from core.utils import setup_logging
+from core.log import setup_logging
 
 
 async def main() -> None:

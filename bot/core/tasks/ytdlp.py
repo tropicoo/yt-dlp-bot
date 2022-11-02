@@ -2,13 +2,13 @@ import asyncio
 import datetime
 from typing import TYPE_CHECKING
 
+from core.config.config import get_main_config
 from core.utils import bold, code
 
-from core.config import settings
 from yt_shared.db import get_db
 from yt_shared.emoji import INFORMATION_EMOJI
 from yt_shared.schemas.ytdlp import VersionContext
-from yt_shared.task_utils.abstract import AbstractTask
+from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.ytdlp.version_checker import YtdlpVersionChecker
 
 if TYPE_CHECKING:
@@ -21,6 +21,7 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
         self._bot = bot
         self._version_checker = YtdlpVersionChecker()
         self._startup_message_sent = False
+        self._check_interval = get_main_config().ytdlp_version_check_interval
 
     async def run(self) -> None:
         while True:
@@ -33,13 +34,11 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
                 'Next yt-dlp version check planned at %s',
                 self._get_next_check_datetime().isoformat(' '),
             )
-            await asyncio.sleep(settings.YTDLP_VERSION_CHECK_INTERVAL)
+            await asyncio.sleep(self._check_interval)
 
-    @staticmethod
-    def _get_next_check_datetime() -> datetime.datetime:
+    def _get_next_check_datetime(self) -> datetime.datetime:
         return (
-            datetime.datetime.now()
-            + datetime.timedelta(seconds=settings.YTDLP_VERSION_CHECK_INTERVAL)
+            datetime.datetime.now() + datetime.timedelta(seconds=self._check_interval)
         ).replace(microsecond=0)
 
     async def _notify_if_new_version(self) -> None:

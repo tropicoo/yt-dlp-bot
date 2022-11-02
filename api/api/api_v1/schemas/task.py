@@ -1,11 +1,10 @@
 import uuid
 from datetime import datetime
-from typing import Optional
 
-from pydantic import StrictStr
+from pydantic import StrictInt, StrictStr
 
 from api.api_v1.schemas.base import BaseOrmModel
-from yt_shared.constants import TaskSource, TaskStatus
+from yt_shared.enums import TaskSource, TaskStatus
 from yt_shared.schemas.base import RealBaseModel
 
 
@@ -13,9 +12,9 @@ class CacheSchema(BaseOrmModel):
     id: uuid.UUID
     created: datetime
     updated: datetime
-    cache_id: str
-    cache_unique_id: str
-    file_size: int
+    cache_id: StrictStr
+    cache_unique_id: StrictStr
+    file_size: StrictInt
     date_timestamp: datetime
 
 
@@ -23,17 +22,17 @@ class FileSimpleSchema(BaseOrmModel):
     id: uuid.UUID
     created: datetime
     updated: datetime
-    title: Optional[str]
-    name: Optional[str]
-    thumb_name: Optional[str]
-    duration: Optional[int]
-    width: Optional[int]
-    height: Optional[int]
-    cache: Optional[CacheSchema] = ...
+    title: StrictStr | None
+    name: StrictStr | None
+    thumb_name: StrictStr | None
+    duration: StrictInt | None
+    width: StrictInt | None
+    height: StrictInt | None
+    cache: CacheSchema | None = ...
 
 
 class FileSchema(FileSimpleSchema):
-    meta: Optional[dict] = ...
+    meta: dict | None = ...
 
 
 class TaskSimpleSchema(BaseOrmModel):
@@ -42,17 +41,17 @@ class TaskSimpleSchema(BaseOrmModel):
     created: datetime
     updated: datetime
     status: TaskStatus
-    url: str
+    url: StrictStr
     source: TaskSource
-    from_user_id: Optional[int]
-    message_id: Optional[int]
-    yt_dlp_version: Optional[str]
-    error: Optional[str]
-    file: Optional[FileSimpleSchema]
+    from_user_id: StrictInt | None
+    message_id: StrictInt | None
+    yt_dlp_version: StrictStr | None
+    error: StrictStr | None
+    file: FileSimpleSchema | None
 
 
 class TaskSchema(TaskSimpleSchema):
-    file: Optional[FileSchema]
+    file: FileSchema | None
 
 
 class CreateTaskIn(RealBaseModel):
@@ -67,9 +66,9 @@ class CreateTaskOut(RealBaseModel):
 
 
 class TasksStatsSchema(BaseOrmModel):
-    total: int
-    unique_urls: int
-    pending: int
-    processing: int
-    failed: int
-    done: int
+    total: StrictInt
+    unique_urls: StrictInt
+    pending: StrictInt
+    processing: StrictInt
+    failed: StrictInt
+    done: StrictInt

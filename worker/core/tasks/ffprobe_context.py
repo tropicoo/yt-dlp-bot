@@ -1,5 +1,4 @@
 import json
-from typing import Optional
 
 from core.tasks.abstract import AbstractFfBinaryTask
 
@@ -7,10 +6,10 @@ from core.tasks.abstract import AbstractFfBinaryTask
 class GetFfprobeContextTask(AbstractFfBinaryTask):
     _CMD = 'ffprobe -loglevel error -show_format -show_streams -of json "{filepath}"'
 
-    async def run(self) -> Optional[dict]:
+    async def run(self) -> dict | None:
         return await self._get_context()
 
-    async def _get_context(self) -> Optional[dict]:
+    async def _get_context(self) -> dict | None:
         cmd = self._CMD.format(filepath=self._file_path)
         proc = await self._run_proc(cmd)
         if not proc:

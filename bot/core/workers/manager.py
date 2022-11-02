@@ -2,19 +2,17 @@ import logging
 from asyncio import Task
 from typing import TYPE_CHECKING
 
-from core.tasks.rabbit_tasks import (
-    ErrorResultWorkerTask,
-    RabbitTaskType,
-    SuccessResultWorkerTask,
-)
-from yt_shared.task_utils.tasks import create_task
+from core.workers.abstract import RabbitTaskType
+from core.workers.error import ErrorResultWorker
+from core.workers.success import SuccessResultWorker
+from yt_shared.utils.tasks.tasks import create_task
 
 if TYPE_CHECKING:
     from core.bot import VideoBot
 
 
 class RabbitWorkerManager:
-    _TASK_TYPES = [ErrorResultWorkerTask, SuccessResultWorkerTask]
+    _TASK_TYPES = (ErrorResultWorker, SuccessResultWorker)
 
     def __init__(self, bot: 'VideoBot') -> None:
         self._log = logging.getLogger(self.__class__.__name__)

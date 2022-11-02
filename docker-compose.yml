@@ -25,7 +25,6 @@ services:
       - rabbitmq
       - worker
       - redis
-      - pgadmin
   bot:
     container_name: yt_bot
     build:

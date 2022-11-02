@@ -8,7 +8,7 @@ telegram:
       upload:
         upload_vide_file: !!bool False
         upload_video_max_file_size: 2147483648
-        forward_to_group: !!bool True
+        forward_to_group: !!bool False
         forward_group_id: -00000000000
         silent: !!bool False
   api:

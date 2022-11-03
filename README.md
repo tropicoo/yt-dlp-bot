@@ -47,7 +47,7 @@ After pasting video URL(s) bot will send you appropriate message whether they we
 ## Advanced setup
 1. If you want to change `yt-dlp` download options, go to the `worker/ytdl_opts`
 directory, copy content from `default.py` to `user.py` and modify as you wish 
-by checking [official documentation](https://github.com/timethrow/yt-dlp/blob/patch-1/README.md#embedding-yt-dlp).
+by checking [available options](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180).
 
 ## 🛑 Failed download
 If your URL can't be downloaded for some reason, you will see this

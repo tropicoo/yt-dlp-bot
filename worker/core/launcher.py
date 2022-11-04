@@ -16,7 +16,7 @@ class WorkerLauncher:
         self._log = logging.getLogger(self.__class__.__name__)
         self._rabbit_mq = get_rabbitmq()
 
-    def start(self):
+    def start(self) -> None:
         self._log.info('Starting download worker instance')
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self._start())
@@ -29,7 +29,7 @@ class WorkerLauncher:
         await self._perform_setup()
 
     async def _perform_setup(self) -> None:
-        await asyncio.gather(self._setup_rabbit(), self._set_yt_dlp_version())
+        await asyncio.gather(*(self._setup_rabbit(), self._set_yt_dlp_version()))
 
     async def _setup_rabbit(self) -> None:
         self._log.info('Setting up RabbitMQ connection')
@@ -39,7 +39,7 @@ class WorkerLauncher:
         )
         await self._rabbit_mq.queues[INPUT_QUEUE].consume(cb.on_input_message)
 
-    async def _set_yt_dlp_version(self):
+    async def _set_yt_dlp_version(self) -> None:
         curr_version = ytdlp_version.__version__
         self._log.info('Setting current yt-dlp version (%s)', curr_version)
         async for db in get_db():

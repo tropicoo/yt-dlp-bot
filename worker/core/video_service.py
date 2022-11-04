@@ -78,18 +78,10 @@ class VideoService:
         tasks = [self._create_thumbnail_task(file_path, thumb_path, video.duration)]
         if settings.SAVE_VIDEO_FILE:
             tasks.append(self._create_copy_file_task(video))
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-        self._raise_on_exception(results)
+        await asyncio.gather(*tasks)
 
         final_coros = [self._repository.save_as_done(db, task, video)]
-        results = await asyncio.gather(*final_coros, return_exceptions=True)
-        self._raise_on_exception(results)
-
-    @staticmethod
-    def _raise_on_exception(results: tuple) -> None:
-        for result in results:
-            if isinstance(result, Exception):
-                raise result
+        await asyncio.gather(*final_coros)
 
     @staticmethod
     async def _set_probe_ctx(file_path: str, video: DownVideo) -> None:

@@ -10,4 +10,7 @@ pyproject.toml
 
 api/Dockerfile
 bot/Dockerfile
+bot/config-example.yml
+bot/*.session
+bot/*.session-journal
 worker/Dockerfile

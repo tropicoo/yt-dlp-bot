@@ -31,7 +31,7 @@ class BotLauncher:
         self._setup_handlers()
         await self._start_bot()
 
-    def _setup_handlers(self):
+    def _setup_handlers(self) -> None:
         cb = TelegramCallback()
         self._bot.add_handler(
             MessageHandler(
@@ -59,8 +59,8 @@ class BotLauncher:
             exception_message_args=(task_name,),
         )
 
-    async def _start_tasks(self):
-        await self._rabbit_worker_manager.start_worker_tasks()
+    async def _start_tasks(self) -> None:
+        await self._rabbit_worker_manager.start_workers()
 
         task_name = YtdlpNewVersionNotifyTask.__class__.__name__
         create_task(

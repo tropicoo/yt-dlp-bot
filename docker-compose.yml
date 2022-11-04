@@ -81,29 +81,9 @@ services:
     image: "redis:alpine"
     container_name: yt_redis
     restart: unless-stopped
-  pgadmin:
-    container_name: yt_pgadmin
-    image: dpage/pgadmin4:6
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
-      PGADMIN_DEFAULT_PASSWORD: "123"
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-    volumes:
-      - pgadmin:/root/.pgadmin
-    ports:
-      - "5050:80"
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 1G
-    depends_on:
-      - postgres
 
 volumes:
   pgdata:
-  pgadmin:
   shared-tmpfs:
     driver: local
     driver_opts:

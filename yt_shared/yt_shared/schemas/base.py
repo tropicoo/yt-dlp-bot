@@ -14,6 +14,7 @@ class BaseRabbitPayloadModel(RealBaseModel):
 
     type: RabbitPayloadType = None
 
+    @classmethod
     @validator('type')
     def validate_type_value(cls, v: RabbitPayloadType) -> RabbitPayloadType:
         if v is not cls._TYPE:

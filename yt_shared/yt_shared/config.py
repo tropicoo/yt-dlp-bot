@@ -42,8 +42,9 @@ class Settings(BaseSettings):
 
     TMP_DOWNLOAD_PATH: str
 
+    @classmethod
     @validator('LOG_LEVEL')
-    def validate_log_level_value(cls, value):
+    def validate_log_level_value(cls, value: str) -> str:
         valid_values: KeysView[str] = logging._nameToLevel.keys()  # noqa
         if value not in valid_values:
             raise ValueError(f'"LOG_LEVEL" must be one of {valid_values}')

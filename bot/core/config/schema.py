@@ -16,8 +16,14 @@ class BaseUserSchema(RealBaseModel):
     id: StrictInt
 
     @property
-    def is_base_user(self):
+    def is_base_user(self) -> bool:
         return True
+
+
+class VideoCaptionSchema(RealBaseModel):
+    include_title: StrictBool
+    include_filename: StrictBool
+    include_link: StrictBool
 
 
 class UserUploadSchema(RealBaseModel):
@@ -26,13 +32,14 @@ class UserUploadSchema(RealBaseModel):
     forward_to_group: StrictBool
     forward_group_id: StrictInt | None
     silent: StrictBool
+    video_caption: VideoCaptionSchema
 
 
 class UserSchema(BaseUserSchema):
     upload: UserUploadSchema
 
     @property
-    def is_base_user(self):
+    def is_base_user(self) -> bool:
         return False
 
 
@@ -45,6 +52,7 @@ class ApiSchema(RealBaseModel):
     upload_video_max_file_size: StrictInt
     upload_to_chat_ids: list[BaseUserSchema]
     silent: StrictBool
+    video_caption: VideoCaptionSchema
 
     _transform_chat_ids = validator('upload_to_chat_ids', pre=True)(change_type)
 
@@ -54,6 +62,7 @@ class TelegramSchema(RealBaseModel):
     api_hash: StrictStr
     token: StrictStr
     lang_code: constr(regex=_LANG_CODE_REGEX, to_lower=True)
+    max_upload_tasks: StrictInt
     allowed_users: list[UserSchema]
     api: ApiSchema
 

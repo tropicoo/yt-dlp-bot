@@ -13,6 +13,7 @@ class LatestVersion(RealBaseModel):
     version: StrictStr
     retrieved_at: datetime.datetime
 
+    @classmethod
     @validator('retrieved_at', pre=True)
     def remove_microseconds(cls, value: datetime.datetime) -> datetime.datetime:
         return _remove_microseconds(value)
@@ -22,6 +23,7 @@ class CurrentVersion(RealBaseModel):
     version: StrictStr = Field(..., alias='current_version')
     updated_at: datetime.datetime
 
+    @classmethod
     @validator('updated_at', pre=True)
     def remove_microseconds(cls, value: datetime.datetime) -> datetime.datetime:
         return _remove_microseconds(value)
@@ -33,10 +35,9 @@ class CurrentVersion(RealBaseModel):
 class VersionContext(RealBaseModel):
     latest: LatestVersion
     current: CurrentVersion
-    has_new_version: bool | None
 
-    @validator('has_new_version', always=True)
-    def check_new_version(cls, value, values: dict) -> bool:
-        return [int(x) for x in values['latest'].version.split('.')] > [
-            int(x) for x in values['current'].version.split('.')
+    @property
+    def has_new_version(self) -> bool:
+        return [int(x) for x in self.latest.version.split('.')] > [
+            int(x) for x in self.current.version.split('.')
         ]

@@ -26,9 +26,10 @@ class VideoBot(Client):
             user.id: user for user in self.conf.telegram.allowed_users
         }
 
-    @staticmethod
-    async def run_forever() -> None:
+    async def run_forever(self) -> None:
         """Firstly 'await bot.start()' should be called."""
+        if not self.is_initialized:
+            raise RuntimeError('Bot was not started (initialized).')
         while True:
             await asyncio.sleep(86400)
 

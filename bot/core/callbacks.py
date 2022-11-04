@@ -6,13 +6,13 @@ from pyrogram.types import Message
 from core.bot import VideoBot
 from core.service import URLService
 from core.utils import bold
-from yt_shared.enums import TelegramChatType
 from yt_shared.emoji import SUCCESS_EMOJI
+from yt_shared.enums import TelegramChatType
 from yt_shared.schemas.url import URL
 
 
 class TelegramCallback:
-    _MSG_SEND_OK = f'{SUCCESS_EMOJI} {bold("URL sent for download")}'
+    _MSG_SEND_OK = f'{SUCCESS_EMOJI} {bold("{count}URL{plural} sent for download")}'
     _MSG_SEND_FAIL = f'🛑 {bold("Failed to send URL for download")}'
 
     def __init__(self) -> None:
@@ -32,8 +32,18 @@ class TelegramCallback:
         self._log.debug(message)
         urls = self._get_urls(message)
         await self._url_service.process_urls(urls=urls)
+        await self._send_acknowledge_message(message=message, urls=urls)
+
+    async def _send_acknowledge_message(
+        self, message: Message, urls: list[URL]
+    ) -> None:
+        urls_count = len(urls)
+        is_multiple = urls_count > 1
         await message.reply(
-            self._MSG_SEND_OK,
+            self._MSG_SEND_OK.format(
+                count=f'{urls_count} ' if is_multiple else '',
+                plural='s' if is_multiple else '',
+            ),
             parse_mode=ParseMode.HTML,
             reply_to_message_id=message.id,
         )

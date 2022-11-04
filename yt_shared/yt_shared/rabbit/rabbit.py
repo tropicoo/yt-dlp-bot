@@ -27,23 +27,23 @@ class RabbitMQ:
         await self._set_exchanges()
         await self._set_queues()
 
-    async def _set_connection(self):
+    async def _set_connection(self) -> None:
         self.connection = await aio_pika.connect_robust(
             settings.RABBITMQ_URI,
             loop=get_running_loop(),
             reconnect_interval=self.RABBITMQ_RECONNECT_INTERVAL,
         )
 
-    async def _set_channel(self):
+    async def _set_channel(self) -> None:
         self.channel = await self.connection.channel()
         await self.channel.set_qos(prefetch_count=self.MAX_UNACK_MESSAGES_PER_CHANNEL)
 
-    async def _set_exchanges(self):
+    async def _set_exchanges(self) -> None:
         for exchange_data in self._config.get('exchanges', []):
             exchange = await self.channel.declare_exchange(**exchange_data)
             self.exchanges[exchange_data['name']] = exchange
 
-    async def _set_queues(self):
+    async def _set_queues(self) -> None:
         for queue_data in self._config.get('queues', []):
             queue = await self.channel.declare_queue(**queue_data)
             queue_name = queue_data['name']

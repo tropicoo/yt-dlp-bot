@@ -15,13 +15,13 @@ if TYPE_CHECKING:
     from core.bot import VideoBot
 
 
-class RabbitTaskType(enum.Enum):
+class RabbitWorkerType(enum.Enum):
     ERROR = 'ERROR'
     SUCCESS = 'SUCCESS'
 
 
 class AbstractResultWorker(AbstractTask):
-    TYPE: RabbitTaskType | None = None
+    TYPE: RabbitWorkerType | None = None
     QUEUE_TYPE: str | None = None
     SCHEMA_CLS: tuple[Type[BaseModel]] = ()
 

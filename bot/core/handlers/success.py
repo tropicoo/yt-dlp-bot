@@ -39,12 +39,14 @@ class SuccessHandler(AbstractHandler):
 
     async def _create_upload_task(self) -> None:
         """Upload video to Telegram chat."""
+        semaphore = asyncio.Semaphore(value=self._bot.conf.telegram.max_upload_tasks)
         task_name = UploadTask.__class__.__name__
         await create_task(
             UploadTask(
                 body=self._body,
                 users=self._receiving_users,
                 bot=self._bot,
+                semaphore=semaphore,
             ).run(),
             task_name=task_name,
             logger=self._log,

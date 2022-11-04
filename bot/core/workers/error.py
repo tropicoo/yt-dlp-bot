@@ -1,11 +1,11 @@
 from core.handlers.error import ErrorHandler
-from core.workers.abstract import AbstractResultWorker, RabbitTaskType
+from core.workers.abstract import AbstractResultWorker, RabbitWorkerType
 from yt_shared.rabbit.rabbit_config import ERROR_QUEUE
 from yt_shared.schemas.error import ErrorDownloadPayload, ErrorGeneralPayload
 
 
 class ErrorResultWorker(AbstractResultWorker):
-    TYPE = RabbitTaskType.ERROR
+    TYPE = RabbitWorkerType.ERROR
     QUEUE_TYPE = ERROR_QUEUE
     SCHEMA_CLS = (ErrorDownloadPayload, ErrorGeneralPayload)
     HANDLER_CLS = ErrorHandler

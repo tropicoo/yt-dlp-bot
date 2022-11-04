@@ -41,6 +41,7 @@ class UploadTask(AbstractTask):
         body: SuccessPayload,
         users: list[BaseUserSchema | UserSchema],
         bot: 'VideoBot',
+        semaphore: asyncio.Semaphore,
     ) -> None:
         super().__init__()
         self._config = get_main_config()
@@ -50,15 +51,22 @@ class UploadTask(AbstractTask):
         self.thumb_path = os.path.join(settings.TMP_DOWNLOAD_PATH, body.thumb_name)
         self._bot = bot
         self._users = users
+        self._semaphore = semaphore
+
         self._upload_chat_ids, self._forward_chat_ids = self._get_upload_chat_ids()
 
         self._video_ctx = self._create_video_context()
         self._cached_message: Message | None = None
 
     async def run(self) -> None:
+        async with self._semaphore:
+            self._log.debug('Semaphore for "%s" acquired', self.filename)
+            await self._run()
+        self._log.debug('Semaphore for "%s" released', self.filename)
+
+    async def _run(self) -> None:
         try:
-            await self._send_upload_text()
-            await self._upload_video_file()
+            await asyncio.gather(*(self._send_upload_text(), self._upload_video_file()))
         except Exception:
             self._log.exception('Exception in upload task for "%s"', self.filename)
 
@@ -163,10 +171,19 @@ class UploadTask(AbstractTask):
         )
 
     def _generate_video_caption(self) -> str:
-        return (
-            f'{bold("Title:")} {self._body.title}\n'
-            f'{bold("URL:")} {self._body.context.url}'
-        )
+        caption_items = []
+        if self._users[0].is_base_user:
+            caption_conf = self._bot.conf.telegram.api.video_caption
+        else:
+            caption_conf = self._users[0].upload.video_caption
+
+        if caption_conf.include_title:
+            caption_items.append(f'{bold("Title:")} {self._body.title}')
+        if caption_conf.include_filename:
+            caption_items.append(f'{bold("Filename:")} {self._body.filename}')
+        if caption_conf.include_link:
+            caption_items.append(f'{bold("URL:")} {self._body.context.url}')
+        return '\n'.join(caption_items)
 
     async def _save_cache_to_db(self, video: Video | Animation) -> None:
         cache = CacheSchema(

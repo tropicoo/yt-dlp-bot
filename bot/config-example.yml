@@ -3,6 +3,7 @@ telegram:
   api_hash: "<PASTE-HERE-TELEGRAM-API-HASH>"
   token: "<PASTE-HERE-TELEGRAM-TOKEN>"
   lang_code: !!str "en"
+  max_upload_tasks: 5
   allowed_users:
     - id: 00000000000
       upload:
@@ -11,6 +12,10 @@ telegram:
         forward_to_group: !!bool False
         forward_group_id: -00000000000
         silent: !!bool False
+        video_caption:
+          include_title: !!bool True
+          include_filename: !!bool False
+          include_link: !!bool True
   api:
     upload_vide_file: !!bool False
     upload_video_max_file_size: 2147483648
@@ -18,4 +23,8 @@ telegram:
       - 00000000000
       - -00000000000
     silent: !!bool False
-ytdlp_version_check_interval: 3600
+    video_caption:
+      include_title: !!bool True
+      include_filename: !!bool False
+      include_link: !!bool True
+ytdlp_version_check_interval: 86400

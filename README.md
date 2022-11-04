@@ -6,12 +6,12 @@ Simple and reliable YouTube Download Telegram Bot.
 ## 😂 Features 
 * Download videos from any [yt-dlp](https://github.com/yt-dlp/yt-dlp) supported website
 * Upload downloaded videos to the Telegram chat
-* Additionally, trigger video download by sending link to API call
-* Track download tasks in the database or API
+* Trigger video download by sending link to an API
+* Track download tasks via API
 
 ## ⚙ Quick Setup
 1. Create Telegram bot using [BotFather](https://t.me/BotFather) and get your `token`
-2. [Get own Telegram API key](https://my.telegram.org/apps) (`api_id` and `api_hash`)
+2. [Get your Telegram API key](https://my.telegram.org/apps) (`api_id` and `api_hash`)
 3. [Find your Telegram User ID](https://stackoverflow.com/questions/32683992/find-out-my-own-user-id-for-sending-a-message-with-telegram-api)
 4. Copy `bot/config-example.yml` to `bot/config.yml`
 5. Write `token`, `api_id`, `api_hash` to `bot/config.yml` by changing respective placeholders
@@ -37,6 +37,9 @@ docker compose build base-image
 
 # Build and run all services in detached mode
 docker compose up --build -d -t 0 && docker compose logs --tail 100 -f
+
+# Stop all services
+docker compose stop -t 0
 ```
 
 Your telegram bot should send you a startup message:
@@ -58,7 +61,6 @@ If your URL can't be downloaded for some reason, you will see this
  - **API**: default port `1984` and no auth. Port can be changed in `docker-compose.yml`
  - **RabbitMQ**: default creds are located in `envs/.env_common`
  - **PostgreSQL**: default creds are located in `envs/.env_common`. Same creds are stored for Alembic in `alembic.ini`.
- - **PGAdmin**: default creds are located in `docker-compose.yml`
 
 ## API
 By default, API service will run on your `localhost` and `1984` port.

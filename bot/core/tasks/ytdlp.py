@@ -24,6 +24,9 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
         self._check_interval = get_main_config().ytdlp_version_check_interval
 
     async def run(self) -> None:
+        await self._run()
+
+    async def _run(self) -> None:
         while True:
             self._log.info('Checking for new yt-dlp version')
             try:
@@ -38,7 +41,8 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
 
     def _get_next_check_datetime(self) -> datetime.datetime:
         return (
-            datetime.datetime.now() + datetime.timedelta(seconds=self._check_interval)
+            datetime.datetime.now(datetime.timezone.utc)
+            + datetime.timedelta(seconds=self._check_interval)
         ).replace(microsecond=0)
 
     async def _notify_if_new_version(self) -> None:
@@ -49,12 +53,15 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
             elif not self._startup_message_sent:
                 await self._notify_up_to_date(context)
                 self._startup_message_sent = True
+            else:
+                # Explicitly do nothing.
+                pass
 
     async def _notify_outdated(self, ctx: VersionContext) -> None:
         text = (
             f'New {code("yt-dlp")} version available: {bold(ctx.latest.version)}\n'
             f'Current version: {bold(ctx.current.version)}\n'
-            f'Rebuild worker with {code("docker-compose build --no-cache worker")}'
+            f'Rebuild worker with {code("docker compose build --no-cache worker")}'
         )
         await self._send_to_chat(text)
 

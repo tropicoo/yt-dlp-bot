@@ -102,7 +102,7 @@ class VideoService:
             self._copy_file_to_storage(video),
             task_name=task_name,
             logger=self._log,
-            exception_message='Task %s raised an exception',
+            exception_message='Task "%s" raised an exception',
             exception_message_args=(task_name,),
         )
 
@@ -113,7 +113,7 @@ class VideoService:
             MakeThumbnailTask(thumb_path, file_path, duration=duration).run(),
             task_name=MakeThumbnailTask.__class__.__name__,
             logger=self._log,
-            exception_message='Task %s raised an exception',
+            exception_message='Task "%s" raised an exception',
             exception_message_args=(MakeThumbnailTask.__class__.__name__,),
         )
 

@@ -1,7 +1,7 @@
 ## yt-dlp-bot
 Simple and reliable YouTube Download Telegram Bot.
 
-![frames](assets/download_success.png)
+![frames](.assets/download_success.png)
 
 ## 😂 Features 
 * Download videos from any [yt-dlp](https://github.com/yt-dlp/yt-dlp) supported website
@@ -51,11 +51,17 @@ After pasting video URL(s) bot will send you appropriate message whether they we
 1. If you want to change `yt-dlp` download options, go to the `worker/ytdl_opts`
 directory, copy content from `default.py` to `user.py` and modify as you wish 
 by checking [available options](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180).
+2. Default max simultaneous video downloads by worker service is 2. Change the `MAX_SIMULTANEOUS_DOWNLOADS`
+   variable in `envs/.env_worker` to desired value but keep in mind `yt-dlp` may glitch when the value is high.
+3. Worker service (particularly the FFmpeg process) makes a JPEG thumbnail from the video. It's needed when 
+   you choose to upload the video to the Telegram chat. By default, it tries to make it on the 10th second 
+   of the video, but if the video is shorter, it will make it on `video length / 2` time point because the FFmpeg
+   process will error out. Change the `THUMBNAIL_FRAME_SECOND` variable if needed in the `envs/.env_worker` file.
 
 ## 🛑 Failed download
 If your URL can't be downloaded for some reason, you will see this
 
-![frames](assets/download_failed.png)
+![frames](.assets/download_failed.png)
 
 ## Access
  - **API**: default port `1984` and no auth. Port can be changed in `docker-compose.yml`

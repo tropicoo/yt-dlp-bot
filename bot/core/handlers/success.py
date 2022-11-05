@@ -50,7 +50,7 @@ class SuccessHandler(AbstractHandler):
             ).run(),
             task_name=task_name,
             logger=self._log,
-            exception_message='Task %s raised an exception',
+            exception_message='Task "%s" raised an exception',
             exception_message_args=(task_name,),
         )
 

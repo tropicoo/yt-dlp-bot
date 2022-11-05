@@ -10,13 +10,13 @@ from core.workers.manager import RabbitWorkerManager
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.utils.tasks.tasks import create_task
 
-REGEX_NOT_START_WITH_SLASH = r'^[^/]'
-
 
 class BotLauncher:
     """Bot launcher which parses configuration file, creates bot with
     camera instances and finally starts the bot.
     """
+
+    REGEX_NOT_START_WITH_SLASH = r'^[^/]'
 
     def __init__(self) -> None:
         """Constructor."""
@@ -45,7 +45,7 @@ class BotLauncher:
                 cb.on_message,
                 filters=filters.user(list(self._bot.allowed_users.keys()))
                 & filters.chat(list(self._bot.allowed_users.keys()))
-                & filters.regex(REGEX_NOT_START_WITH_SLASH),
+                & filters.regex(self.REGEX_NOT_START_WITH_SLASH),
             ),
         )
 
@@ -55,7 +55,7 @@ class BotLauncher:
             self._rabbit_mq.register(),
             task_name=task_name,
             logger=self._log,
-            exception_message='Task %s raised an exception',
+            exception_message='Task "%s" raised an exception',
             exception_message_args=(task_name,),
         )
 
@@ -67,7 +67,7 @@ class BotLauncher:
             YtdlpNewVersionNotifyTask(bot=self._bot).run(),
             task_name=task_name,
             logger=self._log,
-            exception_message='Task %s raised an exception',
+            exception_message='Task "%s" raised an exception',
             exception_message_args=(task_name,),
         )
 
@@ -75,7 +75,7 @@ class BotLauncher:
         """Start telegram bot and related processes."""
         await self._bot.start()
 
-        self._log.info('Starting %s bot', (await self._bot.get_me()).first_name)
+        self._log.info('Starting "%s" bot', (await self._bot.get_me()).first_name)
         await self._bot.send_startup_message()
         await self._start_tasks()
         await self._bot.run_forever()

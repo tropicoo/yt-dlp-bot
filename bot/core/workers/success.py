@@ -20,6 +20,6 @@ class SuccessResultWorker(AbstractResultWorker):
             self.HANDLER_CLS(body=body, bot=self._bot).handle(),
             task_name=task_name,
             logger=self._log,
-            exception_message='Task %s raised an exception',
+            exception_message='Task "%s" raised an exception',
             exception_message_args=(task_name,),
         )

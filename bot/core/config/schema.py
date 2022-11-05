@@ -43,7 +43,7 @@ class UserSchema(BaseUserSchema):
         return False
 
 
-def change_type(values: list[int]) -> list[BaseUserSchema]:
+def _change_type(values: list[int]) -> list[BaseUserSchema]:
     return [BaseUserSchema(id=id_) for id_ in values]
 
 
@@ -54,7 +54,7 @@ class ApiSchema(RealBaseModel):
     silent: StrictBool
     video_caption: VideoCaptionSchema
 
-    _transform_chat_ids = validator('upload_to_chat_ids', pre=True)(change_type)
+    _transform_chat_ids = validator('upload_to_chat_ids', pre=True)(_change_type)
 
 
 class TelegramSchema(RealBaseModel):

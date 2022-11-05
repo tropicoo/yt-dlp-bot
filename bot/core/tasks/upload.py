@@ -154,7 +154,7 @@ class UploadTask(AbstractTask):
             self._save_cache_to_db(video),
             task_name=db_cache_task_name,
             logger=self._log,
-            exception_message='Task %s raised an exception',
+            exception_message='Task "%s" raised an exception',
             exception_message_args=(db_cache_task_name,),
         )
 

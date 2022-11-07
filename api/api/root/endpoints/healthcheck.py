@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.root.schemas.healthcheck import HealthcheckSchema
-from yt_shared.db import get_db
+from yt_shared.db.session import get_db
 
 healthcheck_router = APIRouter(tags=['healthcheck'])
 

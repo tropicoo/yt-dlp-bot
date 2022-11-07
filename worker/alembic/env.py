@@ -9,7 +9,7 @@ from alembic import context
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 from yt_shared.config import settings
-from yt_shared.db import Base
+from yt_shared.db.session import Base
 from yt_shared.models import *  # noqa
 
 config = context.config

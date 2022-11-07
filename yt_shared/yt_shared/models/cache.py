@@ -3,7 +3,7 @@ import uuid
 import sqlalchemy as sa
 from sqlalchemy_utils import Timestamp, UUIDType
 
-from yt_shared.db import Base
+from yt_shared.db.session import Base
 
 
 class Cache(Base, Timestamp):

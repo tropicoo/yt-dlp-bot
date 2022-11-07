@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import Iterable
 
 from core.config.config import get_main_config
 from core.config.schema import UserSchema
@@ -33,22 +34,38 @@ class VideoBot(Client):
         while True:
             await asyncio.sleep(86400)
 
+    def get_startup_users(self) -> list[int]:
+        user_ids = []
+        for user in self.allowed_users.values():
+            if user.send_startup_message:
+                user_ids.append(user.id)
+        return user_ids
+
     async def send_startup_message(self) -> None:
         """Send welcome message after bot launch."""
         self._log.info('Sending welcome message')
-        await self.send_message_all(
-            f'✨ {bold((await self.get_me()).first_name)} started, paste video URL to '
-            f'start download'
+        await self.send_message_to_users(
+            text=(
+                f'✨ {bold((await self.get_me()).first_name)} started, paste video URL '
+                f'to start download'
+            ),
+            user_ids=self.get_startup_users(),
         )
+
+    async def send_message_to_users(
+        self, text: str, user_ids: Iterable[int], parse_mode: ParseMode = ParseMode.HTML
+    ) -> None:
+        coros = []
+        for user_id in user_ids:
+            coros.append(self.send_message(user_id, text, parse_mode=parse_mode))
+        await asyncio.gather(*coros)
 
     async def send_message_all(
         self, text: str, parse_mode: ParseMode = ParseMode.HTML
     ) -> None:
         """Send message to all defined user IDs in config.json."""
-        for user_id in self.allowed_users:
-            try:
-                await self.send_message(user_id, text, parse_mode=parse_mode)
-            except Exception:
-                self._log.exception(
-                    'Failed to send message "%s" to user ID %s', text, user_id
-                )
+        await self.send_message_to_users(
+            text=text,
+            user_ids=self.allowed_users.keys(),
+            parse_mode=parse_mode,
+        )

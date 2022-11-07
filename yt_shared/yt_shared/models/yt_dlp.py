@@ -3,11 +3,10 @@ import datetime
 import sqlalchemy as sa
 from sqlalchemy import func
 
-from yt_shared.db import Base
+from yt_shared.db.session import Base
 
 
 class YTDLP(Base):
-
     __tablename__ = 'yt_dlp'
 
     id = sa.Column(sa.Integer, autoincrement=True, primary_key=True, nullable=False)

@@ -6,8 +6,9 @@ telegram:
   max_upload_tasks: 5
   allowed_users:
     - id: 00000000000
+      send_startup_message: !!bool True
       upload:
-        upload_vide_file: !!bool False
+        upload_video_file: !!bool False
         upload_video_max_file_size: 2147483648
         forward_to_group: !!bool False
         forward_group_id: -00000000000
@@ -17,7 +18,7 @@ telegram:
           include_filename: !!bool False
           include_link: !!bool True
   api:
-    upload_vide_file: !!bool False
+    upload_video_file: !!bool False
     upload_video_max_file_size: 2147483648
     upload_to_chat_ids:
       - 00000000000
@@ -27,4 +28,7 @@ telegram:
       include_title: !!bool True
       include_filename: !!bool False
       include_link: !!bool True
-ytdlp_version_check_interval: 86400
+ytdlp:
+  version_check_enabled: !!bool True
+  version_check_interval: 86400
+  notify_users_on_new_version: !!bool True

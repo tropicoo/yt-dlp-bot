@@ -68,14 +68,14 @@ class SuccessHandler(AbstractHandler):
 
     def _eligible_for_upload(self, video_path: str) -> bool:
         if self._body.context.source is TaskSource.API:
-            upload_vide_file = self._bot.conf.telegram.api.upload_vide_file
+            upload_video_file = self._bot.conf.telegram.api.upload_video_file
             max_file_size = self._bot.conf.telegram.api.upload_video_max_file_size
         else:
             user = self._bot.allowed_users[self._get_sender_id()]
-            upload_vide_file = user.upload.upload_vide_file
+            upload_video_file = user.upload.upload_video_file
             max_file_size = user.upload.upload_video_max_file_size
 
-        if not upload_vide_file:
+        if not upload_video_file:
             return False
 
         file_size = os.stat(video_path).st_size

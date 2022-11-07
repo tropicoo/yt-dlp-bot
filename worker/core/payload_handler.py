@@ -5,7 +5,7 @@ from core.exceptions import DownloadVideoServiceError, GeneralVideoServiceError
 from core.video_service import VideoService
 from yt_dlp import version as ytdlp_version
 
-from yt_shared.db import get_db
+from yt_shared.db.session import get_db
 from yt_shared.models import Task
 from yt_shared.rabbit.publisher import Publisher
 from yt_shared.schemas.error import ErrorDownloadPayload, ErrorGeneralPayload

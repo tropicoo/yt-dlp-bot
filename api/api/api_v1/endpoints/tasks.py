@@ -17,7 +17,7 @@ from api.api_v1.schemas.task import (
     TasksStatsSchema,
 )
 from yt_shared.enums import TaskStatus
-from yt_shared.db import get_db
+from yt_shared.db.session import get_db
 from yt_shared.rabbit.publisher import Publisher
 
 router = APIRouter()

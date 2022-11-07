@@ -27,7 +27,7 @@ class VideoCaptionSchema(RealBaseModel):
 
 
 class UserUploadSchema(RealBaseModel):
-    upload_vide_file: StrictBool
+    upload_video_file: StrictBool
     upload_video_max_file_size: StrictInt
     forward_to_group: StrictBool
     forward_group_id: StrictInt | None
@@ -36,6 +36,7 @@ class UserUploadSchema(RealBaseModel):
 
 
 class UserSchema(BaseUserSchema):
+    send_startup_message: StrictBool
     upload: UserUploadSchema
 
     @property
@@ -48,7 +49,7 @@ def _change_type(values: list[int]) -> list[BaseUserSchema]:
 
 
 class ApiSchema(RealBaseModel):
-    upload_vide_file: StrictBool
+    upload_video_file: StrictBool
     upload_video_max_file_size: StrictInt
     upload_to_chat_ids: list[BaseUserSchema]
     silent: StrictBool
@@ -67,6 +68,12 @@ class TelegramSchema(RealBaseModel):
     api: ApiSchema
 
 
+class YtdlpSchema(RealBaseModel):
+    version_check_enabled: StrictBool
+    version_check_interval: StrictInt
+    notify_users_on_new_version: StrictBool
+
+
 class ConfigSchema(RealBaseModel):
     telegram: TelegramSchema
-    ytdlp_version_check_interval: StrictInt
+    ytdlp: YtdlpSchema

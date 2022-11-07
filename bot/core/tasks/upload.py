@@ -12,7 +12,7 @@ from core.config import settings
 from core.config.config import get_main_config
 from core.config.schema import BaseUserSchema, UserSchema
 from core.utils import bold
-from yt_shared.db import get_db
+from yt_shared.db.session import get_db
 from yt_shared.repositories.task import TaskRepository
 from yt_shared.schemas.base import RealBaseModel
 from yt_shared.schemas.cache import CacheSchema

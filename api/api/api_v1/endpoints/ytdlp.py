@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.api_v1.schemas.ytdlp import YTDLPLatestVersion
-from yt_shared.db import get_db
+from yt_shared.db.session import get_db
 from yt_shared.ytdlp.version_checker import YtdlpVersionChecker
 
 router = APIRouter()

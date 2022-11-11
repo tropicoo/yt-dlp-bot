@@ -2,7 +2,7 @@
 
 Simple and reliable YouTube Download Telegram Bot.
 
-Version: 0.3. [Release details](.releases/release_0.3.md).
+Version: 0.3.1. [Release details](.releases/release_0.3.1.md).
 
 ![frames](.assets/download_success.png)
 
@@ -89,7 +89,7 @@ details
   in `docker-compose.yml`
 - **RabbitMQ**: default creds are located in `envs/.env_common`
 - **PostgreSQL**: default creds are located in `envs/.env_common`. Same creds are stored
-  for Alembic in `alembic.ini`.
+  for Alembic in `worker/alembic.ini` on 53rd line.
 
 ## API
 

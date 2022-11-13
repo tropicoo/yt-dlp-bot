@@ -16,18 +16,16 @@ class GetFfprobeContextTask(AbstractFfBinaryTask):
             return None
 
         stdout, stderr = await self._get_stdout_stderr(proc)
-        self._log.debug(
+        self._log.info(
             'Process %s returncode: %d, stderr: %s', cmd, proc.returncode, stderr
         )
         if proc.returncode:
-            self._log.error(
-                'Failed to make video context. Is file broken? %s?', self._file_path
-            )
-            return None
+            err_msg = f'Failed to make video context. Is file broken? {self._file_path}?'
+            self._log.error(err_msg)
+            raise RuntimeError(err_msg)
         try:
             return json.loads(stdout)
-        except Exception:
-            self._log.exception(
-                'Failed to load ffprobe output [type %s]: %s', type(stdout), stdout
-            )
-            return None
+        except Exception as err:
+            err_msg = f'Failed to load ffprobe output [type {type(stdout)}]: {stdout}'
+            self._log.exception(err_msg)
+            raise RuntimeError(err_msg) from err

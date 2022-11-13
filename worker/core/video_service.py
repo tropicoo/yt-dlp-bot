@@ -73,7 +73,14 @@ class VideoService:
 
         # yt-dlp meta may not contain needed video metadata.
         if not all([video.duration, video.height, video.width]):
-            await self._set_probe_ctx(file_path, video)
+            # TODO: Move to higher level and re-raise as DownloadVideoServiceError with task,
+            # TODO: or create new exception type.
+            try:
+                await self._set_probe_ctx(file_path, video)
+            except RuntimeError as err:
+                exception = DownloadVideoServiceError(str(err))
+                exception.task = task
+                raise exception
 
         tasks = [self._create_thumbnail_task(file_path, thumb_path, video.duration)]
         if settings.SAVE_VIDEO_FILE:
@@ -91,8 +98,7 @@ class VideoService:
         video_streams = [
             stream for stream in probe_ctx['streams'] if stream['codec_type'] == 'video'
         ]
-
-        video.duration = int(float(probe_ctx['format']['duration']))
+        video.duration = float(probe_ctx['format']['duration'])
         video.width = video_streams[0]['width']
         video.height = video_streams[0]['height']
 
@@ -107,7 +113,7 @@ class VideoService:
         )
 
     def _create_thumbnail_task(
-        self, file_path: str, thumb_path: str, duration: int
+        self, file_path: str, thumb_path: str, duration: float
     ) -> asyncio.Task:
         return create_task(
             MakeThumbnailTask(thumb_path, file_path, duration=duration).run(),

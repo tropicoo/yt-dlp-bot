@@ -3,7 +3,7 @@ import os
 from itertools import chain
 from typing import Coroutine, TYPE_CHECKING
 
-from pydantic import StrictInt, StrictStr
+from pydantic import StrictFloat, StrictInt, StrictStr
 from pyrogram.enums import ChatAction, MessageMediaType, ParseMode
 from pyrogram.types import Animation, Message, Video
 from tenacity import retry, stop_after_attempt, wait_fixed
@@ -28,7 +28,7 @@ class VideoContext(RealBaseModel):
     caption: StrictStr
     file_name: StrictStr
     video_path: StrictStr
-    duration: StrictInt
+    duration: StrictFloat
     height: StrictInt
     width: StrictInt
     thumb: StrictStr
@@ -122,7 +122,7 @@ class UploadTask(AbstractTask):
             'chat_id': chat_id,
             'caption': self._video_ctx.caption,
             'file_name': self._video_ctx.file_name,
-            'duration': self._video_ctx.duration,
+            'duration': int(self._video_ctx.duration),
             'height': self._video_ctx.height,
             'width': self._video_ctx.width,
             'thumb': self._video_ctx.thumb,

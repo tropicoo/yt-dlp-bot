@@ -1,7 +1,8 @@
 import uuid
+from typing import ClassVar
 
 from pydantic import StrictStr, StrictInt
-from pydantic.types import ClassVar
+from pydantic.types import StrictFloat
 
 from yt_shared.enums import RabbitPayloadType, TelegramChatType
 from yt_shared.schemas.base import BaseRabbitPayloadModel
@@ -20,7 +21,7 @@ class SuccessPayload(BaseRabbitPayloadModel):
     title: StrictStr
     filename: StrictStr
     thumb_name: StrictStr
-    duration: StrictInt | None
+    duration: StrictFloat | None
     width: StrictInt | None
     height: StrictInt | None
     context: VideoPayload

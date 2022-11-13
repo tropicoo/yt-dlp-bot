@@ -1,13 +1,11 @@
 from core.config import settings
 from core.tasks.abstract import AbstractFfBinaryTask
 
-from yt_shared.schemas.video import DownVideo
-
 
 class MakeThumbnailTask(AbstractFfBinaryTask):
     _CMD = 'ffmpeg -y -loglevel error -i "{filepath}" -ss {second} -vframes 1 -q:v 7 "{thumbpath}"'
 
-    def __init__(self, thumbnail_path: str, *args, duration: int, **kwargs) -> None:
+    def __init__(self, thumbnail_path: str, *args, duration: float, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._thumbnail_path = thumbnail_path
         self._duration = duration

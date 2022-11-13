@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from pydantic import StrictInt, StrictStr
+from pydantic import StrictFloat, StrictInt, StrictStr
 
 from api.api_v1.schemas.base import BaseOrmModel
 from yt_shared.enums import TaskSource, TaskStatus
@@ -25,7 +25,7 @@ class FileSimpleSchema(BaseOrmModel):
     title: StrictStr | None
     name: StrictStr | None
     thumb_name: StrictStr | None
-    duration: StrictInt | None
+    duration: StrictFloat | None
     width: StrictInt | None
     height: StrictInt | None
     cache: CacheSchema | None = ...

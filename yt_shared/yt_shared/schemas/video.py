@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from pydantic import Field, StrictInt, StrictStr, root_validator
+from pydantic import Field, StrictFloat, StrictInt, StrictStr, root_validator
 
 from yt_shared.enums import TaskSource, TelegramChatType
 from yt_shared.schemas.base import RealBaseModel
@@ -24,7 +24,7 @@ class DownVideo(RealBaseModel):
     title: StrictStr
     name: StrictStr
     thumb_name: StrictStr | None = None
-    duration: int | None = None
+    duration: StrictFloat | None = None
     width: int | None = None
     height: int | None = None
     meta: dict

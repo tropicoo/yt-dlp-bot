@@ -48,8 +48,8 @@ class RabbitMQ:
             queue = await self.channel.declare_queue(**queue_data)
             queue_name = queue_data['name']
             bindings = self._config['queue_bindings'][queue_name]
-            for settings in bindings:
-                await queue.bind(self.exchanges[settings['exchange_name']])
+            for _settings in bindings:
+                await queue.bind(self.exchanges[_settings['exchange_name']])
             self.queues[queue_name] = queue
 
     async def close(self) -> None:

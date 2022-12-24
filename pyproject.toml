@@ -1,3 +1,8 @@
 [tool.black]
 line-length = 88
 skip-string-normalization = 1
+
+[tool.ruff]
+line-length = 88
+# Skip line length violations
+ignore = ["E501"]

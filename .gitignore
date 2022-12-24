@@ -4,6 +4,7 @@
 *.session-journal
 config.yml
 config.yaml
+.ruff_cache
 
 __pycache__/
 *.py[cod]

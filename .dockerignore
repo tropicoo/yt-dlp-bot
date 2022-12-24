@@ -7,8 +7,9 @@
 .dockerignore
 .github
 .gitignore
+.ruff_cache
 .releases
-**/Dockerfile*
+**/*Dockerfile*
 LICENSE
 README.md
 pyproject.toml

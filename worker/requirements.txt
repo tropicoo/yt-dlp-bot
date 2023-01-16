@@ -1,4 +1,4 @@
 PyYAML==6.0
-alembic==1.9.1
+alembic==1.9.2
 python-dotenv==0.21.0
 yt-dlp

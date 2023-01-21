@@ -57,7 +57,8 @@ class PayloadHandler:
             from_chat_id=video_payload.from_chat_id,
             from_chat_type=video_payload.from_chat_type,
             from_user_id=task.from_user_id,
-            context=video_payload.dict(),
+            context=video_payload,
+            yt_dlp_version=ytdlp_version.__version__,
         )
         await self._publisher.send_download_finished(success_payload)
 
@@ -75,7 +76,7 @@ class PayloadHandler:
             from_user_id=video_payload.from_user_id,
             message='Download error',
             url=video_payload.url,
-            context=video_payload.dict(),
+            context=video_payload,
             yt_dlp_version=ytdlp_version.__version__,
             exception_msg=str(err),
             exception_type=err.__class__.__name__,
@@ -96,7 +97,7 @@ class PayloadHandler:
             from_user_id=video_payload.from_user_id,
             message='General worker error',
             url=video_payload.url,
-            context=video_payload.dict(),
+            context=video_payload,
             yt_dlp_version=ytdlp_version.__version__,
             exception_msg=traceback.format_exc(),
             exception_type=err.__class__.__name__,

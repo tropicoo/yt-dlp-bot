@@ -25,3 +25,4 @@ class SuccessPayload(BaseRabbitPayloadModel):
     width: StrictInt | None
     height: StrictInt | None
     context: VideoPayload
+    yt_dlp_version: StrictStr | None

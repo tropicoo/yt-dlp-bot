@@ -1,13 +1,17 @@
 import asyncio
 import os
+import traceback
 
 from pyrogram.enums import ParseMode
 
 from core.config import settings
 from core.handlers.abstract import AbstractHandler
 from core.tasks.upload import UploadTask
+
 from yt_shared.emoji import SUCCESS_EMOJI
 from yt_shared.enums import TaskSource
+from yt_shared.rabbit.publisher import Publisher
+from yt_shared.schemas.error import ErrorGeneralPayload
 from yt_shared.schemas.success import SuccessPayload
 from yt_shared.utils.file import file_cleanup
 from yt_shared.utils.tasks.tasks import create_task
@@ -16,8 +20,31 @@ from yt_shared.utils.tasks.tasks import create_task
 class SuccessHandler(AbstractHandler):
     _body: SuccessPayload
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self._publisher = Publisher()
+
     async def handle(self) -> None:
-        await self._handle()
+        try:
+            await self._handle()
+        except Exception as err:
+            await self._publish_error_message(err)
+
+    async def _publish_error_message(self, err: Exception) -> None:
+        err_payload = ErrorGeneralPayload(
+            task_id=self._body.task_id,
+            message_id=self._body.message_id,
+            from_chat_id=self._body.from_chat_id,
+            from_chat_type=self._body.from_chat_type,
+            from_user_id=self._body.from_user_id,
+            message='Upload error',
+            url=self._body.context.url,
+            context=self._body.context,
+            yt_dlp_version=self._body.yt_dlp_version,
+            exception_msg=traceback.format_exc(),
+            exception_type=err.__class__.__name__,
+        )
+        await self._publisher.send_download_error(err_payload)
 
     async def _handle(self) -> None:
         await self._send_success_text()
@@ -26,14 +53,11 @@ class SuccessHandler(AbstractHandler):
             settings.TMP_DOWNLOAD_PATH, self._body.thumb_name
         )
         try:
-            if not self._eligible_for_upload(video_path):
-                self._log.warning(
-                    'File %s will not be uploaded to Telegram', self._body.filename
-                )
-                return
+            self._validate_file_size_for_upload(video_path)
             await self._create_upload_task()
         except Exception:
             self._log.error('Upload of "%s" failed, performing cleanup', video_path)
+            raise
         finally:
             file_cleanup(file_paths=(video_path, thumb_path), log=self._log)
 
@@ -66,7 +90,7 @@ class SuccessHandler(AbstractHandler):
                 kwargs['reply_to_message_id'] = self._body.message_id
             await self._bot.send_message(**kwargs)
 
-    def _eligible_for_upload(self, video_path: str) -> bool:
+    def _validate_file_size_for_upload(self, video_path: str) -> None:
         if self._body.context.source is TaskSource.API:
             upload_video_file = self._bot.conf.telegram.api.upload_video_file
             max_file_size = self._bot.conf.telegram.api.upload_video_max_file_size
@@ -76,14 +100,13 @@ class SuccessHandler(AbstractHandler):
             max_file_size = user.upload.upload_video_max_file_size
 
         if not upload_video_file:
-            return False
+            raise ValueError(f'Video {video_path} not found')
 
         file_size = os.stat(video_path).st_size
         if file_size > max_file_size:
-            self._log.warning(
-                'Video file size %d bigger then allowed %d. Will not upload',
-                file_size,
-                max_file_size,
+            err_msg = (
+                f'Video file size {file_size} bytes bigger then allowed {max_file_size}'
+                f' bytes. Will not upload'
             )
-            return False
-        return True
+            self._log.warning(err_msg)
+            raise ValueError(err_msg)

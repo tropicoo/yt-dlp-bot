@@ -1,8 +1,8 @@
-import enum
+from enum import Enum, auto, unique
 
 
-@enum.unique
-class ChoiceEnum(enum.Enum):
+@unique
+class ChoiceEnum(Enum):
     @classmethod
     def choices(cls) -> tuple[str, ...]:
         return tuple(x.value for x in cls)
@@ -21,9 +21,9 @@ class TaskSource(str, ChoiceEnum):
 
 
 class RabbitPayloadType(ChoiceEnum):
-    DOWNLOAD_ERROR = 'ERROR_DOWNLOAD'
-    GENERAL_ERROR = 'GENERAL_ERROR'
-    SUCCESS = 'SUCCESS'
+    DOWNLOAD_ERROR = auto()
+    GENERAL_ERROR = auto()
+    SUCCESS = auto()
 
 
 class TelegramChatType(ChoiceEnum):

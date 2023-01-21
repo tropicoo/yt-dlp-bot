@@ -9,6 +9,7 @@ Version: 0.5. [Release details](.releases/release_0.5.md).
 ## 😂 Features
 
 * Download videos from any [yt-dlp](https://github.com/yt-dlp/yt-dlp) supported website
+  to your storage
 * Upload downloaded videos to the Telegram chat
 * Trigger video download by sending link to an API
 * Track download tasks via API
@@ -75,6 +76,11 @@ or something went wrong.
    shorter, it will make it on `video length / 2` time point because the FFmpeg process
    will error out. Change the `THUMBNAIL_FRAME_SECOND` variable if needed in
    the `envs/.env_worker` file.
+4. Max upload file size for non-premium Telegram user is 2GB (2147483648 bytes) which is
+   reflected in the example config `bot/config-example.yml`. If the configured user
+   is the premium user, you're allowed to upload files up to 4GB (4294967296 bytes) and
+   can change the default value stored in the `upload_video_max_file_size` config
+   variable.
 
 ## 🛑 Failed download
 
@@ -96,17 +102,17 @@ details
 By default, API service will run on your `localhost` and `1984` port. API endpoint
 documentations lives at `http://127.0.0.1:1984/docs`.
 
-| Endpoint | Method| Description|
-|---|---|---|
-| `/status` | `GET` | Get API healthcheck status, usually response is `{"status": "OK"}` |
-| `/v1/yt-dlp` | `GET` | Get latest and currently installed `yt-dlp` version |
-|`/v1/tasks/?include_meta=False&status=DONE`| `GET` | Get all tasks with filtering options like to include large file metadata and by task status: `PENDING`, `PROCESSING`, `FAILED` and `DONE`. |
-| `/v1/tasks/f828714a-5c50-45de-87c0-3b51b7e04039?include_meta=True` | `GET` | Get info about task by ID |
-| `/v1/tasks/latest?include_meta=True` | `GET` | Get info about latest task |
-| `/v1/tasks/f828714a-5c50-45de-87c0-3b51b7e04039` | `DELETE` | Delete task by ID |
-| `/v1/tasks/latest?include_meta=True` | `GET` | Get info about the latest task |
-| `/v1/tasks` | `POST` | Create a download task by sending json payload `{"url": "<URL>"}` |
-| `/v1/tasks/stats` | `GET` | Get overall tasks stats |
+| Endpoint                                                           | Method   | Description                                                                                                                                |
+|--------------------------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `/status`                                                          | `GET`    | Get API healthcheck status, usually response is `{"status": "OK"}`                                                                         |
+| `/v1/yt-dlp`                                                       | `GET`    | Get latest and currently installed `yt-dlp` version                                                                                        |
+| `/v1/tasks/?include_meta=False&status=DONE`                        | `GET`    | Get all tasks with filtering options like to include large file metadata and by task status: `PENDING`, `PROCESSING`, `FAILED` and `DONE`. |
+| `/v1/tasks/f828714a-5c50-45de-87c0-3b51b7e04039?include_meta=True` | `GET`    | Get info about task by ID                                                                                                                  |
+| `/v1/tasks/latest?include_meta=True`                               | `GET`    | Get info about latest task                                                                                                                 |
+| `/v1/tasks/f828714a-5c50-45de-87c0-3b51b7e04039`                   | `DELETE` | Delete task by ID                                                                                                                          |
+| `/v1/tasks/latest?include_meta=True`                               | `GET`    | Get info about the latest task                                                                                                             |
+| `/v1/tasks`                                                        | `POST`   | Create a download task by sending json payload `{"url": "<URL>"}`                                                                          |
+| `/v1/tasks/stats`                                                  | `GET`    | Get overall tasks stats                                                                                                                    |
 
 ### API examples
 

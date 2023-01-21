@@ -2,7 +2,7 @@
 
 Simple and reliable YouTube Download Telegram Bot.
 
-Version: 0.4. [Release details](.releases/release_0.4.md).
+Version: 0.5. [Release details](.releases/release_0.5.md).
 
 ![frames](.assets/download_success.png)
 
@@ -55,7 +55,7 @@ docker compose stop -t 0
 ```
 
 Your telegram bot should send you a startup message:
-`✨ <YOUR_BOT_NAME> started, paste video URL to start download` and that's it. After
+`✨ <YOUR_BOT_NAME> started, paste a video URL to start download` and that's it. After
 pasting video URL(s) bot will send you appropriate message whether they were downloaded
 or something went wrong.
 

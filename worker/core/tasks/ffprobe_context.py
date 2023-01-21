@@ -20,7 +20,9 @@ class GetFfprobeContextTask(AbstractFfBinaryTask):
             'Process %s returncode: %d, stderr: %s', cmd, proc.returncode, stderr
         )
         if proc.returncode:
-            err_msg = f'Failed to make video context. Is file broken? {self._file_path}?'
+            err_msg = (
+                f'Failed to make video context. Is file broken? {self._file_path}?'
+            )
             self._log.error(err_msg)
             raise RuntimeError(err_msg)
         try:

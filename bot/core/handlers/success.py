@@ -20,7 +20,7 @@ class SuccessHandler(AbstractHandler):
         await self._handle()
 
     async def _handle(self) -> None:
-        self._send_success_text()
+        await self._send_success_text()
         video_path: str = os.path.join(settings.TMP_DOWNLOAD_PATH, self._body.filename)
         thumb_path: str = os.path.join(
             settings.TMP_DOWNLOAD_PATH, self._body.thumb_name
@@ -54,7 +54,7 @@ class SuccessHandler(AbstractHandler):
             exception_message_args=(task_name,),
         )
 
-    def _send_success_text(self) -> None:
+    async def _send_success_text(self) -> None:
         text = f'{SUCCESS_EMOJI} <b>Downloaded</b> {self._body.filename}'
         for user in self._receiving_users:
             kwargs = {
@@ -64,7 +64,7 @@ class SuccessHandler(AbstractHandler):
             }
             if self._body.message_id:
                 kwargs['reply_to_message_id'] = self._body.message_id
-            asyncio.create_task(self._bot.send_message(**kwargs))
+            await self._bot.send_message(**kwargs)
 
     def _eligible_for_upload(self, video_path: str) -> bool:
         if self._body.context.source is TaskSource.API:

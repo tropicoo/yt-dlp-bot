@@ -17,7 +17,7 @@ except ImportError:
 
 class VideoDownloader:
 
-    _PLAYLIST = 'playlist'
+    _PLAYLIST_TYPE = 'playlist'
 
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
@@ -44,6 +44,9 @@ class VideoDownloader:
                 meta = ytdl.extract_info(url, download=True)
                 meta_sanitized = ytdl.sanitize_info(meta)
 
+            self._log.info('Finished downloading %s', url)
+            self._log.debug('Download meta: %s', meta_sanitized)
+
             filename = self._get_filename(meta)
             filepath = os.path.join(curr_tmp_dir, filename)
             self._log.info('Moving %s to %s', filepath, root_tmp_dir)
@@ -51,8 +54,6 @@ class VideoDownloader:
             shutil.move(filepath, root_tmp_dir)
             self._log.info('Removing %s', curr_tmp_dir)
 
-        self._log.info('Finished downloading %s', url)
-        self._log.debug('Download meta: %s', meta_sanitized)
         duration, width, height = self._get_video_context(meta)
         return DownVideo(
             title=meta['title'],
@@ -66,7 +67,7 @@ class VideoDownloader:
     def _get_video_context(
         self, meta: dict
     ) -> tuple[float | None, int | None, int | None]:
-        if meta['_type'] == self._PLAYLIST:
+        if meta['_type'] == self._PLAYLIST_TYPE:
             if not len(meta['entries']):
                 raise ValueError(
                     'Item said to be downloaded but no entries to process.'
@@ -95,6 +96,6 @@ class VideoDownloader:
         return self._get_filepath(meta).rsplit('/', maxsplit=1)[-1]
 
     def _get_filepath(self, meta: dict) -> str:
-        if meta['_type'] == self._PLAYLIST:
+        if meta['_type'] == self._PLAYLIST_TYPE:
             return meta['entries'][0]['requested_downloads'][0]['filepath']
         return meta['requested_downloads'][0]['filepath']

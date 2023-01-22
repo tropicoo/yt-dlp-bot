@@ -2,7 +2,9 @@ from yt_shared.models import Task
 
 
 class BaseVideoServiceError(Exception):
-    task: Task | None = None
+    def __init__(self, message: str, task: Task | None = None) -> None:
+        super().__init__(message)
+        self.task = task
 
 
 class GeneralVideoServiceError(BaseVideoServiceError):

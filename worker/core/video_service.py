@@ -58,9 +58,7 @@ class VideoService:
         except Exception as err:
             self._log.exception('Failed to download video. Context: %s', video_payload)
             await self._handle_download_exception(err, task, db)
-            exception = DownloadVideoServiceError(str(err))
-            exception.task = task
-            raise exception
+            raise DownloadVideoServiceError(message=str(err), task=task)
 
     async def _post_process_file(
         self,
@@ -78,9 +76,7 @@ class VideoService:
             try:
                 await self._set_probe_ctx(file_path, video)
             except RuntimeError as err:
-                exception = DownloadVideoServiceError(str(err))
-                exception.task = task
-                raise exception
+                raise DownloadVideoServiceError(message=str(err), task=task)
 
         tasks = [self._create_thumbnail_task(file_path, thumb_path, video.duration)]
         if settings.SAVE_VIDEO_FILE:

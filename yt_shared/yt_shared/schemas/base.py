@@ -1,5 +1,6 @@
+from typing import ClassVar
+
 from pydantic import BaseModel, Extra, validator
-from pydantic.types import ClassVar
 
 from yt_shared.enums import RabbitPayloadType
 
@@ -7,6 +8,11 @@ from yt_shared.enums import RabbitPayloadType
 class RealBaseModel(BaseModel):
     class Config:
         extra = Extra.forbid
+
+    def json(self, *args, **kwargs) -> str:
+        if 'separators' not in kwargs:
+            kwargs['separators'] = (',', ':')
+        return super().json(*args, **kwargs)
 
 
 class BaseRabbitPayloadModel(RealBaseModel):

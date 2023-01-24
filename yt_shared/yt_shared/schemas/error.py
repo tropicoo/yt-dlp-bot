@@ -1,7 +1,7 @@
 import uuid
+from typing import ClassVar
 
 from pydantic import StrictInt, StrictStr
-from pydantic.types import ClassVar
 
 from yt_shared.enums import RabbitPayloadType, TelegramChatType
 from yt_shared.schemas.base import BaseRabbitPayloadModel

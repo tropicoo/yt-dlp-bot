@@ -4,5 +4,6 @@ skip-string-normalization = 1
 
 [tool.ruff]
 line-length = 88
-# Skip line length violations
-ignore = ["E501"]
+select = ["F", "E", "W", "I001"]
+ignore = ["E501"]  # Skip line length violations
+src = ["api_app", "bot_app", "worker_app"]

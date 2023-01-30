@@ -12,7 +12,7 @@ services:
     container_name: yt_api
     build:
       context: .
-      dockerfile: api/Dockerfile
+      dockerfile: api_app/Dockerfile
     env_file:
       - envs/.env_common
       - envs/.env_api
@@ -29,7 +29,7 @@ services:
     container_name: yt_bot
     build:
       context: .
-      dockerfile: bot/Dockerfile
+      dockerfile: bot_app/Dockerfile
     env_file:
       - envs/.env_common
       - envs/.env_bot
@@ -47,7 +47,7 @@ services:
     container_name: yt_worker
     build:
       context: .
-      dockerfile: worker/Dockerfile
+      dockerfile: worker_app/Dockerfile
     env_file:
       - envs/.env_common
       - envs/.env_worker

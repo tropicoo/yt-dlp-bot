@@ -7,8 +7,8 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_utils import Timestamp, UUIDType
 
-from yt_shared.enums import TaskSource, TaskStatus
 from yt_shared.db.session import Base
+from yt_shared.enums import TaskSource, TaskStatus
 from yt_shared.models.yt_dlp import YTDLP
 
 

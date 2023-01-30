@@ -1,7 +1,7 @@
 **/*.session*
 **/*.yaml
 **/*.yml
-!bot/config.yml
+!bot_app/config.yml
 
 .assets
 .dockerignore

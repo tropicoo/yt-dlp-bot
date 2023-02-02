@@ -12,7 +12,7 @@ services:
     container_name: yt_api
     build:
       context: .
-      dockerfile: api_app/Dockerfile
+      dockerfile: app_api/Dockerfile
     env_file:
       - envs/.env_common
       - envs/.env_api
@@ -29,7 +29,7 @@ services:
     container_name: yt_bot
     build:
       context: .
-      dockerfile: bot_app/Dockerfile
+      dockerfile: app_bot/Dockerfile
     env_file:
       - envs/.env_common
       - envs/.env_bot
@@ -47,7 +47,7 @@ services:
     container_name: yt_worker
     build:
       context: .
-      dockerfile: worker_app/Dockerfile
+      dockerfile: app_worker/Dockerfile
     env_file:
       - envs/.env_common
       - envs/.env_worker
@@ -89,4 +89,4 @@ volumes:
     driver_opts:
       type: "tmpfs"
       device: "tmpfs"
-      o: "size=5120m,uid=1000"
+      o: "size=7120m,uid=1000"

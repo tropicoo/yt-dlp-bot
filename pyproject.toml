@@ -6,4 +6,4 @@ skip-string-normalization = 1
 line-length = 88
 select = ["F", "E", "W", "I001"]
 ignore = ["E501"]  # Skip line length violations
-src = ["api_app", "bot_app", "worker_app"]
+src = ["app_api", "app_bot", "app_worker"]

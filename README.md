@@ -19,8 +19,8 @@ Version: 0.6. [Release details](.releases/release_0.6.md).
 1. Create Telegram bot using [BotFather](https://t.me/BotFather) and get your `token`
 2. [Get your Telegram API Keys](https://my.telegram.org/apps) (`api_id` and `api_hash`)
 3. [Find your Telegram User ID](https://stackoverflow.com/questions/32683992/find-out-my-own-user-id-for-sending-a-message-with-telegram-api)
-4. Copy `bot_app/config-example.yml` to `bot_app/config.yml`
-5. Write `token`, `api_id`, `api_hash` to `bot_app/config.yml` by changing respective
+4. Copy `app_bot/config-example.yml` to `app_bot/config.yml`
+5. Write `token`, `api_id`, `api_hash` to `app_bot/config.yml` by changing respective
    placeholders
 6. Write your Telegram user id to the `allowed_users` -> `id` by replacing dummy value
    and change or remove `forward_group_id` value (if you want to forward the video to
@@ -39,7 +39,7 @@ Version: 0.6. [Release details](.releases/release_0.6.md).
          - "D:/Videos:/filestorage"
    ```
 9. If you want your downloaded video to be uploaded back to the Telegram,
-   set `upload_video_file` config variable for your user in the `bot_app/config.yml`
+   set `upload_video_file` config variable for your user in the `app_bot/config.yml`
    to `True`
 
 ## 🏃 Run
@@ -62,7 +62,7 @@ or something went wrong.
 
 ## 💻 Advanced setup
 
-1. If you want to change `yt-dlp` download options, go to the `worker_app/ytdl_opts`
+1. If you want to change `yt-dlp` download options, go to the `app_worker/ytdl_opts`
    directory, copy content from `default.py` to `user.py` and modify as you wish by
    checking [available options](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180)
    .
@@ -77,7 +77,7 @@ or something went wrong.
    will error out. Change the `THUMBNAIL_FRAME_SECOND` variable if needed in
    the `envs/.env_worker` file.
 4. Max upload file size for non-premium Telegram user is 2GB (2147483648 bytes) which is
-   reflected in the example config `bot_app/config-example.yml`. If the configured user
+   reflected in the example config `app_bot/config-example.yml`. If the configured user
    is the premium user, you're allowed to upload files up to 4GB (4294967296 bytes) and
    can change the default value stored in the `upload_video_max_file_size` config
    variable.
@@ -95,7 +95,7 @@ details
   in `docker-compose.yml`
 - **RabbitMQ**: default creds are located in `envs/.env_common`
 - **PostgreSQL**: default creds are located in `envs/.env_common`. Same creds are stored
-  for Alembic in `worker_app/alembic.ini` on 53rd line.
+  for Alembic in `app_worker/alembic.ini` on 53rd line.
 
 ## API
 

@@ -7,7 +7,7 @@ Release date: January 31, 2023
 # Important
 
 1. API bugfixes
-2. Renamed microservices directories, e.g. `api` -> `api_app`
+2. Renamed microservices directories, e.g. `api` -> `app_api`
 
 # New features
 

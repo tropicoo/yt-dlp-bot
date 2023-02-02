@@ -21,7 +21,7 @@ class YtdlpRepository:
         row_count: int = await db.scalar(select(func.count('*')).select_from(YTDLP))
         if row_count > 1:
             raise MultipleResultsFound(
-                'Multiple yt-dlp version records found. ' 'Expected one.'
+                'Multiple yt-dlp version records found. Expected one.'
             )
 
         clause = update if row_count else insert

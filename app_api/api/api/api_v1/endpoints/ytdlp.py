@@ -10,8 +10,7 @@ router = APIRouter()
 
 @router.get('/')
 async def yt_dlp_version(db: AsyncSession = Depends(get_db)) -> YTDLPLatestVersion:
-    version_checker = YtdlpVersionChecker()
-    ctx = await version_checker.get_version_context(db)
+    ctx = await YtdlpVersionChecker().get_version_context(db)
     return YTDLPLatestVersion(
         current=ctx.current, latest=ctx.latest, need_upgrade=ctx.has_new_version
     )

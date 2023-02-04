@@ -67,9 +67,9 @@ or something went wrong.
    checking [available options](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180)
    .
 2. Default max simultaneous video downloads by worker service is 2. Change
-   the `MAX_SIMULTANEOUS_DOWNLOADS`
-   variable in `envs/.env_worker` to desired value but keep in mind `yt-dlp` may glitch
-   when the value is high.
+   the `MAX_SIMULTANEOUS_DOWNLOADS` variable in `envs/.env_worker` to desired value but
+   keep in mind that default mounted volume size is 7168m (7GB) in `docker-compose.yml` so
+   it may be not enough if you download a lot of large videos at once.
 3. Worker service (particularly the FFmpeg process) makes a JPEG thumbnail from the
    video. It's needed when you choose to upload the video to the Telegram chat. By
    default, it tries to make it on the 10th second of the video, but if the video is

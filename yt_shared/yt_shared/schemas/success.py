@@ -21,6 +21,9 @@ class SuccessPayload(BaseRabbitPayloadModel):
     title: StrictStr
     filename: StrictStr
     thumb_name: StrictStr
+    filepath: StrictStr
+    thumb_path: StrictStr | None = None
+    root_path: StrictStr
     duration: StrictFloat | None
     width: StrictInt | None
     height: StrictInt | None

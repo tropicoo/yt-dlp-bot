@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 from typing import Iterable
 
 
@@ -12,3 +13,7 @@ def file_cleanup(file_paths: Iterable[str], log: logging.Logger = None) -> None:
                 os.remove(file_path)
             except Exception as err:
                 log.warning('File "%s" not deleted: %s', file_path, err)
+
+
+def remove_dir(dir_path: str) -> None:
+    shutil.rmtree(dir_path)

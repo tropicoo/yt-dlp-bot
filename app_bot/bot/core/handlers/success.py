@@ -8,10 +8,9 @@ from yt_shared.enums import TaskSource
 from yt_shared.rabbit.publisher import Publisher
 from yt_shared.schemas.error import ErrorGeneralPayload
 from yt_shared.schemas.success import SuccessPayload
-from yt_shared.utils.file import file_cleanup
+from yt_shared.utils.file import remove_dir
 from yt_shared.utils.tasks.tasks import create_task
 
-from bot.core.config import settings
 from bot.core.handlers.abstract import AbstractHandler
 from bot.core.tasks.upload import UploadTask
 
@@ -47,18 +46,30 @@ class SuccessHandler(AbstractHandler):
 
     async def _handle(self) -> None:
         await self._send_success_text()
-        video_path: str = os.path.join(settings.TMP_DOWNLOAD_PATH, self._body.filename)
-        thumb_path: str = os.path.join(
-            settings.TMP_DOWNLOAD_PATH, self._body.thumb_name
-        )
         try:
-            self._validate_file_size_for_upload(video_path)
-            await self._create_upload_task()
+            if self._upload_is_enabled():
+                self._validate_file_size_for_upload()
+                await self._create_upload_task()
+            else:
+                self._log.warning(
+                    'File %s will not be uploaded due to upload configuration',
+                    self._body.filepath,
+                )
         except Exception:
-            self._log.error('Upload of "%s" failed, performing cleanup', video_path)
+            self._log.exception(
+                'Upload of "%s" failed, performing cleanup', self._body.filepath
+            )
             raise
         finally:
-            file_cleanup(file_paths=(video_path, thumb_path), log=self._log)
+            self._cleanup()
+
+    def _cleanup(self) -> None:
+        self._log.info(
+            'Final cleanup. Removing download content directory %s for task %s',
+            self._body.root_path,
+            self._body.task_id,
+        )
+        remove_dir(self._body.root_path)
 
     async def _create_upload_task(self) -> None:
         """Upload video to Telegram chat."""
@@ -89,19 +100,25 @@ class SuccessHandler(AbstractHandler):
                 kwargs['reply_to_message_id'] = self._body.message_id
             await self._bot.send_message(**kwargs)
 
-    def _validate_file_size_for_upload(self, video_path: str) -> None:
+    def _upload_is_enabled(self) -> bool:
+        """Check whether upload is allowed for particular user configuration."""
         if self._body.context.source is TaskSource.API:
-            upload_video_file = self._bot.conf.telegram.api.upload_video_file
+            return self._bot.conf.telegram.api.upload_video_file
+
+        user = self._bot.allowed_users[self._get_sender_id()]
+        return user.upload.upload_video_file
+
+    def _validate_file_size_for_upload(self) -> None:
+        if self._body.context.source is TaskSource.API:
             max_file_size = self._bot.conf.telegram.api.upload_video_max_file_size
         else:
             user = self._bot.allowed_users[self._get_sender_id()]
-            upload_video_file = user.upload.upload_video_file
             max_file_size = user.upload.upload_video_max_file_size
 
-        if not upload_video_file:
-            raise ValueError(f'Video {video_path} not found')
+        if not os.path.exists(self._body.filepath):
+            raise ValueError(f'Video {self._body.filepath} not found')
 
-        file_size = os.stat(video_path).st_size
+        file_size = os.stat(self._body.filepath).st_size
         if file_size > max_file_size:
             err_msg = (
                 f'Video file size {file_size} bytes bigger then allowed {max_file_size}'

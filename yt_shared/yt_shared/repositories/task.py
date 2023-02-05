@@ -59,7 +59,15 @@ class TaskRepository:
     async def save_as_done(
         db: AsyncSession, task: Task, downloaded_video: DownVideo
     ) -> None:
-        task.file = File(**downloaded_video.dict())
+        task.file = File(
+            title=downloaded_video.title,
+            name=downloaded_video.name,
+            thumb_name=downloaded_video.thumb_name,
+            duration=downloaded_video.duration,
+            width=downloaded_video.width,
+            height=downloaded_video.height,
+            meta=downloaded_video.meta,
+        )
         task.status = TaskStatus.DONE
         await db.commit()
 

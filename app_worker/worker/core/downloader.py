@@ -6,6 +6,7 @@ from tempfile import TemporaryDirectory
 
 import yt_dlp
 from yt_shared.schemas.video import DownVideo
+from yt_shared.utils.common import random_string
 
 from worker.core.config import settings
 
@@ -16,7 +17,6 @@ except ImportError:
 
 
 class VideoDownloader:
-
     _PLAYLIST_TYPE = 'playlist'
 
     def __init__(self) -> None:
@@ -31,9 +31,11 @@ class VideoDownloader:
 
     def _download(self, url: str) -> DownVideo:
         self._log.info('Downloading %s', url)
-        root_tmp_dir = settings.TMP_DOWNLOAD_PATH
-        with TemporaryDirectory(prefix='tmp_video_dir-', dir=root_tmp_dir) as tmp_dir:
-            curr_tmp_dir: str = os.path.join(root_tmp_dir, tmp_dir)
+        tmp_down_path = os.path.join(
+            settings.TMP_DOWNLOAD_ROOT_PATH, settings.TMP_DOWNLOAD_DIR
+        )
+        with TemporaryDirectory(prefix='tmp_video_dir-', dir=tmp_down_path) as tmp_dir:
+            curr_tmp_dir = os.path.join(tmp_down_path, tmp_dir)
             self._log.info('Downloading to %s', curr_tmp_dir)
             ytdl_opts = deepcopy(YTDL_OPTS)
             ytdl_opts['outtmpl'] = os.path.join(
@@ -49,9 +51,16 @@ class VideoDownloader:
 
             filename = self._get_filename(meta)
             filepath = os.path.join(curr_tmp_dir, filename)
-            self._log.info('Moving %s to %s', filepath, root_tmp_dir)
+            destination_dir = os.path.join(
+                os.path.join(
+                    settings.TMP_DOWNLOAD_ROOT_PATH, settings.TMP_DOWNLOADED_DIR
+                ),
+                random_string(number=4),
+            )
+            self._log.info('Moving %s to %s', filepath, destination_dir)
             self._log.info('Content of %s: %s', curr_tmp_dir, os.listdir(curr_tmp_dir))
-            shutil.move(filepath, root_tmp_dir)
+            os.mkdir(destination_dir)
+            shutil.move(filepath, destination_dir)
             self._log.info('Removing %s', curr_tmp_dir)
 
         duration, width, height = self._get_video_context(meta)
@@ -62,6 +71,8 @@ class VideoDownloader:
             width=width,
             height=height,
             meta=meta_sanitized,
+            filepath=os.path.join(destination_dir, filename),
+            root_path=destination_dir,
         )
 
     def _get_video_context(

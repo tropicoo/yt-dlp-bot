@@ -40,7 +40,9 @@ class Settings(BaseSettings):
     def REDIS_URL(self) -> str:
         return f'redis://{self.REDIS_HOST}'
 
-    TMP_DOWNLOAD_PATH: str
+    TMP_DOWNLOAD_ROOT_PATH: str
+    TMP_DOWNLOAD_DIR: str
+    TMP_DOWNLOADED_DIR: str
 
     @classmethod
     @validator('LOG_LEVEL')

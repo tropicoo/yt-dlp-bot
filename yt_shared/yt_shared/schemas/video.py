@@ -28,6 +28,9 @@ class DownVideo(RealBaseModel):
     width: int | None = None
     height: int | None = None
     meta: dict
+    filepath: StrictStr
+    thumb_path: StrictStr | None = None
+    root_path: StrictStr
 
     @root_validator(pre=False)
     def _set_fields(cls, values: dict) -> dict:

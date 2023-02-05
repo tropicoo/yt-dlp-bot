@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 
 from yt_dlp import version as ytdlp_version
 from yt_shared.db.session import get_db
@@ -29,7 +30,13 @@ class WorkerLauncher:
         await self._perform_setup()
 
     async def _perform_setup(self) -> None:
-        await asyncio.gather(*(self._setup_rabbit(), self._set_yt_dlp_version()))
+        await asyncio.gather(
+            *(
+                self._setup_rabbit(),
+                self._set_yt_dlp_version(),
+                self._create_intermediate_directories(),
+            )
+        )
 
     async def _setup_rabbit(self) -> None:
         self._log.info('Setting up RabbitMQ connection')
@@ -44,6 +51,21 @@ class WorkerLauncher:
         self._log.info('Setting current yt-dlp version (%s)', curr_version)
         async for db in get_db():
             await YtdlpRepository().create_or_update_version(curr_version, db)
+
+    async def _create_intermediate_directories(self) -> None:
+        """Create temporary intermediate directories on start if they do not exist."""
+        tmp_download_path = os.path.join(
+            settings.TMP_DOWNLOAD_ROOT_PATH, settings.TMP_DOWNLOAD_DIR
+        )
+        tmp_downloaded_path = os.path.join(
+            settings.TMP_DOWNLOAD_ROOT_PATH, settings.TMP_DOWNLOADED_DIR
+        )
+        self._log.info(
+            'Creating intermediate directories %s if not exist',
+            (tmp_download_path, tmp_downloaded_path),
+        )
+        os.makedirs(tmp_download_path, exist_ok=True)
+        os.makedirs(tmp_downloaded_path, exist_ok=True)
 
     async def stop(self) -> None:
         loop = asyncio.get_running_loop()

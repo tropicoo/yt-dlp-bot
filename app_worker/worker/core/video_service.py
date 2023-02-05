@@ -8,7 +8,7 @@ from yt_shared.enums import TaskStatus
 from yt_shared.models import Task
 from yt_shared.repositories.task import TaskRepository
 from yt_shared.schemas.video import DownVideo, VideoPayload
-from yt_shared.utils.file import file_cleanup
+from yt_shared.utils.file import remove_dir
 from yt_shared.utils.tasks.tasks import create_task
 
 from worker.core.config import settings
@@ -66,29 +66,30 @@ class VideoService:
         task: Task,
         db: AsyncSession,
     ) -> None:
-        file_path: str = os.path.join(settings.TMP_DOWNLOAD_PATH, video.name)
-        thumb_path: str = os.path.join(settings.TMP_DOWNLOAD_PATH, video.thumb_name)
+        thumb_path = os.path.join(video.filepath.rsplit('/', 1)[0], video.thumb_name)
 
         # yt-dlp meta may not contain needed video metadata.
         if not all([video.duration, video.height, video.width]):
             # TODO: Move to higher level and re-raise as DownloadVideoServiceError with task,
             # TODO: or create new exception type.
             try:
-                await self._set_probe_ctx(file_path, video)
+                await self._set_probe_ctx(video)
             except RuntimeError as err:
                 raise DownloadVideoServiceError(message=str(err), task=task)
 
-        tasks = [self._create_thumbnail_task(file_path, thumb_path, video.duration)]
+        tasks = [self._create_thumb_task(video.filepath, thumb_path, video.duration)]
         if settings.SAVE_VIDEO_FILE:
             tasks.append(self._create_copy_file_task(video))
         await asyncio.gather(*tasks)
+
+        video.thumb_path = thumb_path
 
         final_coros = [self._repository.save_as_done(db, task, video)]
         await asyncio.gather(*final_coros)
 
     @staticmethod
-    async def _set_probe_ctx(file_path: str, video: DownVideo) -> None:
-        probe_ctx = await GetFfprobeContextTask(file_path).run()
+    async def _set_probe_ctx(video: DownVideo) -> None:
+        probe_ctx = await GetFfprobeContextTask(video.filepath).run()
         if not probe_ctx:
             return
         video_streams = [
@@ -108,7 +109,7 @@ class VideoService:
             exception_message_args=(task_name,),
         )
 
-    def _create_thumbnail_task(
+    def _create_thumb_task(
         self, file_path: str, thumb_path: str, duration: float
     ) -> asyncio.Task:
         return create_task(
@@ -121,14 +122,13 @@ class VideoService:
 
     @staticmethod
     async def _copy_file_to_storage(video: DownVideo) -> None:
-        src: str = os.path.join(settings.TMP_DOWNLOAD_PATH, video.name)
-        dst: str = os.path.join(settings.STORAGE_PATH, video.name)
-        await asyncio.to_thread(shutil.copy2, src, dst)
+        dst = os.path.join(settings.STORAGE_PATH, video.name)
+        await asyncio.to_thread(shutil.copy2, video.filepath, dst)
 
-    def _err_file_cleanup(self, downloaded_video: DownVideo) -> None:
+    def _err_file_cleanup(self, video: DownVideo) -> None:
         """Cleanup any downloaded/created data if post-processing failed."""
-        _file_paths = (downloaded_video.name, downloaded_video.thumb_name)
-        file_cleanup(file_paths=tuple(x for x in _file_paths if x), log=self._log)
+        self._log.info('Performing error cleanup. Removing %s', video.root_path)
+        remove_dir(video.root_path)
 
     async def _handle_download_exception(
         self, err: Exception, task: Task, db: AsyncSession

@@ -9,7 +9,6 @@ from yt_shared.rabbit.rabbit_config import get_rabbit_config
 
 
 class RabbitMQ:
-
     MAX_UNACK_MESSAGES_PER_CHANNEL = 10
     RABBITMQ_RECONNECT_INTERVAL = 2
 

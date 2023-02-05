@@ -1,5 +1,4 @@
 import asyncio
-import os
 from itertools import chain
 from typing import TYPE_CHECKING, Coroutine
 
@@ -15,7 +14,6 @@ from yt_shared.schemas.success import SuccessPayload
 from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.utils.tasks.tasks import create_task
 
-from bot.core.config import settings
 from bot.core.config.config import get_main_config
 from bot.core.config.schema import BaseUserSchema, UserSchema
 from bot.core.utils import bold
@@ -47,8 +45,8 @@ class UploadTask(AbstractTask):
         self._config = get_main_config()
         self._body = body
         self.filename = body.filename
-        self.filepath = os.path.join(settings.TMP_DOWNLOAD_PATH, self.filename)
-        self.thumb_path = os.path.join(settings.TMP_DOWNLOAD_PATH, body.thumb_name)
+        self.filepath = body.filepath
+        self.thumb_path = body.thumb_path
         self._bot = bot
         self._users = users
         self._semaphore = semaphore

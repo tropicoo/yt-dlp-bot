@@ -1,5 +1,7 @@
 import asyncio
+import random
 from functools import partial, wraps
+from string import ascii_lowercase
 from typing import Any
 
 
@@ -33,3 +35,7 @@ def wrap(func):
         return await loop.run_in_executor(executor, partial(func, *args, **kwargs))
 
     return run
+
+
+def random_string(number: int) -> str:
+    return ''.join(random.choice(ascii_lowercase) for _ in range(number))

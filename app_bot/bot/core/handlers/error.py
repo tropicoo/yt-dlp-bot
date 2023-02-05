@@ -6,6 +6,7 @@ from yt_shared.enums import RabbitPayloadType
 from yt_shared.schemas.error import ErrorDownloadPayload, ErrorGeneralPayload
 
 from bot.core.handlers.abstract import AbstractHandler
+from bot.version import __version__
 
 
 class UserBaseSchema:
@@ -22,6 +23,7 @@ class ErrorHandler(AbstractHandler):
         '🌊 <b>Source:</b> <code>{source}</code>\n'
         '👀 <b>Details:</b> <code>{details}</code>\n'
         '⬇️ <b>yt-dlp version:</b> <code>{yt_dlp_version}</code>\n'
+        '🤖 <b>yt-dlp-bot version:</b> <code>{yt_dlp_bot_version}</code>\n'
         '🏷️ <b>Tag:</b> #error'
     )
 
@@ -56,4 +58,5 @@ class ErrorHandler(AbstractHandler):
             task_id=self._body.task_id,
             details=html.escape(self._body.exception_msg),
             yt_dlp_version=self._body.yt_dlp_version,
+            yt_dlp_bot_version=__version__,
         )

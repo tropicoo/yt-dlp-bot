@@ -1,5 +1,5 @@
 PyYAML==6.0
-Pyrogram==2.0.98
+Pyrogram==2.0.99
 addict==2.4.0
 tenacity==8.2.1
 tgcrypto==1.2.5

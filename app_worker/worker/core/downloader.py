@@ -1,3 +1,4 @@
+import glob
 import logging
 import os
 import shutil
@@ -47,7 +48,7 @@ class VideoDownloader:
                 meta_sanitized = ytdl.sanitize_info(meta)
 
             self._log.info('Finished downloading %s', url)
-            self._log.debug('Download meta: %s', meta_sanitized)
+            self._log.debug('Downloaded "%s" meta: %s', url, meta_sanitized)
 
             filename = self._get_filename(meta)
             filepath = os.path.join(curr_tmp_dir, filename)
@@ -61,7 +62,15 @@ class VideoDownloader:
             self._log.info('Content of %s: %s', curr_tmp_dir, os.listdir(curr_tmp_dir))
             os.mkdir(destination_dir)
             shutil.move(filepath, destination_dir)
-            self._log.info('Removing %s', curr_tmp_dir)
+
+            thumb_name: str | None = None
+            thumb_path = self._find_downloaded_thumbnail(curr_tmp_dir)
+            if thumb_path:
+                shutil.move(thumb_path, destination_dir)
+                thumb_name = thumb_path.rsplit('/', 1)[-1]
+                thumb_path = os.path.join(destination_dir, thumb_name)
+
+            self._log.info('Removing temporary download directory "%s"', curr_tmp_dir)
 
         duration, width, height = self._get_video_context(meta)
         return DownVideo(
@@ -73,7 +82,17 @@ class VideoDownloader:
             meta=meta_sanitized,
             filepath=os.path.join(destination_dir, filename),
             root_path=destination_dir,
+            thumb_path=thumb_path,
+            thumb_name=thumb_name,
         )
+
+    def _find_downloaded_thumbnail(self, root_path: str) -> str | None:
+        """Try to find downloaded thumbnail jpg."""
+        for file_path in glob.glob(os.path.join(root_path, "*.jpg")):
+            self._log.info('Found downloaded thumbnail "%s"', file_path)
+            return file_path
+        self._log.info('Downloaded thumb not found in "%s"', root_path)
+        return None
 
     def _get_video_context(
         self, meta: dict

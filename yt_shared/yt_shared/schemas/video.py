@@ -34,5 +34,6 @@ class DownVideo(RealBaseModel):
 
     @root_validator(pre=False)
     def _set_fields(cls, values: dict) -> dict:
-        values['thumb_name'] = f'{values["name"]}-thumb.jpg'
+        if not values['thumb_name']:
+            values['thumb_name'] = f'{values["name"]}-thumb.jpg'
         return values

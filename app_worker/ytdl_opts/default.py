@@ -4,5 +4,6 @@ YTDL_OPTS = {
     'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4',
     'noplaylist': True,
     'playlist_items': '1:1',
+    'writethumbnail': True,
     'concurrent_fragment_downloads': 5,
 }

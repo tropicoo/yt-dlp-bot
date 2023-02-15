@@ -66,9 +66,8 @@ class VideoService:
         task: Task,
         db: AsyncSession,
     ) -> None:
-        thumb_path = os.path.join(video.filepath.rsplit('/', 1)[0], video.thumb_name)
-
-        # yt-dlp meta may not contain needed video metadata.
+        """Post-process downloaded media files, e.g. make thumbnail and copy to storage."""
+        # yt-dlp's 'info-meta' may not contain all needed video metadata.
         if not all([video.duration, video.height, video.width]):
             # TODO: Move to higher level and re-raise as DownloadVideoServiceError with task,
             # TODO: or create new exception type.
@@ -77,12 +76,20 @@ class VideoService:
             except RuntimeError as err:
                 raise DownloadVideoServiceError(message=str(err), task=task)
 
-        tasks = [self._create_thumb_task(video.filepath, thumb_path, video.duration)]
+        coro_tasks = []
+        if not video.thumb_path:
+            thumb_path = os.path.join(video.root_path, video.thumb_name)
+            video.thumb_path = thumb_path
+            coro_tasks.append(
+                self._create_thumb_task(
+                    file_path=video.filepath,
+                    thumb_path=thumb_path,
+                    duration=video.duration,
+                )
+            )
         if settings.SAVE_VIDEO_FILE:
-            tasks.append(self._create_copy_file_task(video))
-        await asyncio.gather(*tasks)
-
-        video.thumb_path = thumb_path
+            coro_tasks.append(self._create_copy_file_task(video))
+        await asyncio.gather(*coro_tasks)
 
         final_coros = [self._repository.save_as_done(db, task, video)]
         await asyncio.gather(*final_coros)

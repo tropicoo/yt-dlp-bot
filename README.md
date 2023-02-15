@@ -2,7 +2,7 @@
 
 Simple and reliable YouTube Download Telegram Bot.
 
-Version: 0.7. [Release details](.releases/release_0.7.md).
+Version: 0.8. [Release details](.releases/release_0.8.md).
 
 ![frames](.assets/download_success.png)
 

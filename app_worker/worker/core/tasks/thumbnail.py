@@ -3,7 +3,7 @@ from worker.core.tasks.abstract import AbstractFfBinaryTask
 
 
 class MakeThumbnailTask(AbstractFfBinaryTask):
-    _CMD = 'ffmpeg -y -loglevel error -i "{filepath}" -ss {second} -vframes 1 -q:v 7 "{thumbpath}"'
+    _CMD = 'ffmpeg -y -loglevel error -i "{filepath}" -ss {time_point} -vframes 1 -q:v 7 "{thumbpath}"'
 
     def __init__(self, thumbnail_path: str, *args, duration: float, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -16,9 +16,10 @@ class MakeThumbnailTask(AbstractFfBinaryTask):
     async def _make_thumbnail(self) -> bool:
         cmd = self._CMD.format(
             filepath=self._file_path,
-            second=self._get_thumb_second(),
+            time_point=self._get_thumb_time_point(),
             thumbpath=self._thumbnail_path,
         )
+        self._log.info('Creating thumbnail with command "%s"', cmd)
         proc = await self._run_proc(cmd)
         if not proc:
             return False
@@ -32,11 +33,11 @@ class MakeThumbnailTask(AbstractFfBinaryTask):
             stderr,
         )
         if proc.returncode:
-            self._log.error('Failed to make thumbnail for %s', self._file_path)
+            self._log.error('Failed to make thumbnail for "%s"', self._file_path)
             return False
         return True
 
-    def _get_thumb_second(self) -> float:
+    def _get_thumb_time_point(self) -> float:
         """Get a valid thumbnail second (seek time point for FFmpeg).
 
         If the video is shorter the user-specified thumbnail frame second,

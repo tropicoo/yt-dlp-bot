@@ -67,6 +67,7 @@ class UploadTask(AbstractTask):
             await asyncio.gather(*(self._send_upload_text(), self._upload_video_file()))
         except Exception:
             self._log.exception('Exception in upload task for "%s"', self.filename)
+            raise
 
     async def _send_upload_text(self) -> None:
         text = f'⬆️ {bold("Uploading")} {self.filename}'

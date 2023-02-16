@@ -2,7 +2,7 @@
 
 Simple and reliable YouTube Download Telegram Bot.
 
-Version: 0.8. [Release details](.releases/release_0.8.md).
+Version: 0.9. [Release details](.releases/release_0.9.md).
 
 ![frames](.assets/download_success.png)
 
@@ -68,11 +68,12 @@ or something went wrong.
    .
 2. Default max simultaneous video downloads by worker service is 2. Change
    the `MAX_SIMULTANEOUS_DOWNLOADS` variable in `envs/.env_worker` to desired value but
-   keep in mind that default mounted volume size is 7168m (7GB) in `docker-compose.yml` so
-   it may be not enough if you download a lot of large videos at once.
-3. Worker service (particularly the FFmpeg process) makes a JPEG thumbnail from the
+   keep in mind that default mounted volume size is 7168m (7GB) in `docker-compose.yml`
+   so it may be not enough if you download a lot of large videos at once.
+3. `yt-dlp` will try to download video thumbnail if it exists. In other case Worker
+   service (particularly the FFmpeg process) will make a JPEG thumbnail from the
    video. It's needed when you choose to upload the video to the Telegram chat. By
-   default, it tries to make it on the 10th second of the video, but if the video is
+   default, it will try to make it on the 10th second of the video, but if the video is
    shorter, it will make it on `video length / 2` time point because the FFmpeg process
    will error out. Change the `THUMBNAIL_FRAME_SECOND` variable if needed in
    the `envs/.env_worker` file.

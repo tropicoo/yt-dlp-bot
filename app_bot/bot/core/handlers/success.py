@@ -65,10 +65,10 @@ class SuccessHandler(AbstractHandler):
 
     def _cleanup(self) -> None:
         self._log.info(
-            'Final task cleanup. Removing download content directory "%s" with files %s for task "%s"',
+            'Final task "%s" cleanup. Removing download content directory "%s" with files %s',
+            self._body.task_id,
             self._body.root_path,
             os.listdir(self._body.root_path),
-            self._body.task_id,
         )
         remove_dir(self._body.root_path)
 

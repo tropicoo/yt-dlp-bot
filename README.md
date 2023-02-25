@@ -171,7 +171,9 @@ documentations lives at `http://127.0.0.1:1984/docs`.
    Request
    ```json
    {
-       "url": "https://youtu.be/AWy1qiTF64M"
+       "url": "https://www.youtube.com/watch?v=zGDzdps75ns",
+       "download_media_type": "AUDIO_VIDEO",
+       "save_to_storage": false
    }
    ```
    Response

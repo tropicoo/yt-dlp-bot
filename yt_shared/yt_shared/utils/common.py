@@ -39,3 +39,6 @@ def wrap(func):
 
 def random_string(number: int) -> str:
     return ''.join(random.choice(ascii_lowercase) for _ in range(number))
+
+
+async_lock = asyncio.Lock()

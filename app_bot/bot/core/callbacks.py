@@ -30,7 +30,7 @@ class TelegramCallback:
     async def on_message(self, client: VideoBot, message: Message) -> None:
         """Receive video URL and send to the download worker."""
         self._log.debug(message)
-        urls = self._get_urls(message)
+        urls = self._parse_urls(message)
         await self._url_service.process_urls(urls=urls)
         await self._send_acknowledge_message(message=message, urls=urls)
 
@@ -48,8 +48,9 @@ class TelegramCallback:
             reply_to_message_id=message.id,
         )
 
-    @staticmethod
-    def _get_urls(message: Message) -> list[URL]:
+    def _parse_urls(self, message: Message) -> list[URL]:
+        bot: VideoBot = message._client  # noqa
+        user = bot.allowed_users[message.from_user.id]
         return [
             URL(
                 url=url,
@@ -57,6 +58,8 @@ class TelegramCallback:
                 from_chat_type=TelegramChatType(message.chat.type.value),
                 from_user_id=message.from_user.id,
                 message_id=message.id,
+                save_to_storage=user.save_to_storage,
+                download_media_type=user.download_media_type,
             )
             for url in message.text.splitlines()
         ]

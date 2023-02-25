@@ -7,6 +7,8 @@ telegram:
   allowed_users:
     - id: 00000000000
       send_startup_message: !!bool True
+      download_media_type: !!str "VIDEO"
+      save_to_storage: !!bool False
       upload:
         upload_video_file: !!bool False
         upload_video_max_file_size: 2147483648

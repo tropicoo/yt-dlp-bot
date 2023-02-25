@@ -1,9 +1,11 @@
 # Byte-compiled / optimized / DLL files
 
+*tmp*
 *.session
 *.session-journal
-config.yml
-config.yaml
+config*.yml
+config*.yaml
+!app_bot/config-example.yml
 .ruff_cache
 
 __pycache__/

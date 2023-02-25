@@ -27,10 +27,9 @@ class Task(Base, Timestamp):
         nullable=False,
         index=True,
     )
-    file = relationship(
+    files = relationship(
         'File',
         backref='task',
-        uselist=False,
         cascade='all, delete-orphan',
     )
     added_at = sa.Column(sa.DateTime, nullable=False)
@@ -66,7 +65,7 @@ class File(Base, Timestamp):
         UUIDType(binary=False),
         sa.ForeignKey('task.id', ondelete='CASCADE'),
         nullable=False,
-        unique=True,
+        unique=False,
         index=True,
     )
     cache = relationship(

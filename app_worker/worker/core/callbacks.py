@@ -1,13 +1,13 @@
 import logging
 
 from aio_pika import IncomingMessage
-from yt_shared.schemas.video import VideoPayload
+from yt_shared.schemas.media import IncomingMediaPayload
 
 from worker.core.payload_handler import PayloadHandler
 
 
 class _RMQCallbacks:
-    """RabbitMQ callbacks."""
+    """RabbitMQ's callbacks."""
 
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
@@ -22,20 +22,22 @@ class _RMQCallbacks:
 
     async def _process_incoming_message(self, message: IncomingMessage) -> None:
         self._log.info('[x] Received message %s', message.body)
-        video_payload = self._deserialize_message(message)
-        if not video_payload:
+        media_payload = self._deserialize_message(message)
+        if not media_payload:
             await self._reject_invalid_message(message)
             return
 
-        await self._payload_handler.handle(video_payload=video_payload)
+        await self._payload_handler.handle(media_payload=media_payload)
         await message.ack()
-        self._log.info('Processing done with payload: %s', video_payload)
+        self._log.info('Processing done with payload: %s', media_payload)
 
-    def _deserialize_message(self, message: IncomingMessage) -> VideoPayload | None:
+    def _deserialize_message(
+        self, message: IncomingMessage
+    ) -> IncomingMediaPayload | None:
         try:
-            return VideoPayload.parse_raw(message.body)
+            return IncomingMediaPayload.parse_raw(message.body)
         except Exception:
-            self._log.exception('Failed to deserialize message body')
+            self._log.exception('Failed to deserialize message body: %s', message.body)
             return None
 
     async def _reject_invalid_message(self, message: IncomingMessage) -> None:

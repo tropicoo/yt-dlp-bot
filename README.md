@@ -2,15 +2,15 @@
 
 Simple and reliable YouTube Download Telegram Bot.
 
-Version: 0.9. [Release details](.releases/release_0.9.md).
+Version: 1.0. [Release details](.releases/release_1.0.md).
 
 ![frames](.assets/download_success.png)
 
 ## 😂 Features
 
-* Download videos from any [yt-dlp](https://github.com/yt-dlp/yt-dlp) supported website
+* Download audio and videos from any [yt-dlp](https://github.com/yt-dlp/yt-dlp) supported website
   to your storage
-* Upload downloaded videos to the Telegram chat
+* Upload downloaded audio and videos to the Telegram chat
 * Trigger video download by sending link to an API
 * Track download tasks via API
 
@@ -26,7 +26,7 @@ Version: 0.9. [Release details](.releases/release_0.9.md).
    and change or remove `forward_group_id` value (if you want to forward the video to
    some group when upload is enabled)
 7. Check the default environment variables in `envs/.env_common` and change if needed
-8. Video storage path (`STORAGE_PATH` environment variable) is located in
+8. Video `STORAGE_PATH` environment variable is located in
    the `envs/.env_worker` file. By default, it's `/filestorage` path inside the
    container. What you want is to map the real path to this inside
    the `docker-compose.yml` file for `worker` service, e.g. if you're on Windows, next

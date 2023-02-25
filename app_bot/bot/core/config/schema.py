@@ -5,6 +5,7 @@ from pydantic import (
     constr,
     validator,
 )
+from yt_shared.enums import DownMediaType
 from yt_shared.schemas.base import RealBaseModel
 
 _LANG_CODE_LEN = 2
@@ -36,6 +37,8 @@ class UserUploadSchema(RealBaseModel):
 
 class UserSchema(BaseUserSchema):
     send_startup_message: StrictBool
+    download_media_type: DownMediaType
+    save_to_storage: StrictBool
     upload: UserUploadSchema
 
     @property

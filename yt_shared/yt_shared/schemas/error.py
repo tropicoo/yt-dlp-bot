@@ -5,7 +5,7 @@ from pydantic import StrictInt, StrictStr
 
 from yt_shared.enums import RabbitPayloadType, TelegramChatType
 from yt_shared.schemas.base import BaseRabbitPayloadModel
-from yt_shared.schemas.video import VideoPayload
+from yt_shared.schemas.media import IncomingMediaPayload
 
 
 class ErrorGeneralPayload(BaseRabbitPayloadModel):
@@ -19,7 +19,7 @@ class ErrorGeneralPayload(BaseRabbitPayloadModel):
     message_id: StrictInt | None
     message: StrictStr
     url: StrictStr
-    context: VideoPayload
+    context: IncomingMediaPayload
     exception_msg: StrictStr
     exception_type: StrictStr
     yt_dlp_version: StrictStr | None

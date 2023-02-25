@@ -24,7 +24,7 @@ class DatabaseRepository:
         stmt = (
             select(Task)
             .options(
-                joinedload(Task.file)
+                joinedload(Task.files)
                 .load_only(*self._get_load_file_cols(include_meta))
                 .options(joinedload(File.cache))
             )
@@ -37,6 +37,7 @@ class DatabaseRepository:
             stmt = stmt.filter(Task.status.in_(status))
 
         tasks = await self._db.execute(stmt)
+        tasks.unique()
         return tasks.scalars().all()
 
     @staticmethod
@@ -60,13 +61,14 @@ class DatabaseRepository:
         stmt = (
             select(Task)
             .options(
-                joinedload(Task.file)
+                joinedload(Task.files)
                 .load_only(*self._get_load_file_cols(include_meta))
                 .options(joinedload(File.cache))
             )
             .filter(Task.id == id)
         )
         task = await self._db.execute(stmt)
+        task.unique()
         return task.scalar_one()
 
     async def get_latest_task(self, include_meta: bool) -> Task:
@@ -74,13 +76,14 @@ class DatabaseRepository:
             select(Task)
             .order_by(desc(Task.created))
             .options(
-                joinedload(Task.file)
+                joinedload(Task.files)
                 .load_only(*self._get_load_file_cols(include_meta))
                 .options(joinedload(File.cache))
             )
             .limit(1)
         )
         task = await self._db.execute(stmt)
+        task.unique()
         return task.scalar_one()
 
     async def delete_task(self, id: str | uuid.UUID) -> None:

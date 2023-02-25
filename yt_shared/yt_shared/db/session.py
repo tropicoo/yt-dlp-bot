@@ -4,8 +4,8 @@ from typing import AsyncGenerator
 
 import sqlalchemy as sa
 from sqlalchemy import MetaData
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import declarative_base, declared_attr
 from sqlalchemy_utils import UUIDType
 from yt_shared.config import settings
 
@@ -18,9 +18,8 @@ engine = create_async_engine(
 
 metadata = MetaData()
 metadata.bind = engine
-AsyncSessionLocal = sessionmaker(
+AsyncSessionLocal = async_sessionmaker(
     engine,
-    class_=AsyncSession,
     expire_on_commit=settings.SQLALCHEMY_EXPIRE_ON_COMMIT,
 )
 

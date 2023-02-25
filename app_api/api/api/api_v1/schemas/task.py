@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 
-from pydantic import StrictFloat, StrictInt, StrictStr
-from yt_shared.enums import TaskSource, TaskStatus
+from pydantic import StrictBool, StrictFloat, StrictInt, StrictStr
+from yt_shared.enums import DownMediaType, TaskSource, TaskStatus
 from yt_shared.schemas.base import RealBaseModel
 
 from api.api.api_v1.schemas.base import BaseOrmModel
@@ -47,15 +47,17 @@ class TaskSimpleSchema(BaseOrmModel):
     message_id: StrictInt | None
     yt_dlp_version: StrictStr | None
     error: StrictStr | None
-    file: FileSimpleSchema | None
+    files: list[FileSimpleSchema]
 
 
 class TaskSchema(TaskSimpleSchema):
-    file: FileSchema | None
+    files: list[FileSchema]
 
 
 class CreateTaskIn(RealBaseModel):
     url: StrictStr
+    download_media_type: DownMediaType
+    save_to_storage: StrictBool
 
 
 class CreateTaskOut(RealBaseModel):

@@ -53,7 +53,7 @@ class Video(RealBaseModel):
     @root_validator(pre=False)
     def _set_fields(cls, values: dict) -> dict:
         if not values['thumb_name']:
-            values['thumb_name'] = f'{values["name"]}-thumb.jpg'
+            values['thumb_name'] = f'{values["filename"]}-thumb.jpg'
         return values
 
 

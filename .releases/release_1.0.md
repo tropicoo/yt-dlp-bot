@@ -8,7 +8,7 @@ Release date: February 25, 2023
 
 1. Changed content yt-dlp options in `app_worker/ytdl_opts/default.py`
 2. Added two new user config options in `app_bot/config-example.yml`:
-    1. `download_media_type`: What do download - audio (mp3), video or both. Values can
+    1. `download_media_type`: What to download - audio (mp3), video or both. Values can
        be `AUDIO`, `VIDEO`, `AUDIO_VIDEO`.
     2. `save_to_storage`: Moved from `envs/.env_worker`
 3. Creating task on API now requires previously mentioned two fields in payload to be

@@ -45,7 +45,7 @@ class MediaDownloader:
         try:
             return self._download(url=url, media_type=media_type)
         except Exception:
-            self._log.exception('Failed to download %s', url)
+            self._log.error('Failed to download %s', url)
             raise
 
     def _configure_ytdl_opts(

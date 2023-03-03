@@ -15,6 +15,7 @@ DEFAULT_YTDL_OPTS = [
     '1:1',
     '--concurrent-fragments',
     '5',
+    '--ignore-errors',
     '--verbose',
 ]
 

@@ -138,7 +138,7 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
                 self._cache_data(message)
 
     def _create_cache_task(self, cache_object: _Audio | _Video | Animation) -> None:
-        self._log.info('Creating cache task for %s', cache_object)
+        self._log.debug('Creating cache task for %s', cache_object)
         db_cache_task_name = 'Save cache to DB'
         create_task(
             self._save_cache_to_db(cache_object),

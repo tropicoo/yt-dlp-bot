@@ -15,6 +15,7 @@ from yt_shared.schemas.base import RealBaseModel
 from yt_shared.schemas.cache import CacheSchema
 from yt_shared.schemas.media import Audio, Video
 from yt_shared.schemas.success import SuccessPayload
+from yt_shared.utils.common import format_bytes
 from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.utils.tasks.tasks import create_task
 
@@ -83,7 +84,10 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
             raise
 
     async def _send_upload_text(self) -> None:
-        text = f'⬆️ {bold("Uploading")} {self._filename}'
+        text = (
+            f'⬆️ {bold("Uploading")} {self._filename}\n'
+            f'📏 {bold("Size")} {format_bytes(self._media_object.file_size)}'
+        )
         coros = []
         for chat_id in self._upload_chat_ids:
             kwargs = {
@@ -207,10 +211,12 @@ class AudioUploadTask(AbstractUploadTask):
         self._create_cache_task(cache_object=audio)
 
     def _generate_file_caption(self) -> str:
-        caption_items = []
-        caption_items.append(f'{bold("Title:")} {self._media_object.title}')
-        caption_items.append(f'{bold("Filename:")} {self._media_object.filename}')
-        caption_items.append(f'{bold("URL:")} {self._ctx.context.url}')
+        caption_items = [
+            f'{bold("Title:")} {self._media_object.title}',
+            f'{bold("Filename:")} {self._media_object.filename}',
+            f'{bold("URL:")} {self._ctx.context.url}',
+            f'{bold("Size:")} {format_bytes(self._media_object.file_size)}',
+        ]
         return '\n'.join(caption_items)
 
 
@@ -243,6 +249,10 @@ class VideoUploadTask(AbstractUploadTask):
             caption_items.append(f'{bold("Filename:")} {self._media_object.filename}')
         if caption_conf.include_link:
             caption_items.append(f'{bold("URL:")} {self._ctx.context.url}')
+        if caption_conf.include_size:
+            caption_items.append(
+                f'{bold("Size:")} {format_bytes(self._media_object.file_size)}'
+            )
         return '\n'.join(caption_items)
 
     def _generate_send_media_coroutine(self, chat_id: int) -> Coroutine:
@@ -256,13 +266,12 @@ class VideoUploadTask(AbstractUploadTask):
             'thumb': self._media_ctx.thumb,
         }
         if self._media_ctx.type is MessageMediaType.ANIMATION:
-            send_func_name = 'send_animation'
             kwargs['animation'] = self._media_ctx.filepath
-        else:
-            send_func_name = 'send_video'
-            kwargs['video'] = self._media_ctx.filepath
-            kwargs['supports_streaming'] = True
-        return getattr(self._bot, send_func_name)(**kwargs)
+            return self._bot.send_animation(**kwargs)
+
+        kwargs['video'] = self._media_ctx.filepath
+        kwargs['supports_streaming'] = True
+        return self._bot.send_video(**kwargs)
 
     def _cache_data(self, message: Message) -> None:
         self._log.info('Saving telegram file cache')

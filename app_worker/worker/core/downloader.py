@@ -6,30 +6,31 @@ from copy import deepcopy
 from tempfile import TemporaryDirectory
 
 import yt_dlp
-
-from worker.core.config import settings
-from worker.utils import cli_to_api
 from yt_shared.enums import DownMediaType
 from yt_shared.schemas.media import Audio, DownMedia, Video
 from yt_shared.utils.common import random_string
+from yt_shared.utils.file import file_size
+
+from worker.core.config import settings
+from worker.utils import cli_to_api
 
 try:
     from ytdl_opts.user import (
-        DEFAULT_YTDL_OPTS,
-        AUDIO_YTDL_OPTS,
         AUDIO_FORMAT_YTDL_OPTS,
-        VIDEO_YTDL_OPTS,
+        AUDIO_YTDL_OPTS,
+        DEFAULT_YTDL_OPTS,
         FINAL_AUDIO_FORMAT,
         FINAL_THUMBNAIL_FORMAT,
+        VIDEO_YTDL_OPTS,
     )
 except ImportError:
     from ytdl_opts.default import (
-        DEFAULT_YTDL_OPTS,
-        AUDIO_YTDL_OPTS,
         AUDIO_FORMAT_YTDL_OPTS,
-        VIDEO_YTDL_OPTS,
+        AUDIO_YTDL_OPTS,
+        DEFAULT_YTDL_OPTS,
         FINAL_AUDIO_FORMAT,
         FINAL_THUMBNAIL_FORMAT,
+        VIDEO_YTDL_OPTS,
     )
 
 
@@ -128,16 +129,15 @@ class MediaDownloader:
         curr_tmp_dir: str,
         destination_dir: str,
     ) -> tuple[Audio | None, Video | None]:
-        get_audio = lambda: self._create_audio_dto(
-            meta=meta,
-            curr_tmp_dir=curr_tmp_dir,
-            destination_dir=destination_dir,
-        )
-        get_video = lambda: self._create_video_dto(
-            meta=meta,
-            curr_tmp_dir=curr_tmp_dir,
-            destination_dir=destination_dir,
-        )
+        def get_audio():
+            return self._create_audio_dto(
+                meta=meta, curr_tmp_dir=curr_tmp_dir, destination_dir=destination_dir
+            )
+
+        def get_video():
+            return self._create_video_dto(
+                meta=meta, curr_tmp_dir=curr_tmp_dir, destination_dir=destination_dir
+            )
 
         match media_type:  # noqa: E999
             case DownMediaType.AUDIO:
@@ -172,13 +172,15 @@ class MediaDownloader:
             thumb_path = os.path.join(destination_dir, thumb_name)
 
         duration, width, height = self._get_video_context(meta)
+        filepath = os.path.join(destination_dir, video_filename)
         return Video(
             title=meta['title'],
             filename=video_filename,
             duration=duration,
             width=width,
             height=height,
-            filepath=os.path.join(destination_dir, video_filename),
+            filepath=filepath,
+            file_size=file_size(filepath),
             thumb_path=thumb_path,
             thumb_name=thumb_name,
         )
@@ -196,11 +198,13 @@ class MediaDownloader:
         audio_filepath = os.path.join(curr_tmp_dir, audio_filename)
         self._log.info('Moving "%s" to "%s"', audio_filepath, destination_dir)
         shutil.move(audio_filepath, destination_dir)
+        filepath = os.path.join(destination_dir, audio_filename)
         return Audio(
             title=meta['title'],
             filename=audio_filename,
             duration=None,
-            filepath=os.path.join(destination_dir, audio_filename),
+            filepath=filepath,
+            file_size=file_size(filepath),
         )
 
     def _find_downloaded_file(self, root_path: str, extension: str) -> str | None:

@@ -24,6 +24,7 @@ class VideoCaptionSchema(RealBaseModel):
     include_title: StrictBool
     include_filename: StrictBool
     include_link: StrictBool
+    include_size: StrictBool
 
 
 class UserUploadSchema(RealBaseModel):

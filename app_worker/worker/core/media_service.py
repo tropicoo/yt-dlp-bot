@@ -4,18 +4,18 @@ import os
 import shutil
 
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from worker.core.config import settings
-from worker.core.downloader import MediaDownloader
-from worker.core.exceptions import DownloadVideoServiceError
-from worker.core.tasks.ffprobe_context import GetFfprobeContextTask
-from worker.core.tasks.thumbnail import MakeThumbnailTask
 from yt_shared.enums import DownMediaType, TaskStatus
 from yt_shared.models import Task
 from yt_shared.repositories.task import TaskRepository
 from yt_shared.schemas.media import Audio, DownMedia, IncomingMediaPayload, Video
 from yt_shared.utils.file import remove_dir
 from yt_shared.utils.tasks.tasks import create_task
+
+from worker.core.config import settings
+from worker.core.downloader import MediaDownloader
+from worker.core.exceptions import DownloadVideoServiceError
+from worker.core.tasks.ffprobe_context import GetFfprobeContextTask
+from worker.core.tasks.thumbnail import MakeThumbnailTask
 
 
 class MediaService:
@@ -70,15 +70,15 @@ class MediaService:
         media_payload: IncomingMediaPayload,
         db: AsyncSession,
     ) -> None:
-        post_process_audio = lambda: self._post_process_audio(
-            media=media,
-            media_payload=media_payload,
-            task=task,
-            db=db,
-        )
-        post_process_video = lambda: self._post_process_video(
-            media=media, media_payload=media_payload, task=task, db=db
-        )
+        def post_process_audio():
+            return self._post_process_audio(
+                media=media, media_payload=media_payload, task=task, db=db
+            )
+
+        def post_process_video():
+            return self._post_process_video(
+                media=media, media_payload=media_payload, task=task, db=db
+            )
 
         match media.media_type:  # noqa: E999
             case DownMediaType.AUDIO:

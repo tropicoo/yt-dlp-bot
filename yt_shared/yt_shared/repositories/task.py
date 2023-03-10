@@ -8,7 +8,7 @@ from yt_shared.enums import TaskStatus
 from yt_shared.models import Cache, File, Task
 from yt_shared.schemas.cache import CacheSchema
 from yt_shared.schemas.media import Audio, IncomingMediaPayload, Video
-from yt_shared.utils.common import async_lock
+from yt_shared.utils.common import ASYNC_LOCK
 
 
 class TaskRepository:
@@ -76,7 +76,7 @@ class TaskRepository:
             file.thumb_name = media.thumb_name
 
         db.add(file)
-        async with async_lock:
+        async with ASYNC_LOCK:
             await db.flush([file])
         return file
 

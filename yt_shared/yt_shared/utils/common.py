@@ -4,6 +4,20 @@ from functools import partial, wraps
 from string import ascii_lowercase
 from typing import Any
 
+ASYNC_LOCK = asyncio.Lock()
+
+_UNIT_SIZE_NAMES = ('', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi')
+_BASE = 1024.0
+
+
+def format_bytes(num: int, suffix: str = "B") -> str:
+    """Format bytes to human-readable size."""
+    for unit in _UNIT_SIZE_NAMES:
+        if abs(num) < _BASE:
+            return f"{num:3.1f}{unit}{suffix}"
+        num /= _BASE
+    return f"{num:.1f}Yi{suffix}"
+
 
 class Singleton(type):
     """Singleton class."""
@@ -39,6 +53,3 @@ def wrap(func):
 
 def random_string(number: int) -> str:
     return ''.join(random.choice(ascii_lowercase) for _ in range(number))
-
-
-async_lock = asyncio.Lock()

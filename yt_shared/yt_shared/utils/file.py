@@ -17,3 +17,7 @@ def file_cleanup(file_paths: Iterable[str], log: logging.Logger = None) -> None:
 
 def remove_dir(dir_path: str) -> None:
     shutil.rmtree(dir_path)
+
+
+def file_size(filepath: str) -> int:
+    return os.path.getsize(filepath)

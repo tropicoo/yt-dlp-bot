@@ -28,22 +28,22 @@ class IncomingMediaPayload(RealBaseModel):
     added_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class Audio(RealBaseModel):
-    file_type: Literal[MediaFileType.AUDIO] = MediaFileType.AUDIO
+class CommonMedia(RealBaseModel):
+    file_type: MediaFileType
     title: StrictStr
     filename: StrictStr
     filepath: StrictStr
+    file_size: StrictInt
     duration: StrictFloat | None = None
+
+
+class Audio(CommonMedia):
+    file_type: Literal[MediaFileType.AUDIO] = MediaFileType.AUDIO
     orm_file_id: uuid.UUID | None = None
 
 
-class Video(RealBaseModel):
+class Video(CommonMedia):
     file_type: Literal[MediaFileType.VIDEO] = MediaFileType.VIDEO
-    title: StrictStr
-    filename: StrictStr
-    filepath: StrictStr
-    duration: StrictFloat | None = None
-
     thumb_name: StrictStr | None = None
     width: int | None = None
     height: int | None = None

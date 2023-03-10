@@ -1,6 +1,4 @@
-## Release Info
-
-Version: 1.1
+## Release 1.1
 
 Release date: March 11, 2023
 
@@ -19,9 +17,7 @@ N/A
 
 ---
 
-## Release Info
-
-Version: 1.0
+## Release 1.0
 
 Release date: February 25, 2023
 
@@ -47,9 +43,7 @@ N/A
 
 ---
 
-## Release Info
-
-Version: 0.9
+## Release 0.9
 
 Release date: February 16, 2023
 
@@ -96,12 +90,9 @@ N/A
 
 N/A
 
-
 ---
 
-## Release Info
-
-Version: 0.8
+## Release 0.8
 
 Release date: February 15, 2023
 
@@ -121,9 +112,7 @@ N/A
 
 ---
 
-## Release Info
-
-Version: 0.7
+## Release 0.7
 
 Release date: February 5, 2023
 
@@ -146,9 +135,7 @@ N/A
 
 ---
 
-## Release Info
-
-Version: 0.6
+## Release 0.6
 
 Release date: January 31, 2023
 
@@ -167,9 +154,7 @@ N/A
 
 ---
 
-## Release Info
-
-Version: 0.5
+## Release 0.5
 
 Release date: January 21, 2023
 
@@ -189,9 +174,7 @@ N/A
 
 ---
 
-## Release Info
-
-Version: 0.4
+## Release 0.4
 
 Release date: November 13, 2022
 
@@ -214,9 +197,26 @@ N/A
 
 ---
 
-## Release Info
+## Release 0.3.1
 
-Version: 0.3
+Release date: November 11, 2022
+
+## New Features
+
+* This is maintenance release. No New Features. Bumped `fastapi` and `SQLAlchemy`
+  versions, updated README.
+
+## Important
+
+N/A
+
+## Misc
+
+N/A
+
+---
+
+## Release 0.3
 
 Release date: November 7, 2022
 
@@ -241,24 +241,3 @@ Release date: November 7, 2022
 ## Misc
 
 1. Updated README
-
----
-
-## Release Info
-
-Version: 0.3.1
-
-Release date: November 11, 2022
-
-## New Features
-
-* This is maintenance release. No New Features. Bumped `fastapi` and `SQLAlchemy`
-  versions, updated README.
-
-## Important
-
-N/A
-
-## Misc
-
-N/A

@@ -34,6 +34,10 @@ except ImportError:
     )
 
 
+class MediaDownloaderError(Exception):
+    pass
+
+
 class MediaDownloader:
     _PLAYLIST_TYPE = 'playlist'
     _DESTINATION_TMP_DIR_NAME_LEN = 4
@@ -85,14 +89,19 @@ class MediaDownloader:
                 self._log.info('Downloading %s', url)
                 self._log.info('Downloading to %s', curr_tmp_dir)
                 self._log.info('Downloading with options %s', ytdl_opts)
-                meta = ytdl.extract_info(url, download=True)
+
+                meta: dict | None = ytdl.extract_info(url, download=True)
+                current_files = os.listdir(curr_tmp_dir)
+                if not meta and not current_files:
+                    err_msg = f'Nothing downloaded. Is URL valid? "{url}"'
+                    self._log.error(err_msg)
+                    raise MediaDownloaderError(err_msg)
+
                 meta_sanitized = ytdl.sanitize_info(meta)
 
             self._log.info('Finished downloading %s', url)
             self._log.info('Downloaded "%s" meta: %s', url, meta_sanitized)
-            self._log.info(
-                'Content of "%s": %s', curr_tmp_dir, os.listdir(curr_tmp_dir)
-            )
+            self._log.info('Content of "%s": %s', curr_tmp_dir, current_files)
 
             destination_dir = os.path.join(
                 os.path.join(

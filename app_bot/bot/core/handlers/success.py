@@ -9,11 +9,13 @@ from yt_shared.rabbit.publisher import Publisher
 from yt_shared.schemas.error import ErrorGeneralPayload
 from yt_shared.schemas.media import Audio, Video
 from yt_shared.schemas.success import SuccessPayload
+from yt_shared.utils.common import format_bytes
 from yt_shared.utils.file import remove_dir
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.handlers.abstract import AbstractHandler
 from bot.core.tasks.upload import AudioUploadTask, VideoUploadTask
+from bot.core.utils import bold
 
 
 class SuccessHandler(AbstractHandler):
@@ -97,7 +99,10 @@ class SuccessHandler(AbstractHandler):
         )
 
     async def _send_success_text(self, media_object: Audio | Video) -> None:
-        text = f'{SUCCESS_EMOJI} <b>Downloaded</b> {media_object.filename}'
+        text = (
+            f'{SUCCESS_EMOJI} {bold("Downloaded")} {media_object.filename}\n'
+            f'📏 {bold("Size")} {format_bytes(media_object.file_size)}'
+        )
         for user in self._receiving_users:
             kwargs = {
                 'chat_id': user.id,

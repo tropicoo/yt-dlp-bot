@@ -27,7 +27,7 @@ class AbstractHandler(metaclass=abc.ABCMeta):
         await self._handle()
 
     @abc.abstractmethod
-    async def _handle(self) -> None:
+    async def _handle(self, *args, **kwargs) -> None:
         pass
 
     def _get_sender_id(self) -> int | None:

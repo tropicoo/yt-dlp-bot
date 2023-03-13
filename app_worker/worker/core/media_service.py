@@ -178,6 +178,8 @@ class MediaService:
     async def _copy_file_to_storage(file: Audio | Video) -> None:
         dst = os.path.join(settings.STORAGE_PATH, file.filename)
         await asyncio.to_thread(shutil.copy2, file.filepath, dst)
+        file.saved_to_storage = True
+        file.storage_path = dst
 
     def _err_file_cleanup(self, video: DownMedia) -> None:
         """Cleanup any downloaded/created data if post-processing failed."""

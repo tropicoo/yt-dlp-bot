@@ -1,5 +1,5 @@
 import uuid
-from typing import ClassVar
+from typing import Literal
 
 from pydantic import StrictInt, StrictStr
 
@@ -9,9 +9,9 @@ from yt_shared.schemas.media import DownMedia, IncomingMediaPayload
 
 
 class SuccessPayload(BaseRabbitPayloadModel):
-    _TYPE: ClassVar = RabbitPayloadType.SUCCESS
+    """Payload with downloaded media context."""
 
-    type: RabbitPayloadType = _TYPE
+    type: Literal[RabbitPayloadType.SUCCESS] = RabbitPayloadType.SUCCESS
     task_id: uuid.UUID
     from_chat_id: StrictInt | None
     from_chat_type: TelegramChatType | None

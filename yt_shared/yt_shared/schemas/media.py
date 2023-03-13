@@ -36,6 +36,9 @@ class CommonMedia(RealBaseModel):
     file_size: StrictInt
     duration: StrictFloat | None = None
 
+    saved_to_storage: StrictBool = False
+    storage_path: StrictStr | None = None
+
 
 class Audio(CommonMedia):
     file_type: Literal[MediaFileType.AUDIO] = MediaFileType.AUDIO
@@ -73,5 +76,5 @@ class DownMedia(RealBaseModel):
             raise ValueError('Provide audio, video or both.')
         return values
 
-    def get_media_objects(self) -> tuple[Audio, Video]:
+    def get_media_objects(self) -> tuple[Audio | Video, ...]:
         return tuple(filter(None, (self.audio, self.video)))

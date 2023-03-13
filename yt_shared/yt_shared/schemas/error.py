@@ -1,5 +1,5 @@
 import uuid
-from typing import ClassVar
+from typing import Literal
 
 from pydantic import StrictInt, StrictStr
 
@@ -9,9 +9,7 @@ from yt_shared.schemas.media import IncomingMediaPayload
 
 
 class ErrorGeneralPayload(BaseRabbitPayloadModel):
-    _TYPE: ClassVar = RabbitPayloadType.GENERAL_ERROR
-
-    type: RabbitPayloadType = _TYPE
+    type: Literal[RabbitPayloadType.GENERAL_ERROR] = RabbitPayloadType.GENERAL_ERROR
     task_id: uuid.UUID | StrictStr | None
     from_chat_id: StrictInt | None
     from_chat_type: TelegramChatType | None
@@ -26,7 +24,5 @@ class ErrorGeneralPayload(BaseRabbitPayloadModel):
 
 
 class ErrorDownloadPayload(ErrorGeneralPayload):
-    _TYPE: ClassVar = RabbitPayloadType.DOWNLOAD_ERROR
-
-    type: RabbitPayloadType = _TYPE
+    type: Literal[RabbitPayloadType.DOWNLOAD_ERROR] = RabbitPayloadType.DOWNLOAD_ERROR
     task_id: uuid.UUID

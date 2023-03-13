@@ -1,8 +1,8 @@
-from enum import Enum, unique
+from enum import StrEnum, unique
 
 
 @unique
-class StrChoiceEnum(str, Enum):
+class StrChoiceEnum(StrEnum):
     @classmethod
     def choices(cls) -> tuple[str, ...]:
         return tuple(x.value for x in cls)

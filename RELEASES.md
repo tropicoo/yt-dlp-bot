@@ -1,3 +1,21 @@
+## Release 1.2
+
+Release date: March 13, 2023
+
+## New Features
+
+- Show message when media was saved to storage.
+
+## Important
+
+N/A
+
+## Misc
+
+N/A
+
+---
+
 ## Release 1.1
 
 Release date: March 11, 2023

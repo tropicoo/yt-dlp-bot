@@ -15,7 +15,7 @@ from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.handlers.abstract import AbstractHandler
 from bot.core.tasks.upload import AudioUploadTask, VideoUploadTask
-from bot.core.utils import bold
+from bot.core.utils import bold, code
 
 
 class SuccessHandler(AbstractHandler):
@@ -103,6 +103,9 @@ class SuccessHandler(AbstractHandler):
             f'{SUCCESS_EMOJI} {bold("Downloaded")} {media_object.filename}\n'
             f'📏 {bold("Size")} {format_bytes(media_object.file_size)}'
         )
+        if media_object.saved_to_storage:
+            text = f'{text}\n💾 {bold("Saved to")} {code(media_object.storage_path)}'
+
         for user in self._receiving_users:
             kwargs = {
                 'chat_id': user.id,

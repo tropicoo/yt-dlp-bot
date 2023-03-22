@@ -29,7 +29,7 @@ import socket
 import sys
 from contextlib import closing
 from dataclasses import dataclass, field
-from typing import Type
+from typing import Generator, Type
 
 SOCK_CONNECTED = 0
 DEFAULT_PORT = 0
@@ -50,8 +50,12 @@ class ServiceRegistry(type):
         return service_cls
 
     @classmethod
-    def get_services(mcs) -> dict[str, type['BaseService']]:
+    def get_registry(mcs) -> dict[str, type['BaseService']]:
         return mcs.REGISTRY.copy()
+
+    @classmethod
+    def get_instances(mcs) -> Generator['BaseService', None, None]:
+        return (service_cls() for service_cls in mcs.REGISTRY.values())
 
 
 @dataclass
@@ -96,9 +100,7 @@ async def check_reachability(service: BaseService) -> None:
 
 async def main() -> None:
     logging.getLogger('asyncio').setLevel(logging.ERROR)
-    coros = []
-    for service_cls in ServiceRegistry.get_services().values():
-        coros.append(check_reachability(service_cls()))
+    coros = [check_reachability(service) for service in ServiceRegistry.get_instances()]
     await asyncio.gather(*coros)
 
 

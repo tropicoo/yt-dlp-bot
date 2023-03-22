@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
     ports:
       - "1984:8000"
-    command: bash -c "./start.sh && uvicorn main:app --host 0.0.0.0 --port 8000"
+    command: bash -c "python start.py && uvicorn main:app --host 0.0.0.0 --port 8000"
     depends_on:
       - postgres
       - rabbitmq
@@ -35,7 +35,7 @@ services:
       - envs/.env_bot
     restart: unless-stopped
     command: >
-      bash -c "./start.sh && python main.py"
+      bash -c "python start.py && python main.py"
     depends_on:
       - postgres
       - rabbitmq
@@ -53,7 +53,7 @@ services:
       - envs/.env_worker
     restart: unless-stopped
     command: >
-      bash -c "alembic upgrade head && ./start.sh && python main.py"
+      bash -c "python start.py && alembic upgrade head && python main.py"
     depends_on:
       - postgres
       - rabbitmq

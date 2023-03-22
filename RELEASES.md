@@ -1,3 +1,21 @@
+## Release 1.2.1
+
+Release date: March 22, 2023
+
+## New Features
+
+N/A (Maintenance release)
+
+## Important
+
+1. Disabled SQL logs by default: `SQLALCHEMY_ECHO=False` in `envs/.env_common`
+
+## Misc
+
+1. Improved upload log messages - now include file size and whether upload of the file is cached
+
+---
+
 ## Release 1.2
 
 Release date: March 13, 2023

@@ -8,6 +8,7 @@ def setup_logging() -> None:
     logging.basicConfig(
         format=log_format, level=logging.getLevelName(settings.LOG_LEVEL)
     )
-
-    log = logging.getLogger('sqlalchemy.engine.Engine')
-    log.handlers.pop()
+    try:
+        logging.getLogger('sqlalchemy.engine.Engine').handlers.pop()
+    except IndexError:
+        pass

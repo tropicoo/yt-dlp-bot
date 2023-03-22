@@ -13,9 +13,12 @@ from pydantic import (
 
 from yt_shared.enums import DownMediaType, MediaFileType, TaskSource, TelegramChatType
 from yt_shared.schemas.base import RealBaseModel
+from yt_shared.utils.common import format_bytes
 
 
 class IncomingMediaPayload(RealBaseModel):
+    """RabbitMQ incoming media payload from Telegram Bot or API service."""
+
     id: uuid.UUID | None
     from_chat_id: StrictInt | None
     from_chat_type: TelegramChatType | None
@@ -28,30 +31,38 @@ class IncomingMediaPayload(RealBaseModel):
     added_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class CommonMedia(RealBaseModel):
+class BaseMedia(RealBaseModel):
+    """Model representing abstract downloaded media with common fields."""
+
     file_type: MediaFileType
     title: StrictStr
     filename: StrictStr
     filepath: StrictStr
     file_size: StrictInt
     duration: StrictFloat | None = None
+    orm_file_id: uuid.UUID | None = None
 
     saved_to_storage: StrictBool = False
     storage_path: StrictStr | None = None
 
+    def file_size_human(self) -> str:
+        return format_bytes(num=self.file_size)
 
-class Audio(CommonMedia):
+
+class Audio(BaseMedia):
+    """Model representing downloaded audio file."""
+
     file_type: Literal[MediaFileType.AUDIO] = MediaFileType.AUDIO
-    orm_file_id: uuid.UUID | None = None
 
 
-class Video(CommonMedia):
+class Video(BaseMedia):
+    """Model representing downloaded video file with separate thumbnail."""
+
     file_type: Literal[MediaFileType.VIDEO] = MediaFileType.VIDEO
     thumb_name: StrictStr | None = None
     width: int | None = None
     height: int | None = None
     thumb_path: StrictStr | None = None
-    orm_file_id: uuid.UUID | None = None
 
     @root_validator(pre=False)
     def _set_fields(cls, values: dict) -> dict:

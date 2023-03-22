@@ -7,7 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from yt_shared.enums import DownMediaType, TaskStatus
 from yt_shared.models import Task
 from yt_shared.repositories.task import TaskRepository
-from yt_shared.schemas.media import Audio, DownMedia, IncomingMediaPayload, Video
+from yt_shared.schemas.media import (
+    BaseMedia,
+    DownMedia,
+    IncomingMediaPayload,
+    Video,
+)
 from yt_shared.utils.file import remove_dir
 from yt_shared.utils.tasks.tasks import create_task
 
@@ -153,7 +158,7 @@ class MediaService:
         video.width = video_streams[0]['width']
         video.height = video_streams[0]['height']
 
-    def _create_copy_file_task(self, file: Audio | Video) -> asyncio.Task:
+    def _create_copy_file_task(self, file: BaseMedia) -> asyncio.Task:
         task_name = f'Copy {file.file_type} file to storage task'
         return create_task(
             self._copy_file_to_storage(file),
@@ -175,7 +180,7 @@ class MediaService:
         )
 
     @staticmethod
-    async def _copy_file_to_storage(file: Audio | Video) -> None:
+    async def _copy_file_to_storage(file: BaseMedia) -> None:
         dst = os.path.join(settings.STORAGE_PATH, file.filename)
         await asyncio.to_thread(shutil.copy2, file.filepath, dst)
         file.saved_to_storage = True

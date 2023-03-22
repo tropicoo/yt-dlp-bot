@@ -3,7 +3,7 @@ import asyncio
 from itertools import chain
 from typing import TYPE_CHECKING, Coroutine
 
-from pydantic import StrictFloat, StrictInt, StrictStr
+from pydantic import StrictBool, StrictFloat, StrictInt, StrictStr
 from pyrogram.enums import ChatAction, MessageMediaType, ParseMode
 from pyrogram.types import Animation, Message
 from pyrogram.types import Audio as _Audio
@@ -13,9 +13,8 @@ from yt_shared.db.session import get_db
 from yt_shared.repositories.task import TaskRepository
 from yt_shared.schemas.base import RealBaseModel
 from yt_shared.schemas.cache import CacheSchema
-from yt_shared.schemas.media import Audio, Video
+from yt_shared.schemas.media import BaseMedia, Video
 from yt_shared.schemas.success import SuccessPayload
-from yt_shared.utils.common import format_bytes
 from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.utils.tasks.tasks import create_task
 
@@ -27,21 +26,22 @@ if TYPE_CHECKING:
     from bot.core.bot import VideoBot
 
 
-class AbstractUploadContext(RealBaseModel):
+class BaseUploadContext(RealBaseModel):
     caption: StrictStr
     filename: StrictStr
     filepath: StrictStr
     duration: StrictFloat
     type: MessageMediaType
+    is_cached: StrictBool = False
 
 
-class VideoUploadContext(AbstractUploadContext):
+class VideoUploadContext(BaseUploadContext):
     height: StrictInt
     width: StrictInt
     thumb: StrictStr
 
 
-class AudioUploadContext(AbstractUploadContext):
+class AudioUploadContext(BaseUploadContext):
     pass
 
 
@@ -50,7 +50,7 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
 
     def __init__(
         self,
-        media_object: Audio | Video,
+        media_object: BaseMedia,
         users: list[BaseUserSchema | UserSchema],
         bot: 'VideoBot',
         semaphore: asyncio.Semaphore,
@@ -86,7 +86,7 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
     async def _send_upload_text(self) -> None:
         text = (
             f'⬆️ {bold("Uploading")} {self._filename}\n'
-            f'📏 {bold("Size")} {format_bytes(self._media_object.file_size)}'
+            f'📏 {bold("Size")} {self._media_object.file_size_human()}'
         )
         coros = []
         for chat_id in self._upload_chat_ids:
@@ -125,7 +125,13 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
 
     async def _upload_file(self) -> None:
         for chat_id in chain(self._upload_chat_ids, self._forward_chat_ids):
-            self._log.info('Uploading "%s" to chat id "%d"', self._filename, chat_id)
+            self._log.info(
+                'Uploading "%s" [%s] [cached: %s] to chat id "%d"',
+                self._filename,
+                self._media_object.file_size_human(),
+                self._media_ctx.is_cached,
+                chat_id,
+            )
             await self._bot.send_chat_action(chat_id, action=self._UPLOAD_ACTION)
             try:
                 message = await self.__upload(chat_id=chat_id)
@@ -206,23 +212,25 @@ class AudioUploadTask(AbstractUploadTask):
         self._media_ctx.type = message.media
         self._media_ctx.filepath = audio.file_id
         self._media_ctx.duration = audio.duration
+        self._media_ctx.is_cached = True
         self._cached_message = message
 
         self._create_cache_task(cache_object=audio)
 
     def _generate_file_caption(self) -> str:
-        caption_items = [
+        caption_items = (
             f'{bold("Title:")} {self._media_object.title}',
-            f'{bold("Filename:")} {self._media_object.filename}',
+            f'{bold("Filename:")} {self._filename}',
             f'{bold("URL:")} {self._ctx.context.url}',
-            f'{bold("Size:")} {format_bytes(self._media_object.file_size)}',
-        ]
+            f'{bold("Size:")} {self._media_object.file_size_human()}',
+        )
         return '\n'.join(caption_items)
 
 
 class VideoUploadTask(AbstractUploadTask):
     _UPLOAD_ACTION = ChatAction.UPLOAD_VIDEO
     _media_ctx: VideoUploadContext
+    _media_object: Video
 
     def _create_media_context(self) -> VideoUploadContext:
         return VideoUploadContext(
@@ -246,12 +254,12 @@ class VideoUploadTask(AbstractUploadTask):
         if caption_conf.include_title:
             caption_items.append(f'{bold("Title:")} {self._media_object.title}')
         if caption_conf.include_filename:
-            caption_items.append(f'{bold("Filename:")} {self._media_object.filename}')
+            caption_items.append(f'{bold("Filename:")} {self._filename}')
         if caption_conf.include_link:
             caption_items.append(f'{bold("URL:")} {self._ctx.context.url}')
         if caption_conf.include_size:
             caption_items.append(
-                f'{bold("Size:")} {format_bytes(self._media_object.file_size)}'
+                f'{bold("Size:")} {self._media_object.file_size_human()}'
             )
         return '\n'.join(caption_items)
 
@@ -284,6 +292,7 @@ class VideoUploadTask(AbstractUploadTask):
         self._media_ctx.type = message.media
         self._media_ctx.filepath = video.file_id
         self._media_ctx.thumb = video.thumbs[0].file_id
+        self._media_ctx.is_cached = True
         self._cached_message = message
 
         self._create_cache_task(cache_object=video)

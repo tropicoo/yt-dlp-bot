@@ -48,7 +48,9 @@ class WorkerLauncher:
 
     async def _set_yt_dlp_version(self) -> None:
         curr_version = ytdlp_version.__version__
-        self._log.info('Setting current yt-dlp version (%s)', curr_version)
+        self._log.info(
+            'Saving current yt-dlp version (%s) to the database', curr_version
+        )
         async for db in get_db():
             await YtdlpRepository().create_or_update_version(curr_version, db)
 

@@ -4,7 +4,6 @@ RUN apk add --no-cache \
         tzdata \
         htop \
         bash \
-        netcat-openbsd \
         libstdc++
 
 WORKDIR /app

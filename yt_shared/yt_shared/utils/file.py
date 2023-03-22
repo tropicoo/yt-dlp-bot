@@ -20,4 +20,5 @@ def remove_dir(dir_path: str) -> None:
 
 
 def file_size(filepath: str) -> int:
+    """Return file size in bytes."""
     return os.path.getsize(filepath)

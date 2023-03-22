@@ -7,15 +7,14 @@ from yt_shared.emoji import SUCCESS_EMOJI
 from yt_shared.enums import MediaFileType, TaskSource
 from yt_shared.rabbit.publisher import Publisher
 from yt_shared.schemas.error import ErrorGeneralPayload
-from yt_shared.schemas.media import Audio, Video
+from yt_shared.schemas.media import BaseMedia
 from yt_shared.schemas.success import SuccessPayload
-from yt_shared.utils.common import format_bytes
 from yt_shared.utils.file import remove_dir
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.handlers.abstract import AbstractHandler
 from bot.core.tasks.upload import AudioUploadTask, VideoUploadTask
-from bot.core.utils import bold, code
+from bot.core.utils import bold
 
 
 class SuccessHandler(AbstractHandler):
@@ -54,7 +53,7 @@ class SuccessHandler(AbstractHandler):
         )
         await self._publisher.send_download_error(err_payload)
 
-    async def _handle(self, media_object: Audio | Video) -> None:
+    async def _handle(self, media_object: BaseMedia) -> None:
         try:
             await self._send_success_text(media_object)
             if self._upload_is_enabled():
@@ -79,7 +78,7 @@ class SuccessHandler(AbstractHandler):
         )
         remove_dir(root_path)
 
-    async def _create_upload_task(self, media_object: Audio | Video) -> None:
+    async def _create_upload_task(self, media_object: BaseMedia) -> None:
         """Upload video to Telegram chat."""
         semaphore = asyncio.Semaphore(value=self._bot.conf.telegram.max_upload_tasks)
         upload_task_cls = self._UPLOAD_TASK_MAP[media_object.file_type]
@@ -98,14 +97,15 @@ class SuccessHandler(AbstractHandler):
             exception_message_args=(task_name,),
         )
 
-    async def _send_success_text(self, media_object: Audio | Video) -> None:
-        text = (
-            f'{SUCCESS_EMOJI} {bold("Downloaded")} {media_object.filename}\n'
-            f'📏 {bold("Size")} {format_bytes(media_object.file_size)}'
-        )
+    @staticmethod
+    def _create_success_text(media_object: BaseMedia) -> str:
+        text = f'{SUCCESS_EMOJI} {bold("Downloaded")} {media_object.filename}'
         if media_object.saved_to_storage:
-            text = f'{text}\n💾 {bold("Saved to")} {code(media_object.storage_path)}'
+            text = f'{text}\n💾 {bold("Saved to media storage")}'
+        return f'{text}\n📏 {bold("Size")} {media_object.file_size_human()}'
 
+    async def _send_success_text(self, media_object: BaseMedia) -> None:
+        text = self._create_success_text(media_object)
         for user in self._receiving_users:
             kwargs = {
                 'chat_id': user.id,
@@ -124,7 +124,7 @@ class SuccessHandler(AbstractHandler):
         user = self._bot.allowed_users[self._get_sender_id()]
         return user.upload.upload_video_file
 
-    def _validate_file_size_for_upload(self, media_object: Audio | Video) -> None:
+    def _validate_file_size_for_upload(self, media_object: BaseMedia) -> None:
         if self._body.context.source is TaskSource.API:
             max_file_size = self._bot.conf.telegram.api.upload_video_max_file_size
         else:

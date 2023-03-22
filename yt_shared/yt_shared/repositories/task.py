@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from yt_shared.enums import TaskStatus
 from yt_shared.models import Cache, File, Task
 from yt_shared.schemas.cache import CacheSchema
-from yt_shared.schemas.media import Audio, IncomingMediaPayload, Video
+from yt_shared.schemas.media import BaseMedia, IncomingMediaPayload, Video
 from yt_shared.utils.common import ASYNC_LOCK
 
 
@@ -60,7 +60,7 @@ class TaskRepository:
 
     @staticmethod
     async def save_file(
-        db: AsyncSession, task: Task, media: Audio | Video, meta: dict
+        db: AsyncSession, task: Task, media: BaseMedia, meta: dict
     ) -> File:
         file = File(
             title=media.title,

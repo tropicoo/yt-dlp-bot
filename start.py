@@ -25,9 +25,7 @@
 import asyncio
 import logging
 import os
-import socket
 import sys
-from contextlib import closing
 from dataclasses import dataclass, field
 from typing import Generator, Type
 
@@ -84,9 +82,13 @@ class PostgreSQLService(BaseService, metaclass=ServiceRegistry):
 
 
 async def is_port_open(host: str, port: int) -> bool:
-    sock: socket.socket
-    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-        return await asyncio.to_thread(sock.connect_ex, (host, port)) == SOCK_CONNECTED
+    try:
+        reader, writer = await asyncio.open_connection(host, port)
+        writer.close()
+        await writer.wait_closed()
+        return True
+    except Exception:
+        return False
 
 
 async def check_reachability(service: BaseService) -> None:

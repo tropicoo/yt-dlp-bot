@@ -14,9 +14,11 @@ Version: 1.3. [Release details](RELEASES.md).
 
 ## 😂 Features
 
-* Download audio and videos from any [yt-dlp](https://github.com/yt-dlp/yt-dlp) supported website
-  to your storage
-* Upload downloaded audio and videos to the Telegram chat
+* Download audio and videos from any [yt-dlp](https://github.com/yt-dlp/yt-dlp)
+  supported website to your storage
+* Upload downloaded audio and videos back to the Telegram chat
+* Interact with the bot from private or group chat (any user within the chat with the
+  bot can send the links)
 * Trigger video download by sending link to an API
 * Track download tasks via API
 
@@ -28,9 +30,9 @@ Version: 1.3. [Release details](RELEASES.md).
 4. Copy `app_bot/config-example.yml` to `app_bot/config.yml`
 5. Write `token`, `api_id`, `api_hash` to `app_bot/config.yml` by changing respective
    placeholders
-6. Write your Telegram user id to the `allowed_users` -> `id` by replacing dummy value
-   and change or remove `forward_group_id` value (if you want to forward the video to
-   some group when upload is enabled)
+6. Write your Telegram user or group id to the `allowed_users` -> `id` by replacing dummy
+   value and change `forward_group_id` value if you want to forward the video to
+   some group when upload is enabled
 7. Configure download media type for the user/group: `AUDIO`, `VIDEO` or `AUDIO_VIDEO` 
    in `app_bot/config.yml`'s variable `download_media_type`
 8. Check the default environment variables in `envs/.env_common` and change if needed

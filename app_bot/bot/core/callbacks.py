@@ -1,6 +1,6 @@
 import logging
 
-from pyrogram.enums import ParseMode
+from pyrogram.enums import ChatType, ParseMode
 from pyrogram.types import Message
 from yt_shared.emoji import SUCCESS_EMOJI
 from yt_shared.enums import TelegramChatType
@@ -48,9 +48,22 @@ class TelegramCallback:
             reply_to_message_id=message.id,
         )
 
+    @staticmethod
+    def _get_user_id(message: Message) -> int:
+        """Make explicit selection to not forget how this works since we just can return
+        `message.chat.id` for all cases.
+        """
+        match message.chat.type:
+            case ChatType.PRIVATE:
+                return message.from_user.id
+            case ChatType.GROUP:
+                return message.chat.id
+            case _:
+                return message.chat.id
+
     def _parse_urls(self, message: Message) -> list[URL]:
         bot: VideoBot = message._client  # noqa
-        user = bot.allowed_users[message.from_user.id]
+        user = bot.allowed_users[self._get_user_id(message)]
         return [
             URL(
                 url=url,

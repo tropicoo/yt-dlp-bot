@@ -1,3 +1,21 @@
+## Release 1.3
+
+Release date: March 28, 2023
+
+## New Features
+
+- Now any user which is in the configured group with the bot can send the link
+
+## Important
+
+N/A
+
+## Misc
+
+N/A
+
+---
+
 ## Release 1.2.1
 
 Release date: March 22, 2023

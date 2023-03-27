@@ -43,9 +43,13 @@ class BotLauncher:
         self._bot.add_handler(
             MessageHandler(
                 cb.on_message,
-                filters=filters.user(list(self._bot.allowed_users.keys()))
-                & filters.chat(list(self._bot.allowed_users.keys()))
-                & filters.regex(self.REGEX_NOT_START_WITH_SLASH),
+                filters=(
+                    filters.regex(self.REGEX_NOT_START_WITH_SLASH)
+                    & (
+                        filters.user(list(self._bot.allowed_users.keys()))
+                        | filters.chat(list(self._bot.allowed_users.keys()))
+                    )
+                ),
             ),
         )
 

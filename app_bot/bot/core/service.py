@@ -63,5 +63,7 @@ class UrlParser:
         for url, regex in product(urls, regexes):
             if re.match(regex, url):
                 valid.append(url)
+
+        valid = list(dict.fromkeys(valid))
         self._log.debug('Matched urls: %s', valid)
         return valid

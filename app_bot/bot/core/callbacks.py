@@ -37,6 +37,7 @@ class TelegramCallback:
                 urls=urls, regexes=client.conf.telegram.url_validation_regexes
             )
             if not urls:
+                self._log.info('No urls to download, skipping message')
                 return
 
         urls = self._url_parser.parse_urls(urls=urls, message=message, user=user)

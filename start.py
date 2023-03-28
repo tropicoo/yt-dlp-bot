@@ -71,14 +71,14 @@ class BaseService:
 class RabbitMQService(BaseService, metaclass=ServiceRegistry):
     name: str = field(default='RabbitMQ')
     host: str = field(default=os.getenv('RABBITMQ_HOST'))
-    port: int = field(default=int(os.getenv('RABBITMQ_PORT')))
+    port: int = field(default=int(os.getenv('RABBITMQ_PORT', DEFAULT_PORT)))
 
 
 @dataclass
 class PostgreSQLService(BaseService, metaclass=ServiceRegistry):
     name: str = field(default='PostgreSQL')
     host: str = field(default=os.getenv('POSTGRES_HOST'))
-    port: int = field(default=int(os.getenv('POSTGRES_PORT')))
+    port: int = field(default=int(os.getenv('POSTGRES_PORT', DEFAULT_PORT)))
 
 
 async def is_port_open(host: str, port: int) -> bool:

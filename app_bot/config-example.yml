@@ -4,11 +4,14 @@ telegram:
   token: "<PASTE-HERE-TELEGRAM-TOKEN>"
   lang_code: !!str "en"
   max_upload_tasks: 5
+  url_validation_regexes:
+    - "^http(s)?:\\/\\/.+$"
   allowed_users:
     - id: 00000000000
       send_startup_message: !!bool True
       download_media_type: !!str "VIDEO"
       save_to_storage: !!bool False
+      use_url_regex_match: !!bool True
       upload:
         upload_video_file: !!bool False
         upload_video_max_file_size: 2147483648

@@ -1,13 +1,12 @@
 import logging
 
-from pyrogram.enums import ChatType, ParseMode
+from pyrogram.enums import ParseMode
 from pyrogram.types import Message
 from yt_shared.emoji import SUCCESS_EMOJI
-from yt_shared.enums import TelegramChatType
-from yt_shared.schemas.url import URL
+from yt_shared.utils.user import get_user_id
 
 from bot.core.bot import VideoBot
-from bot.core.service import URLService
+from bot.core.service import UrlParser, UrlService
 from bot.core.utils import bold
 
 
@@ -17,7 +16,8 @@ class TelegramCallback:
 
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
-        self._url_service = URLService()
+        self._url_parser = UrlParser()
+        self._url_service = UrlService()
 
     @staticmethod
     async def on_start(client: VideoBot, message: Message) -> None:
@@ -29,50 +29,34 @@ class TelegramCallback:
 
     async def on_message(self, client: VideoBot, message: Message) -> None:
         """Receive video URL and send to the download worker."""
-        self._log.debug(message)
-        urls = self._parse_urls(message)
-        await self._url_service.process_urls(urls=urls)
-        await self._send_acknowledge_message(message=message, urls=urls)
+        self._log.debug('Received Telegram Message: %s', message)
+        urls = message.text.splitlines()
+        user = client.allowed_users[get_user_id(message)]
+        if user.use_url_regex_match:
+            urls = self._url_parser.filter_urls(
+                urls=urls, regexes=client.conf.telegram.url_validation_regexes
+            )
+            if not urls:
+                return
+
+        urls = self._url_parser.parse_urls(urls=urls, message=message, user=user)
+        await self._url_service.process_urls(urls)
+        await self._send_acknowledge_message(message=message, url_count=len(urls))
 
     async def _send_acknowledge_message(
-        self, message: Message, urls: list[URL]
+        self,
+        message: Message,
+        url_count: int,
     ) -> None:
-        urls_count = len(urls)
-        is_multiple = urls_count > 1
         await message.reply(
-            self._MSG_SEND_OK.format(
-                count=f'{urls_count} ' if is_multiple else '',
-                plural='s' if is_multiple else '',
-            ),
+            text=self._format_acknowledge_text(url_count),
             parse_mode=ParseMode.HTML,
             reply_to_message_id=message.id,
         )
 
-    @staticmethod
-    def _get_user_id(message: Message) -> int:
-        """Make explicit selection to not forget how this works since we just can return
-        `message.chat.id` for all cases.
-        """
-        match message.chat.type:
-            case ChatType.PRIVATE:
-                return message.from_user.id
-            case ChatType.GROUP:
-                return message.chat.id
-            case _:
-                return message.chat.id
-
-    def _parse_urls(self, message: Message) -> list[URL]:
-        bot: VideoBot = message._client  # noqa
-        user = bot.allowed_users[self._get_user_id(message)]
-        return [
-            URL(
-                url=url,
-                from_chat_id=message.chat.id,
-                from_chat_type=TelegramChatType(message.chat.type.value),
-                from_user_id=message.from_user.id,
-                message_id=message.id,
-                save_to_storage=user.save_to_storage,
-                download_media_type=user.download_media_type,
-            )
-            for url in message.text.splitlines()
-        ]
+    def _format_acknowledge_text(self, url_count: int) -> str:
+        is_multiple = url_count > 1
+        return self._MSG_SEND_OK.format(
+            count=f'{url_count} ' if is_multiple else '',
+            plural='s' if is_multiple else '',
+        )

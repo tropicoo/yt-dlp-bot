@@ -1,3 +1,32 @@
+## Release 1.4
+
+Release date: March 29, 2023
+
+## New Features
+
+- Enable or disable URL match against the regex. If you use the bot in the group with
+  other people and don't want the bot to try to download any text message sent to the
+  group, you can enable `use_url_regex_match: !!bool True` in the `app_bot/config.yml`
+  so the bot will skip messages not matching URL regexes. You can add your own if
+  needed.
+
+## Important
+
+1. Two new variables introduced in the `app_bot/config-example.yml`
+    1. ```yaml
+       url_validation_regexes:
+         - "^http(s)?:\\/\\/.+$"
+       ```
+    2. ```yaml
+       use_url_regex_match: !!bool True
+       ```
+
+## Misc
+
+N/A
+
+---
+
 ## Release 1.3
 
 Release date: March 28, 2023

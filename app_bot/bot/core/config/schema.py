@@ -40,6 +40,7 @@ class UserSchema(BaseUserSchema):
     send_startup_message: StrictBool
     download_media_type: DownMediaType
     save_to_storage: StrictBool
+    use_url_regex_match: StrictBool
     upload: UserUploadSchema
 
     @property
@@ -67,6 +68,7 @@ class TelegramSchema(RealBaseModel):
     token: StrictStr
     lang_code: constr(regex=_LANG_CODE_REGEX, to_lower=True)
     max_upload_tasks: StrictInt
+    url_validation_regexes: list[str]
     allowed_users: list[UserSchema]
     api: ApiSchema
 

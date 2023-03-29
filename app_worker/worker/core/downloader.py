@@ -100,7 +100,7 @@ class MediaDownloader:
                 meta_sanitized = ytdl.sanitize_info(meta)
 
             self._log.info('Finished downloading %s', url)
-            self._log.info('Downloaded "%s" meta: %s', url, meta_sanitized)
+            self._log.debug('Downloaded "%s" meta: %s', url, meta_sanitized)
             self._log.info('Content of "%s": %s', curr_tmp_dir, current_files)
 
             destination_dir = os.path.join(

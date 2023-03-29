@@ -50,7 +50,7 @@ class AbstractResultWorker(AbstractTask):
                     await message.nack(requeue=False)
 
     async def _process_message(self, message: IncomingMessage) -> None:
-        self._log.info('[x] Received message %s', message.body)
+        self._log.debug('[x] Received message %s', message.body)
         body = await self._deserialize_message(message)
         await self._process_body(body)
         await message.ack()

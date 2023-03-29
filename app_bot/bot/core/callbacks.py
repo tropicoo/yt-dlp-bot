@@ -3,11 +3,10 @@ import logging
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message
 from yt_shared.emoji import SUCCESS_EMOJI
-from yt_shared.utils.user import get_user_id
 
 from bot.core.bot import VideoBot
 from bot.core.service import UrlParser, UrlService
-from bot.core.utils import bold
+from bot.core.utils import bold, get_user_id
 
 
 class TelegramCallback:
@@ -37,7 +36,7 @@ class TelegramCallback:
                 urls=urls, regexes=client.conf.telegram.url_validation_regexes
             )
             if not urls:
-                self._log.info('No urls to download, skipping message')
+                self._log.debug('No urls to download, skipping message')
                 return
 
         urls = self._url_parser.parse_urls(urls=urls, message=message, user=user)

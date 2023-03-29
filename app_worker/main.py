@@ -1,11 +1,16 @@
+import asyncio
+
+import uvloop
+
 from worker.core.launcher import WorkerLauncher
 from worker.core.log import setup_logging
 
 
-def main() -> None:
+async def main() -> None:
     setup_logging()
-    WorkerLauncher().start()
+    await WorkerLauncher().start()
 
 
 if __name__ == '__main__':
-    main()
+    uvloop.install()
+    asyncio.run(main())

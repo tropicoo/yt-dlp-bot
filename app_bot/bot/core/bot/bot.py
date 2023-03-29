@@ -13,6 +13,8 @@ from bot.core.utils import bold
 class VideoBot(Client):
     """Extended Pyrogram's `Client` class."""
 
+    _RUN_FOREVER_SLEEP_SECONDS = 86400
+
     def __init__(self) -> None:
         self.conf = get_main_config()
         super().__init__(
@@ -33,7 +35,7 @@ class VideoBot(Client):
         if not self.is_initialized:
             raise RuntimeError('Bot was not started (initialized).')
         while True:
-            await asyncio.sleep(86400)
+            await asyncio.sleep(self._RUN_FOREVER_SLEEP_SECONDS)
 
     def get_startup_users(self) -> list[int]:
         user_ids = []

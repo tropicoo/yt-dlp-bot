@@ -1,3 +1,21 @@
+## Release 1.4.1
+
+Release date: March 29, 2023
+
+## New Features
+
+N/A
+
+## Important
+
+N/A
+
+## Misc
+
+ - Maintenance release: added `uvloop`.
+
+---
+
 ## Release 1.4
 
 Release date: March 29, 2023

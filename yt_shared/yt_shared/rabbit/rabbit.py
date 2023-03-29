@@ -1,3 +1,4 @@
+import logging
 from asyncio import get_running_loop
 
 import aio_pika
@@ -13,6 +14,7 @@ class RabbitMQ:
     RABBITMQ_RECONNECT_INTERVAL = 2
 
     def __init__(self) -> None:
+        self._log = logging.getLogger(self.__class__.__name__)
         self._config = get_rabbit_config()
 
         self.connection: RobustConnection = None
@@ -52,8 +54,10 @@ class RabbitMQ:
             self.queues[queue_name] = queue
 
     async def close(self) -> None:
+        self._log.debug('[RabbitMQ] Closing connection')
         await self.channel.close()
         await self.connection.close()
+        self._log.debug('[RabbitMQ] Connection closed')
 
 
 _rabbit_mq = RabbitMQ()

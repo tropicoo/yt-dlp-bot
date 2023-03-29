@@ -7,27 +7,29 @@ from yt_shared.db.session import get_db
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.rabbit.rabbit_config import INPUT_QUEUE
 from yt_shared.repositories.ytdlp import YtdlpRepository
+from yt_shared.utils.common import register_shutdown
 
 from worker.core.callbacks import rmq_callbacks as cb
 from worker.core.config import settings
 
 
 class WorkerLauncher:
+    _RUN_FOREVER_SLEEP_SECONDS = 86400
+
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
         self._rabbit_mq = get_rabbitmq()
 
-    def start(self) -> None:
+    async def start(self) -> None:
         self._log.info('Starting download worker instance')
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self._start())
-        try:
-            loop.run_forever()
-        finally:
-            loop.run_until_complete(self.stop())
+        await self._start()
 
     async def _start(self) -> None:
         await self._perform_setup()
+        await self._run_forever()
+
+    async def _run_forever(self) -> None:
+        await asyncio.sleep(self._RUN_FOREVER_SLEEP_SECONDS)
 
     async def _perform_setup(self) -> None:
         await asyncio.gather(
@@ -37,6 +39,7 @@ class WorkerLauncher:
                 self._create_intermediate_directories(),
             )
         )
+        self._register_shutdown()
 
     async def _setup_rabbit(self) -> None:
         self._log.info('Setting up RabbitMQ connection')
@@ -69,6 +72,10 @@ class WorkerLauncher:
         os.makedirs(tmp_download_path, exist_ok=True)
         os.makedirs(tmp_downloaded_path, exist_ok=True)
 
-    async def stop(self) -> None:
+    def _register_shutdown(self) -> None:
+        register_shutdown(self.stop)
+
+    def stop(self, *args) -> None:
+        self._log.info('Shutting down %s', self.__class__.__name__)
         loop = asyncio.get_running_loop()
-        loop.run_until_complete(self._rabbit_mq.close())
+        loop.create_task(self._rabbit_mq.close())

@@ -1,8 +1,10 @@
 import asyncio
+import atexit
 import random
+import signal
 from functools import partial, wraps
 from string import ascii_lowercase
-from typing import Any
+from typing import Any, Callable
 
 ASYNC_LOCK = asyncio.Lock()
 
@@ -53,3 +55,9 @@ def wrap(func):
 
 def random_string(number: int) -> str:
     return ''.join(random.choice(ascii_lowercase) for _ in range(number))
+
+
+def register_shutdown(callback: Callable) -> None:
+    atexit.register(callback)
+    signal.signal(signal.SIGTERM, callback)
+    signal.signal(signal.SIGINT, callback)

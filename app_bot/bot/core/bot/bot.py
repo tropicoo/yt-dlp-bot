@@ -49,8 +49,8 @@ class VideoBot(Client):
         self._log.info('Sending welcome message')
         await self.send_message_to_users(
             text=(
-                f'✨ {bold((await self.get_me()).first_name)} started, paste a video URL '
-                f'to start download'
+                f'✨ {bold((await self.get_me()).first_name)} started, '
+                f'paste a video URL(s) to start download'
             ),
             user_ids=self.get_startup_users(),
         )

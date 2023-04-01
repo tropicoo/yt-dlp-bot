@@ -30,12 +30,12 @@ Version: 1.4.1. [Release details](RELEASES.md).
 4. Copy `app_bot/config-example.yml` to `app_bot/config.yml`
 5. Write `token`, `api_id`, `api_hash` to `app_bot/config.yml` by changing respective
    placeholders
-6. Write your Telegram user or group id to the `allowed_users` -> `id` by replacing dummy
+6. Write your Telegram user or group ID to the `allowed_users` -> `id` by replacing dummy
    value and change `forward_group_id` value if you want to forward the video to
    some group when upload is enabled
-7. Configure download media type for the user/group: `AUDIO`, `VIDEO` or `AUDIO_VIDEO` 
-   in `app_bot/config.yml`'s variable `download_media_type`
-8. Check the default environment variables in `envs/.env_common` and change if needed
+7. Change download media type for the user/group: `AUDIO`, `VIDEO` or `AUDIO_VIDEO` 
+   in `app_bot/config.yml`'s variable `download_media_type`. Default `VIDEO`
+8. Change application's `LOG_LEVEL` in `envs/.env_common` if needed
 9. Media `STORAGE_PATH` environment variable is located in
    the `envs/.env_worker` file. By default, it's `/filestorage` path inside the
    container. What you want is to map the real path to this inside
@@ -44,12 +44,11 @@ Version: 1.4.1. [Release details](RELEASES.md).
    videos will be saved to your `Videos` folder.
    ```yml
      worker:
-       ...
        volumes:
          - "D:/Videos:/filestorage"
    ```
 10. If you want your downloaded video to be uploaded back to the Telegram,
-   set `upload_video_file` config variable for your user in the `app_bot/config.yml`
+   set `upload_video_file` config variable for your user/group in the `app_bot/config.yml`
    to `True`
 
 ## 🏃 Run
@@ -66,7 +65,7 @@ docker compose stop -t 0
 ```
 
 Your telegram bot should send you a startup message:
-`✨ <YOUR_BOT_NAME> started, paste a video URL to start download` and that's it. After
+`✨ <YOUR_BOT_NAME> started, paste a video URL(s) to start download` and that's it. After
 pasting video URL(s) bot will send you appropriate message whether they were downloaded
 or something went wrong.
 
@@ -104,8 +103,8 @@ details
 
 - **API**: default port is `1984` and no auth. Port can be changed
   in `docker-compose.yml`
-- **RabbitMQ**: default creds are located in `envs/.env_common`
-- **PostgreSQL**: default creds are located in `envs/.env_common`. Same creds are stored
+- **RabbitMQ**: default credentials are located in `envs/.env_common`
+- **PostgreSQL**: default credentials are located in `envs/.env_common`. Same credentials are stored
   for Alembic in `app_worker/alembic.ini` on 53rd line.
 
 ## API

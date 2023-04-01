@@ -4,7 +4,7 @@ import traceback
 from yt_dlp import version as ytdlp_version
 from yt_shared.db.session import get_db
 from yt_shared.models import Task
-from yt_shared.rabbit.publisher import Publisher
+from yt_shared.rabbit.publisher import RmqPublisher
 from yt_shared.schemas.error import ErrorDownloadPayload, ErrorGeneralPayload
 from yt_shared.schemas.media import DownMedia, IncomingMediaPayload
 from yt_shared.schemas.success import SuccessPayload
@@ -17,7 +17,7 @@ class PayloadHandler:
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
         self._media_service = MediaService()
-        self._publisher = Publisher()
+        self._rmq_publisher = RmqPublisher()
 
     async def handle(self, media_payload: IncomingMediaPayload) -> None:
         try:
@@ -55,7 +55,7 @@ class PayloadHandler:
             context=media_payload,
             yt_dlp_version=ytdlp_version.__version__,
         )
-        await self._publisher.send_download_finished(success_payload)
+        await self._rmq_publisher.send_download_finished(success_payload)
 
     async def _send_failed_video_download_task(
         self,
@@ -76,7 +76,7 @@ class PayloadHandler:
             exception_msg=str(err),
             exception_type=err.__class__.__name__,
         )
-        await self._publisher.send_download_error(err_payload)
+        await self._rmq_publisher.send_download_error(err_payload)
 
     async def _send_general_error(
         self,
@@ -97,4 +97,4 @@ class PayloadHandler:
             exception_msg=traceback.format_exc(),
             exception_type=err.__class__.__name__,
         )
-        await self._publisher.send_download_error(err_payload)
+        await self._rmq_publisher.send_download_error(err_payload)

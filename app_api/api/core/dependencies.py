@@ -1,5 +1,5 @@
-from yt_shared.rabbit.publisher import Publisher
+from yt_shared.rabbit.publisher import RmqPublisher
 
 
-async def get_publisher():
-    yield Publisher()
+async def get_rmq_publisher():
+    yield RmqPublisher()

@@ -7,7 +7,7 @@ from starlette import status
 from starlette.responses import Response
 from yt_shared.db.session import get_db
 from yt_shared.enums import TaskStatus
-from yt_shared.rabbit.publisher import Publisher
+from yt_shared.rabbit.publisher import RmqPublisher
 
 from api.api.api_v1.schemas.task import (
     CreateTaskIn,
@@ -16,7 +16,7 @@ from api.api.api_v1.schemas.task import (
     TaskSimpleSchema,
     TasksStatsSchema,
 )
-from api.core.dependencies import get_publisher
+from api.core.dependencies import get_rmq_publisher
 from api.core.exceptions import TaskNotFoundHTTPError
 from api.core.services.task import TaskService, TaskServiceError
 
@@ -39,7 +39,7 @@ async def get_tasks(
 @router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_task(
     task: CreateTaskIn,
-    pb: Publisher = Depends(get_publisher),
+    pb: RmqPublisher = Depends(get_rmq_publisher),
 ) -> CreateTaskOut:
     try:
         return await TaskService.create_task_non_db(task=task, publisher=pb)

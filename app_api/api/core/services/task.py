@@ -5,7 +5,7 @@ from typing import Type
 from sqlalchemy.ext.asyncio import AsyncSession
 from yt_shared.enums import TaskSource, TaskStatus
 from yt_shared.models import Task
-from yt_shared.rabbit.publisher import Publisher
+from yt_shared.rabbit.publisher import RmqPublisher
 from yt_shared.schemas.media import IncomingMediaPayload
 
 from api.api.api_v1.schemas.task import (
@@ -61,7 +61,7 @@ class TaskService:
     @staticmethod
     async def create_task_non_db(
         task: CreateTaskIn,
-        publisher: Publisher,
+        publisher: RmqPublisher,
     ) -> CreateTaskOut:
         task_id = uuid.uuid4()
         source = TaskSource.API

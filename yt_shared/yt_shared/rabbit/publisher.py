@@ -19,7 +19,7 @@ from yt_shared.schemas.success import SuccessPayload
 from yt_shared.utils.common import Singleton
 
 
-class Publisher(metaclass=Singleton):
+class RmqPublisher(metaclass=Singleton):
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
         self._rabbit_mq = get_rabbitmq()

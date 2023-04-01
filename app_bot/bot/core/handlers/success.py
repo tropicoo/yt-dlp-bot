@@ -5,7 +5,7 @@ import traceback
 from pyrogram.enums import ParseMode
 from yt_shared.emoji import SUCCESS_EMOJI
 from yt_shared.enums import MediaFileType, TaskSource
-from yt_shared.rabbit.publisher import Publisher
+from yt_shared.rabbit.publisher import RmqPublisher
 from yt_shared.schemas.error import ErrorGeneralPayload
 from yt_shared.schemas.media import BaseMedia
 from yt_shared.schemas.success import SuccessPayload
@@ -26,7 +26,7 @@ class SuccessHandler(AbstractHandler):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self._publisher = Publisher()
+        self._rmq_publisher = RmqPublisher()
 
     async def handle(self) -> None:
         try:
@@ -51,7 +51,7 @@ class SuccessHandler(AbstractHandler):
             exception_msg=traceback.format_exc(),
             exception_type=err.__class__.__name__,
         )
-        await self._publisher.send_download_error(err_payload)
+        await self._rmq_publisher.send_download_error(err_payload)
 
     async def _handle(self, media_object: BaseMedia) -> None:
         try:
@@ -71,7 +71,7 @@ class SuccessHandler(AbstractHandler):
     def _cleanup(self) -> None:
         root_path = self._body.media.root_path
         self._log.info(
-            'Final task "%s" cleanup. Removing download content directory "%s" with files %s',
+            'Cleaning up task "%s": removing download content directory "%s" with files %s',
             self._body.task_id,
             root_path,
             os.listdir(root_path),

@@ -35,7 +35,9 @@ Version: 1.4.1. [Release details](RELEASES.md).
    some group when upload is enabled
 7. Change download media type for the user/group: `AUDIO`, `VIDEO` or `AUDIO_VIDEO` 
    in `app_bot/config.yml`'s variable `download_media_type`. Default `VIDEO`
-8. Change application's `LOG_LEVEL` in `envs/.env_common` if needed
+8. If you want your downloaded audio/video to be uploaded back to the Telegram,
+   set `upload_video_file` config variable for your user/group in the `app_bot/config.yml`
+   to `True`
 9. Media `STORAGE_PATH` environment variable is located in
    the `envs/.env_worker` file. By default, it's `/filestorage` path inside the
    container. What you want is to map the real path to this inside
@@ -47,9 +49,7 @@ Version: 1.4.1. [Release details](RELEASES.md).
        volumes:
          - "D:/Videos:/filestorage"
    ```
-10. If you want your downloaded video to be uploaded back to the Telegram,
-   set `upload_video_file` config variable for your user/group in the `app_bot/config.yml`
-   to `True`
+10. Change application's `LOG_LEVEL` in `envs/.env_common` if needed
 
 ## 🏃 Run
 

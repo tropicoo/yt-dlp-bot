@@ -43,6 +43,11 @@ class MediaDownloader:
     _DESTINATION_TMP_DIR_NAME_LEN = 4
     _KEEP_VIDEO_OPTION = '--keep-video'
 
+    _EXT_TO_NAME = {
+        FINAL_AUDIO_FORMAT: 'audio',
+        FINAL_THUMBNAIL_FORMAT: 'thumbnail',
+    }
+
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
 
@@ -219,7 +224,9 @@ class MediaDownloader:
     def _find_downloaded_file(self, root_path: str, extension: str) -> str | None:
         """Try to find downloaded audio or thumbnail file."""
         for file_name in glob.glob(f"*.{extension}", root_dir=root_path):
-            self._log.info('Found downloaded %s "%s"', extension, file_name)
+            self._log.info(
+                'Found downloaded %s "%s"', self._EXT_TO_NAME[extension], file_name
+            )
             return file_name
         self._log.info('Downloaded %s not found in "%s"', extension, root_path)
         return None

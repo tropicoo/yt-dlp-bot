@@ -48,6 +48,10 @@ class BaseMedia(RealBaseModel):
     def file_size_human(self) -> str:
         return format_bytes(num=self.file_size)
 
+    def mark_as_saved_to_storage(self, storage_path: str) -> None:
+        self.storage_path = storage_path
+        self.saved_to_storage = True
+
 
 class Audio(BaseMedia):
     """Model representing downloaded audio file."""

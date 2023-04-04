@@ -183,8 +183,7 @@ class MediaService:
         dst = os.path.join(settings.STORAGE_PATH, file.filename)
         self._log.info('Copying "%s" to storage "%s"', file.filepath, dst)
         await asyncio.to_thread(shutil.copy2, file.filepath, dst)
-        file.saved_to_storage = True
-        file.storage_path = dst
+        file.mark_as_saved_to_storage(storage_path=dst)
 
     def _err_file_cleanup(self, video: DownMedia) -> None:
         """Cleanup any downloaded/created data if post-processing failed."""
@@ -194,5 +193,4 @@ class MediaService:
     async def _handle_download_exception(
         self, err: Exception, task: Task, db: AsyncSession
     ) -> None:
-        exception_msg = str(err)
-        await self._repository.save_as_failed(db, task, exception_msg)
+        await self._repository.save_as_failed(db=db, task=task, error_message=str(err))

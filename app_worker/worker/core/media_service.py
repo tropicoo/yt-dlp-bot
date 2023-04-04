@@ -179,16 +179,16 @@ class MediaService:
             exception_message_args=(MakeThumbnailTask.__class__.__name__,),
         )
 
-    @staticmethod
-    async def _copy_file_to_storage(file: BaseMedia) -> None:
+    async def _copy_file_to_storage(self, file: BaseMedia) -> None:
         dst = os.path.join(settings.STORAGE_PATH, file.filename)
+        self._log.info('Copying "%s" to storage "%s"', file.filepath, dst)
         await asyncio.to_thread(shutil.copy2, file.filepath, dst)
         file.saved_to_storage = True
         file.storage_path = dst
 
     def _err_file_cleanup(self, video: DownMedia) -> None:
         """Cleanup any downloaded/created data if post-processing failed."""
-        self._log.info('Performing error cleanup. Removing %s', video.root_path)
+        self._log.info('Performing error cleanup: removing %s', video.root_path)
         remove_dir(video.root_path)
 
     async def _handle_download_exception(

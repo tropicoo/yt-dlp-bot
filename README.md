@@ -1,6 +1,6 @@
 ## yt-dlp-bot
 
-Simple and reliable YouTube Download Telegram Bot.
+Simple and reliable self-hosted YouTube Download Telegram Bot.
 
 Version: 1.4.1. [Release details](RELEASES.md).
 

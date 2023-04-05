@@ -11,10 +11,6 @@ from bot.core.utils import split_telegram_message
 from bot.version import __version__
 
 
-class UserBaseSchema:
-    pass
-
-
 class ErrorHandler(AbstractHandler):
     _body: ErrorDownloadPayload | ErrorGeneralPayload
     _ERR_MSG_TPL = (

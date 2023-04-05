@@ -5,7 +5,9 @@ from pyrogram.enums import ParseMode
 from yt_shared.enums import RabbitPayloadType
 from yt_shared.schemas.error import ErrorDownloadPayload, ErrorGeneralPayload
 
+from bot.core.config import settings
 from bot.core.handlers.abstract import AbstractHandler
+from bot.core.utils import split_telegram_message
 from bot.version import __version__
 
 
@@ -21,7 +23,7 @@ class ErrorHandler(AbstractHandler):
         '💬 <b>Message:</b> {message}\n'
         '📹 <b>Video URL:</b> <code>{url}</code>\n'
         '🌊 <b>Source:</b> <code>{source}</code>\n'
-        '👀 <b>Details:</b> <code>{details}</code>\n'
+        '👀 <b>Details:</b> <code>{{details}}</code>\n'
         '⬇️ <b>yt-dlp version:</b> <code>{yt_dlp_version}</code>\n'
         '🤖 <b>yt-dlp-bot version:</b> <code>{yt_dlp_bot_version}</code>\n'
         '🏷️ <b>Tag:</b> #error'
@@ -50,13 +52,30 @@ class ErrorHandler(AbstractHandler):
             asyncio.create_task(self._bot.send_message(**kwargs))
 
     def _format_error_message(self) -> str:
-        return self._ERR_MSG_TPL.format(
+        exception_msg = html.escape(self._body.exception_msg)
+        pre_formatted_message = self._ERR_MSG_TPL.format(
             header=self._ERR_MSG_HEADER_MAP[self._body.type],
             message=self._body.message,
             url=self._body.url,
             source=self._body.context.source.value,
             task_id=self._body.task_id,
-            details=html.escape(self._body.exception_msg),
             yt_dlp_version=self._body.yt_dlp_version,
             yt_dlp_bot_version=__version__,
         )
+
+        msg_len = len(pre_formatted_message) - 9  # len('{details}') == 9
+        exc_msg_len = len(exception_msg)
+        self._log.debug('Length of exception_msg %s', exc_msg_len)
+        self._log.debug('Length of pre_formatted_message %s', msg_len)
+        if msg_len + exc_msg_len > settings.TG_MAX_MSG_SIZE:
+            exception_msg = next(
+                split_telegram_message(
+                    text=exception_msg,
+                    chunk_size=settings.TG_MAX_MSG_SIZE - msg_len,
+                    return_first=True,
+                    negate=True,
+                )
+            )
+        message = pre_formatted_message.format(details=exception_msg)
+        self._log.debug('Length of formatted_message %s', len(message))
+        return message

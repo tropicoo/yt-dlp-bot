@@ -61,7 +61,7 @@ def get_main_config() -> ConfigSchema:
 
 
 class BotSettings(Settings):
-    pass
+    TG_MAX_MSG_SIZE: int
 
 
 settings = BotSettings()

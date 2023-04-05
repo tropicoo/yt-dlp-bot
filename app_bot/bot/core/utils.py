@@ -3,10 +3,13 @@ import asyncio
 import random
 import string
 from datetime import datetime
+from typing import Generator
 from uuid import uuid4
 
 from pyrogram.enums import ChatType
 from pyrogram.types import Message
+
+from bot.core.config import settings
 
 
 async def shallow_sleep_async(sleep_time: float = 0.1) -> None:
@@ -65,3 +68,22 @@ def build_command_presentation(commands: dict[str, list]) -> str:
     for desc, cmds in commands.items():
         groups.append('{0}\n{1}'.format(desc, '\n'.join(['/' + c for c in cmds])))
     return '\n\n'.join(groups)
+
+
+def split_telegram_message(
+    text: str,
+    chunk_size: int = settings.TG_MAX_MSG_SIZE,
+    return_first: bool = False,
+    negate: bool = False,
+) -> Generator[str, None, None]:
+    text_len = len(text)
+    if text_len > chunk_size:
+        for x in range(0, text_len, chunk_size):
+            if negate:
+                yield text[-chunk_size - x : text_len - x]
+            else:
+                yield text[x : x + chunk_size]
+            if return_first:
+                break
+    else:
+        yield text

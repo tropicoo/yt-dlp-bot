@@ -10,7 +10,7 @@ class Cache(Base, Timestamp):
     id = sa.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     cache_id = sa.Column(sa.String, nullable=False)
     cache_unique_id = sa.Column(sa.String, nullable=False)
-    file_size = sa.Column(sa.Integer, nullable=False)
+    file_size = sa.Column(sa.BigInteger, nullable=False)
     date_timestamp = sa.Column(sa.DateTime, nullable=False)
     file_id = sa.Column(
         UUIDType(binary=False),

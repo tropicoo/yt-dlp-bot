@@ -12,10 +12,10 @@ class YtdlpVersionChecker:
     """yt-dlp version number checker."""
 
     LATEST_TAG_URL = 'https://github.com/yt-dlp/yt-dlp/releases/latest'
-    REPOSITORY_CLS = YtdlpRepository
 
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
+        self._ytdlp_repository = YtdlpRepository()
 
     async def get_version_context(self, db: AsyncSession) -> VersionContext:
         latest, current = await asyncio.gather(
@@ -35,6 +35,6 @@ class YtdlpVersionChecker:
 
     async def get_current_version(self, db: AsyncSession) -> CurrentVersion:
         self._log.info('Get current yt-dlp version')
-        ytdlp_ = await self.REPOSITORY_CLS().get_current_version(db)
+        ytdlp_ = await self._ytdlp_repository.get_current_version(db)
         self._log.info('Current yt-dlp version: %s', ytdlp_.current_version)
         return CurrentVersion.from_orm(ytdlp_)

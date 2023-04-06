@@ -33,8 +33,8 @@ class Task(Base, Timestamp):
         cascade='all, delete-orphan',
     )
     added_at = sa.Column(sa.DateTime, nullable=False)
-    from_user_id = sa.Column(sa.Integer, nullable=True)
-    message_id = sa.Column(sa.Integer, nullable=True)
+    from_user_id = sa.Column(sa.BigInteger, nullable=True)
+    message_id = sa.Column(sa.BigInteger, nullable=True)
     error = sa.Column(sa.String, nullable=True)
     yt_dlp_version = sa.Column(
         sa.String, nullable=True, default=select(YTDLP.current_version)

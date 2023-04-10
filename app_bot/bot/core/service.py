@@ -5,7 +5,7 @@ from itertools import product
 from pyrogram.types import Message
 from yt_shared.enums import TaskSource, TelegramChatType
 from yt_shared.rabbit.publisher import RmqPublisher
-from yt_shared.schemas.media import IncomingMediaPayload
+from yt_shared.schemas.media import InbMediaPayload
 from yt_shared.schemas.url import URL
 
 from bot.core.config.schema import UserSchema
@@ -21,7 +21,7 @@ class UrlService:
             await self._send_to_worker(url)
 
     async def _send_to_worker(self, url: URL) -> bool:
-        payload = IncomingMediaPayload(
+        payload = InbMediaPayload(
             url=url.url,
             message_id=url.message_id,
             from_user_id=url.from_user_id,

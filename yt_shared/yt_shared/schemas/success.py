@@ -5,7 +5,7 @@ from pydantic import StrictInt, StrictStr
 
 from yt_shared.enums import RabbitPayloadType, TelegramChatType
 from yt_shared.schemas.base import BaseRabbitPayloadModel
-from yt_shared.schemas.media import DownMedia, IncomingMediaPayload
+from yt_shared.schemas.media import DownMedia, InbMediaPayload
 
 
 class SuccessPayload(BaseRabbitPayloadModel):
@@ -18,5 +18,5 @@ class SuccessPayload(BaseRabbitPayloadModel):
     from_user_id: StrictInt | None
     message_id: StrictInt | None
     media: DownMedia
-    context: IncomingMediaPayload
+    context: InbMediaPayload
     yt_dlp_version: StrictStr | None

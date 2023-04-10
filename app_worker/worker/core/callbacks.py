@@ -1,7 +1,7 @@
 import logging
 
 from aio_pika import IncomingMessage
-from yt_shared.schemas.media import IncomingMediaPayload
+from yt_shared.schemas.media import InbMediaPayload
 
 from worker.core.payload_handler import PayloadHandler
 
@@ -31,11 +31,9 @@ class _RMQCallbacks:
         await message.ack()
         self._log.info('Processing done with payload: %s', media_payload)
 
-    def _deserialize_message(
-        self, message: IncomingMessage
-    ) -> IncomingMediaPayload | None:
+    def _deserialize_message(self, message: IncomingMessage) -> InbMediaPayload | None:
         try:
-            return IncomingMediaPayload.parse_raw(message.body)
+            return InbMediaPayload.parse_raw(message.body)
         except Exception:
             self._log.exception('Failed to deserialize message body: %s', message.body)
             return None

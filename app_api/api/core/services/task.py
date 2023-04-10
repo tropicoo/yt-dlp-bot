@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from yt_shared.enums import TaskSource, TaskStatus
 from yt_shared.models import Task
 from yt_shared.rabbit.publisher import RmqPublisher
-from yt_shared.schemas.media import IncomingMediaPayload
+from yt_shared.schemas.media import InbMediaPayload
 
 from api.api.api_v1.schemas.task import (
     CreateTaskIn,
@@ -66,7 +66,7 @@ class TaskService:
         task_id = uuid.uuid4()
         source = TaskSource.API
         added_at = datetime.now(timezone.utc)
-        payload = IncomingMediaPayload(
+        payload = InbMediaPayload(
             id=task_id,
             url=task.url,
             added_at=added_at,

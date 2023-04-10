@@ -10,7 +10,7 @@ from yt_shared.repositories.task import TaskRepository
 from yt_shared.schemas.media import (
     BaseMedia,
     DownMedia,
-    IncomingMediaPayload,
+    InbMediaPayload,
     Video,
 )
 from yt_shared.utils.file import remove_dir
@@ -30,7 +30,7 @@ class MediaService:
         self._repository = TaskRepository()
 
     async def process(
-        self, media_payload: IncomingMediaPayload, db: AsyncSession
+        self, media_payload: InbMediaPayload, db: AsyncSession
     ) -> tuple[DownMedia | None, Task | None]:
         task = await self._repository.get_or_create_task(db, media_payload)
         if task.status != TaskStatus.PENDING.value:
@@ -41,7 +41,7 @@ class MediaService:
         )
 
     async def _process(
-        self, media_payload: IncomingMediaPayload, task: Task, db: AsyncSession
+        self, media_payload: InbMediaPayload, task: Task, db: AsyncSession
     ) -> DownMedia:
         await self._repository.save_as_processing(db, task)
         media = await self._start_download(task, media_payload, db)
@@ -54,7 +54,7 @@ class MediaService:
         return media
 
     async def _start_download(
-        self, task: Task, media_payload: IncomingMediaPayload, db: AsyncSession
+        self, task: Task, media_payload: InbMediaPayload, db: AsyncSession
     ) -> DownMedia:
         try:
             return await asyncio.get_running_loop().run_in_executor(
@@ -72,7 +72,7 @@ class MediaService:
         self,
         media: DownMedia,
         task: Task,
-        media_payload: IncomingMediaPayload,
+        media_payload: InbMediaPayload,
         db: AsyncSession,
     ) -> None:
         def post_process_audio():
@@ -98,7 +98,7 @@ class MediaService:
     async def _post_process_video(
         self,
         media: DownMedia,
-        media_payload: IncomingMediaPayload,
+        media_payload: InbMediaPayload,
         task: Task,
         db: AsyncSession,
     ) -> None:
@@ -135,7 +135,7 @@ class MediaService:
     async def _post_process_audio(
         self,
         media: DownMedia,
-        media_payload: IncomingMediaPayload,
+        media_payload: InbMediaPayload,
         task: Task,
         db: AsyncSession,
     ) -> None:

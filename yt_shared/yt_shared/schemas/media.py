@@ -16,7 +16,7 @@ from yt_shared.schemas.base import RealBaseModel
 from yt_shared.utils.common import format_bytes
 
 
-class IncomingMediaPayload(RealBaseModel):
+class InbMediaPayload(RealBaseModel):
     """RabbitMQ incoming media payload from Telegram Bot or API service."""
 
     id: uuid.UUID | None

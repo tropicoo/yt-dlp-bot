@@ -6,7 +6,7 @@ from yt_shared.db.session import get_db
 from yt_shared.models import Task
 from yt_shared.rabbit.publisher import RmqPublisher
 from yt_shared.schemas.error import ErrorDownloadPayload, ErrorGeneralPayload
-from yt_shared.schemas.media import DownMedia, IncomingMediaPayload
+from yt_shared.schemas.media import DownMedia, InbMediaPayload
 from yt_shared.schemas.success import SuccessPayload
 
 from worker.core.exceptions import DownloadVideoServiceError, GeneralVideoServiceError
@@ -19,13 +19,13 @@ class PayloadHandler:
         self._media_service = MediaService()
         self._rmq_publisher = RmqPublisher()
 
-    async def handle(self, media_payload: IncomingMediaPayload) -> None:
+    async def handle(self, media_payload: InbMediaPayload) -> None:
         try:
             await self._handle(media_payload)
         except Exception as err:
             await self._send_general_error(err, media_payload)
 
-    async def _handle(self, media_payload: IncomingMediaPayload) -> None:
+    async def _handle(self, media_payload: InbMediaPayload) -> None:
         async for session in get_db():
             try:
                 media, task = await self._media_service.process(media_payload, session)
@@ -43,7 +43,7 @@ class PayloadHandler:
             await self._send_finished_task(task, media, media_payload)
 
     async def _send_finished_task(
-        self, task: Task, media: DownMedia, media_payload: IncomingMediaPayload
+        self, task: Task, media: DownMedia, media_payload: InbMediaPayload
     ) -> None:
         success_payload = SuccessPayload(
             task_id=task.id,
@@ -60,7 +60,7 @@ class PayloadHandler:
     async def _send_failed_video_download_task(
         self,
         err: DownloadVideoServiceError,
-        media_payload: IncomingMediaPayload,
+        media_payload: InbMediaPayload,
     ) -> None:
         task = err.task
         err_payload = ErrorDownloadPayload(
@@ -81,7 +81,7 @@ class PayloadHandler:
     async def _send_general_error(
         self,
         err: GeneralVideoServiceError | Exception,
-        media_payload: IncomingMediaPayload,
+        media_payload: InbMediaPayload,
     ) -> None:
         task: Task | None = getattr(err, 'task', None)
         err_payload = ErrorGeneralPayload(

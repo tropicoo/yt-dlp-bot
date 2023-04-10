@@ -14,7 +14,7 @@ from yt_shared.rabbit.rabbit_config import (
     SUCCESS_QUEUE,
 )
 from yt_shared.schemas.error import ErrorDownloadPayload, ErrorGeneralPayload
-from yt_shared.schemas.media import IncomingMediaPayload
+from yt_shared.schemas.media import InbMediaPayload
 from yt_shared.schemas.success import SuccessPayload
 from yt_shared.utils.common import Singleton
 
@@ -28,7 +28,7 @@ class RmqPublisher(metaclass=Singleton):
     def _is_sent(confirm: ConfirmationFrameType | None) -> bool:
         return isinstance(confirm, Basic.Ack)
 
-    async def send_for_download(self, media_payload: IncomingMediaPayload) -> bool:
+    async def send_for_download(self, media_payload: InbMediaPayload) -> bool:
         message = aio_pika.Message(body=media_payload.json().encode())
         exchange = self._rabbit_mq.exchanges[INPUT_EXCHANGE]
         confirm = await exchange.publish(

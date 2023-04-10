@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from yt_shared.enums import TaskStatus
 from yt_shared.models import Cache, File, Task
 from yt_shared.schemas.cache import CacheSchema
-from yt_shared.schemas.media import BaseMedia, IncomingMediaPayload, Video
+from yt_shared.schemas.media import BaseMedia, InbMediaPayload, Video
 from yt_shared.utils.common import ASYNC_LOCK
 
 
@@ -16,7 +16,7 @@ class TaskRepository:
         self._log = logging.getLogger(self.__class__.__name__)
 
     async def get_or_create_task(
-        self, db: AsyncSession, media_payload: IncomingMediaPayload
+        self, db: AsyncSession, media_payload: InbMediaPayload
     ) -> Task:
         if media_payload.id is None:
             return await self._create_task(db, media_payload)
@@ -29,9 +29,7 @@ class TaskRepository:
             return await self._create_task(db, media_payload)
 
     @staticmethod
-    async def _create_task(
-        db: AsyncSession, media_payload: IncomingMediaPayload
-    ) -> Task:
+    async def _create_task(db: AsyncSession, media_payload: InbMediaPayload) -> Task:
         task = Task(
             id=media_payload.id,
             url=media_payload.url,

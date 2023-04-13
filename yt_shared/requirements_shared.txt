@@ -1,4 +1,4 @@
-SQLAlchemy-Utils==0.40.0
+SQLAlchemy-Utils==0.41.0
 SQLAlchemy==2.0.9
 aio-pika==9.0.5
 aiohttp==3.8.4

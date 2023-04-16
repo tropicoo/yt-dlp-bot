@@ -107,6 +107,8 @@ class SuccessHandler(AbstractHandler):
     async def _send_success_text(self, media_object: BaseMedia) -> None:
         text = self._create_success_text(media_object)
         for user in self._receiving_users:
+            if user.upload.silent:
+                continue
             kwargs = {
                 'chat_id': user.id,
                 'text': text,

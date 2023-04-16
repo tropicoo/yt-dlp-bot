@@ -19,7 +19,7 @@ from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.config.config import get_main_config
-from bot.core.config.schema import BaseUserSchema, UserSchema
+from bot.core.config.schema import AnonymousUserSchema, UserSchema
 from bot.core.utils import bold
 
 if TYPE_CHECKING:
@@ -51,7 +51,7 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
     def __init__(
         self,
         media_object: BaseMedia,
-        users: list[BaseUserSchema | UserSchema],
+        users: list[AnonymousUserSchema | UserSchema],
         bot: 'VideoBot',
         semaphore: asyncio.Semaphore,
         context: SuccessPayload,
@@ -67,7 +67,7 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
         self._ctx = context
         self._media_ctx = self._create_media_context()
 
-        self._upload_chat_ids, self._forward_chat_ids = self._get_upload_chat_ids()
+        self._forward_chat_ids = self._get_forward_chat_ids()
         self._cached_message: Message | None = None
 
     async def run(self) -> None:
@@ -89,9 +89,11 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
             f'📏 {bold("Size")} {self._media_object.file_size_human()}'
         )
         coros = []
-        for chat_id in self._upload_chat_ids:
+        for user in self._users:
+            if user.upload.silent:
+                continue
             kwargs = {
-                'chat_id': chat_id,
+                'chat_id': user.id,
                 'text': text,
                 'parse_mode': ParseMode.HTML,
             }
@@ -100,15 +102,13 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
             coros.append(self._bot.send_message(**kwargs))
         await asyncio.gather(*coros)
 
-    def _get_upload_chat_ids(self) -> tuple[list[int], list[int]]:
-        chat_ids = []
+    def _get_forward_chat_ids(self) -> list[int]:
         forward_chat_ids = []
         for user in self._users:
-            chat_ids.append(user.id)
             if isinstance(user, UserSchema):
                 if user.upload.forward_to_group and user.upload.forward_group_id:
                     forward_chat_ids.append(user.upload.forward_group_id)
-        return chat_ids, forward_chat_ids
+        return forward_chat_ids
 
     @retry(wait=wait_fixed(3), stop=stop_after_attempt(3), reraise=True)
     async def __upload(self, chat_id: int) -> Message | None:
@@ -124,7 +124,7 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
         pass
 
     async def _upload_file(self) -> None:
-        for chat_id in chain(self._upload_chat_ids, self._forward_chat_ids):
+        for chat_id in chain((u.id for u in self._users), self._forward_chat_ids):
             self._log.info(
                 'Uploading "%s" [%s] [cached: %s] to chat id "%d"',
                 self._filename,
@@ -246,7 +246,7 @@ class VideoUploadTask(AbstractUploadTask):
 
     def _generate_file_caption(self) -> str:
         caption_items = []
-        if self._users[0].is_base_user:
+        if self._users[0].is_anonymous_user:
             caption_conf = self._bot.conf.telegram.api.video_caption
         else:
             caption_conf = self._users[0].upload.video_caption

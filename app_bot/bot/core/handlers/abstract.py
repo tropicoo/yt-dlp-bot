@@ -6,7 +6,7 @@ from yt_shared.enums import TaskSource, TelegramChatType
 from yt_shared.schemas.error import ErrorDownloadPayload, ErrorGeneralPayload
 from yt_shared.schemas.success import SuccessPayload
 
-from bot.core.config.schema import BaseUserSchema, UserSchema
+from bot.core.config.schema import AnonymousUserSchema, UserSchema
 
 if TYPE_CHECKING:
     from bot.core.bot import VideoBot
@@ -37,7 +37,7 @@ class AbstractHandler(metaclass=abc.ABCMeta):
             return self._body.context.from_user_id
         return self._body.context.from_chat_id
 
-    def _get_receiving_users(self) -> list[BaseUserSchema | UserSchema]:
+    def _get_receiving_users(self) -> list[AnonymousUserSchema | UserSchema]:
         if self._body.context.source is TaskSource.API:
             return self._bot.conf.telegram.api.upload_to_chat_ids.copy()
         return [self._bot.allowed_users[self._get_sender_id()]]

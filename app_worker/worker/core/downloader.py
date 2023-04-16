@@ -50,6 +50,9 @@ class MediaDownloader:
 
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
+        self._tmp_downloaded_dest_dir = os.path.join(
+            settings.TMP_DOWNLOAD_ROOT_PATH, settings.TMP_DOWNLOADED_DIR
+        )
 
     def download(self, url: str, media_type: DownMediaType) -> DownMedia:
         try:
@@ -109,9 +112,7 @@ class MediaDownloader:
             self._log.info('Content of "%s": %s', curr_tmp_dir, current_files)
 
             destination_dir = os.path.join(
-                os.path.join(
-                    settings.TMP_DOWNLOAD_ROOT_PATH, settings.TMP_DOWNLOADED_DIR
-                ),
+                self._tmp_downloaded_dest_dir,
                 random_string(number=self._DESTINATION_TMP_DIR_NAME_LEN),
             )
             os.mkdir(destination_dir)

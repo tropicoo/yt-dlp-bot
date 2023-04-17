@@ -104,8 +104,7 @@ details
 - **API**: default port is `1984` and no auth. Port can be changed
   in `docker-compose.yml`
 - **RabbitMQ**: default credentials are located in `envs/.env_common`
-- **PostgreSQL**: default credentials are located in `envs/.env_common`. Same credentials are stored
-  for Alembic in `app_worker/alembic.ini` on 53rd line.
+- **PostgreSQL**: default credentials are located in `envs/.env_common`.
 
 ## API
 

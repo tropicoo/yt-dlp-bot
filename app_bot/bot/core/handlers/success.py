@@ -29,8 +29,8 @@ class SuccessHandler(AbstractHandler):
         self._rmq_publisher = RmqPublisher()
 
     async def handle(self) -> None:
+        coro_tasks = []
         try:
-            coro_tasks = []
             for media_object in self._body.media.get_media_objects():
                 coro_tasks.append(self._handle(media_object))
             await asyncio.gather(*coro_tasks)
@@ -126,22 +126,20 @@ class SuccessHandler(AbstractHandler):
         user = self._bot.allowed_users[self._get_sender_id()]
         return user.upload.upload_video_file
 
-    def _validate_file_size_for_upload(self, media_object: BaseMedia) -> None:
+    def _validate_file_size_for_upload(self, media_obj: BaseMedia) -> None:
         if self._body.context.source is TaskSource.API:
             max_file_size = self._bot.conf.telegram.api.upload_video_max_file_size
         else:
             user = self._bot.allowed_users[self._get_sender_id()]
             max_file_size = user.upload.upload_video_max_file_size
 
-        if not os.path.exists(media_object.filepath):
-            raise ValueError(
-                f'{media_object.file_type} {media_object.filepath} not found'
-            )
+        if not os.path.exists(media_obj.filepath):
+            raise ValueError(f'{media_obj.file_type} {media_obj.filepath} not found')
 
-        file_size = os.stat(media_object.filepath).st_size
+        file_size = os.stat(media_obj.filepath).st_size
         if file_size > max_file_size:
             err_msg = (
-                f'{media_object.file_type} file size {file_size} bytes bigger than '
+                f'{media_obj.file_type} file size {file_size} bytes bigger than '
                 f'allowed {max_file_size} bytes. Will not upload'
             )
             self._log.warning(err_msg)

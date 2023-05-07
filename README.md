@@ -1,4 +1,4 @@
-## yt-dlp-bot
+## yt-dlp-bot - YouTube Download Telegram Bot
 
 Simple and reliable self-hosted YouTube Download Telegram Bot.
 

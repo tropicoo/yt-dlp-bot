@@ -25,7 +25,7 @@ class ConfigLoader:
         return data
 
     def _load_config(self) -> tuple[ConfigSchema | None, ValidationError | None]:
-        """Loads telegram and camera configuration from config file."""
+        """Loads bot configuration from config file."""
         dir_path = Path(__file__).parent.parent.parent.parent
         conf_file_path = dir_path / self._CONF_FILENAME
         self._check_path_existence(conf_file_path)

@@ -12,9 +12,7 @@ from bot.core.workers.manager import RabbitWorkerManager
 
 
 class BotLauncher:
-    """Bot launcher which parses configuration file, creates bot with
-    camera instances and finally starts the bot.
-    """
+    """Bot launcher which parses configuration file, creates and starts the bot."""
 
     REGEX_NOT_START_WITH_SLASH = r'^[^/]'
 

@@ -24,7 +24,6 @@ class YtdlpVersionChecker:
         return VersionContext(latest=latest, current=current)
 
     async def get_latest_version(self) -> LatestVersion:
-        self._log.info('Get latest yt-dlp version')
         async with aiohttp.ClientSession() as session:
             async with session.get(self.LATEST_TAG_URL) as resp:
                 version = resp.url.parts[-1]
@@ -34,7 +33,6 @@ class YtdlpVersionChecker:
                 )
 
     async def get_current_version(self, db: AsyncSession) -> CurrentVersion:
-        self._log.info('Get current yt-dlp version')
         ytdlp_ = await self._ytdlp_repository.get_current_version(db)
         self._log.info('Current yt-dlp version: %s', ytdlp_.current_version)
         return CurrentVersion.from_orm(ytdlp_)

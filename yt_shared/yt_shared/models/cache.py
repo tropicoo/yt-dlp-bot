@@ -7,6 +7,8 @@ from yt_shared.db.session import Base
 
 
 class Cache(Base, Timestamp):
+    """Telegram file cache model."""
+
     id = sa.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     cache_id = sa.Column(sa.String, nullable=False)
     cache_unique_id = sa.Column(sa.String, nullable=False)

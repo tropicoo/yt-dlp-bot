@@ -59,11 +59,11 @@ class UrlParser:
     def filter_urls(self, urls: list[str], regexes: list[str]) -> list[str]:
         """Return valid urls."""
         self._log.debug('Matching urls: %s against regexes %s', urls, regexes)
-        valid = []
+        valid_urls = []
         for url, regex in product(urls, regexes):
             if re.match(regex, url):
-                valid.append(url)
+                valid_urls.append(url)
 
-        valid = list(dict.fromkeys(valid))
-        self._log.debug('Matched urls: %s', valid)
-        return valid
+        valid_urls = list(dict.fromkeys(valid_urls))
+        self._log.debug('Matched urls: %s', valid_urls)
+        return valid_urls

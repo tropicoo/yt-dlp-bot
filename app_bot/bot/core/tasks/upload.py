@@ -38,7 +38,7 @@ class BaseUploadContext(RealBaseModel):
 class VideoUploadContext(BaseUploadContext):
     height: StrictInt
     width: StrictInt
-    thumb: StrictStr
+    thumb: StrictStr | None = None
 
 
 class AudioUploadContext(BaseUploadContext):
@@ -271,8 +271,10 @@ class VideoUploadTask(AbstractUploadTask):
             'duration': int(self._media_ctx.duration),
             'height': self._media_ctx.height,
             'width': self._media_ctx.width,
-            'thumb': self._media_ctx.thumb,
         }
+
+        if self._media_ctx.thumb:
+            kwargs['thumb'] = self._media_ctx.thumb
         if self._media_ctx.type is MessageMediaType.ANIMATION:
             kwargs['animation'] = self._media_ctx.filepath
             return self._bot.send_animation(**kwargs)
@@ -291,7 +293,11 @@ class VideoUploadTask(AbstractUploadTask):
 
         self._media_ctx.type = message.media
         self._media_ctx.filepath = video.file_id
-        self._media_ctx.thumb = video.thumbs[0].file_id
+        try:
+            self._media_ctx.thumb = video.thumbs[0].file_id
+        except TypeError:
+            # video.thumbs is None when no thumnmail
+            self._log.warning('No thumbnail found for caching object')
         self._media_ctx.is_cached = True
         self._cached_message = message
 

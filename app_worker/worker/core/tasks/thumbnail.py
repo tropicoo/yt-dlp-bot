@@ -1,3 +1,5 @@
+from yt_shared.schemas.media import Video
+
 from worker.core.config import settings
 from worker.core.tasks.abstract import AbstractFfBinaryTask
 
@@ -5,13 +7,19 @@ from worker.core.tasks.abstract import AbstractFfBinaryTask
 class MakeThumbnailTask(AbstractFfBinaryTask):
     _CMD = 'ffmpeg -y -loglevel error -i "{filepath}" -ss {time_point} -vframes 1 -q:v 7 "{thumbpath}"'
 
-    def __init__(self, thumbnail_path: str, *args, duration: float, **kwargs) -> None:
+    def __init__(
+        self, thumbnail_path: str, *args, duration: float, video_ctx: Video, **kwargs
+    ) -> None:
         super().__init__(*args, **kwargs)
         self._thumbnail_path = thumbnail_path
         self._duration = duration
+        self._video_ctx = video_ctx
 
     async def run(self) -> bool:
-        return await self._make_thumbnail()
+        is_created = await self._make_thumbnail()
+        if is_created:
+            self._video_ctx.thumb_path = self._thumbnail_path
+        return is_created
 
     async def _make_thumbnail(self) -> bool:
         cmd = self._CMD.format(

@@ -116,12 +116,12 @@ class MediaService:
         coro_tasks = []
         if not video.thumb_path:
             thumb_path = os.path.join(media.root_path, video.thumb_name)
-            video.thumb_path = thumb_path
             coro_tasks.append(
                 self._create_thumb_task(
                     file_path=video.filepath,
                     thumb_path=thumb_path,
                     duration=video.duration,
+                    video_ctx=video,
                 )
             )
 
@@ -146,15 +146,21 @@ class MediaService:
         file = results[0]
         media.audio.orm_file_id = file.id
 
-    @staticmethod
-    async def _set_probe_ctx(video: Video) -> None:
+    async def _set_probe_ctx(self, video: Video) -> None:
         probe_ctx = await GetFfprobeContextTask(video.filepath).run()
         if not probe_ctx:
             return
-        video_streams = [
-            stream for stream in probe_ctx['streams'] if stream['codec_type'] == 'video'
-        ]
+
+        video_streams = [s for s in probe_ctx['streams'] if s['codec_type'] == 'video']
         video.duration = float(probe_ctx['format']['duration'])
+        if not video_streams:
+            self._log.warning(
+                'Video file does not contain video stream. Might be only audio. '
+                'Ffprobe context: %s',
+                probe_ctx,
+            )
+            return
+
         video.width = video_streams[0]['width']
         video.height = video_streams[0]['height']
 
@@ -169,10 +175,16 @@ class MediaService:
         )
 
     def _create_thumb_task(
-        self, file_path: str, thumb_path: str, duration: float
+        self,
+        file_path: str,
+        thumb_path: str,
+        duration: float,
+        video_ctx: Video,
     ) -> asyncio.Task:
         return create_task(
-            MakeThumbnailTask(thumb_path, file_path, duration=duration).run(),
+            MakeThumbnailTask(
+                thumb_path, file_path, duration=duration, video_ctx=video_ctx
+            ).run(),
             task_name=MakeThumbnailTask.__class__.__name__,
             logger=self._log,
             exception_message='Task "%s" raised an exception',

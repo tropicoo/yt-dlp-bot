@@ -4,6 +4,7 @@ from typing import Iterable
 
 from pyrogram import Client
 from pyrogram.enums import ParseMode
+from pyrogram.errors import RPCError
 
 from bot.core.config.config import get_main_config
 from bot.core.config.schema import UserSchema
@@ -59,9 +60,13 @@ class VideoBot(Client):
         self, text: str, user_ids: Iterable[int], parse_mode: ParseMode = ParseMode.HTML
     ) -> None:
         coros = []
+        self._log.debug('Sending message "%s" to users %s', text, user_ids)
         for user_id in user_ids:
             coros.append(self.send_message(user_id, text, parse_mode=parse_mode))
-        await asyncio.gather(*coros)
+        results = await asyncio.gather(*coros, return_exceptions=True)
+        for user_id, result in zip(user_ids, results):
+            if isinstance(result, RPCError):
+                self._log.error('User %s did not receive message: %s', user_id, result)
 
     async def send_message_all(
         self, text: str, parse_mode: ParseMode = ParseMode.HTML

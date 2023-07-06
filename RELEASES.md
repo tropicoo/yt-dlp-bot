@@ -1,3 +1,23 @@
+## Release 1.4.2
+
+Release date: July 06, 2023
+
+## New Features
+
+- Use cookies for website auth for download by putting them into the `app_worker/cookies/cookies.txt` file in Netscape
+  format.
+
+## Important
+
+- If you are using the customized yt-dlp options in the `app_worker/ytdl_opts/user.py` you must reconfigure them from
+  the updated `app_worker/ytdl_opts/default.py`.
+
+## Misc
+
+N/A
+
+---
+
 ## Release 1.4.1
 
 Release date: March 29, 2023

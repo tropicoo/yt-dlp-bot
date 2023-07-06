@@ -2,7 +2,7 @@
 
 Simple and reliable self-hosted YouTube Download Telegram Bot.
 
-Version: 1.4.1. [Release details](RELEASES.md).
+Version: 1.4.2. [Release details](RELEASES.md).
 
 ![frames](.assets/download_success.png)
 
@@ -92,6 +92,8 @@ or something went wrong.
    is the premium user, you're allowed to upload files up to 4GB (4294967296 bytes) and
    can change the default value stored in the `upload_video_max_file_size` config
    variable.
+5. If the website you want to download from requires authentication you can use your cookies by putting them into
+   the `app_worker/cookies/cookies.txt` file in the Netscape format.
 
 ## 🛑 Failed download
 

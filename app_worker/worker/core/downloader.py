@@ -12,6 +12,7 @@ from yt_shared.utils.common import random_string
 from yt_shared.utils.file import file_size
 
 from worker.core.config import settings
+from worker.core.exceptions import MediaDownloaderError
 from worker.utils import cli_to_api
 
 try:
@@ -32,10 +33,6 @@ except ImportError:
         FINAL_THUMBNAIL_FORMAT,
         VIDEO_YTDL_OPTS,
     )
-
-
-class MediaDownloaderError(Exception):
-    pass
 
 
 class MediaDownloader:

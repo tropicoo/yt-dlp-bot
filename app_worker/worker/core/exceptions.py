@@ -13,3 +13,7 @@ class GeneralVideoServiceError(BaseVideoServiceError):
 
 class DownloadVideoServiceError(BaseVideoServiceError):
     pass
+
+
+class MediaDownloaderError(Exception):
+    pass

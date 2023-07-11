@@ -33,7 +33,7 @@ Version: 1.4.2. [Release details](RELEASES.md).
    placeholders
 6. Write your Telegram user or group ID to the `allowed_users` -> `id` by replacing dummy
    value and change `forward_group_id` value if you want to forward the video to
-   some group when upload is enabled
+   some group/channel when upload is enabled. Bot should be added to the group/channel to be able to send messages.
 7. Change download media type for the user/group: `AUDIO`, `VIDEO` or `AUDIO_VIDEO` 
    in `app_bot/config.yml`'s variable `download_media_type`. Default `VIDEO`
 8. If you want your downloaded audio/video to be uploaded back to the Telegram,
@@ -94,6 +94,20 @@ or something went wrong.
    variable.
 5. If the website you want to download from requires authentication you can use your cookies by putting them into
    the `app_worker/cookies/cookies.txt` file in the Netscape format.
+6. If your country has an [Alpine Linux Mirror](https://mirrors.alpinelinux.org/), you can speed up the image builds by:
+   1. Creating `apk_mirrors` text file and putting there your mirror urls, for example for Ukraine they are:
+      ```
+      https://alpine.astra.in.ua/v3.17/main
+      https://alpine.astra.in.ua/v3.17/community
+      ```
+   2. Adding `COPY apk_mirrors /etc/apk/repositories` to the third line in `base.Dockerfile`:
+      ```dockerfile
+      FROM python:3.11-alpine
+
+      COPY apk_mirrors /etc/apk/repositories
+      ...
+      ```
+   3. Rebuild the images.
 
 ## 🛑 Failed download
 

@@ -296,7 +296,7 @@ class VideoUploadTask(AbstractUploadTask):
         try:
             self._media_ctx.thumb = video.thumbs[0].file_id
         except TypeError:
-            # video.thumbs is None when no thumnmail
+            # video.thumbs is None when no thumbnail
             self._log.warning('No thumbnail found for caching object')
         self._media_ctx.is_cached = True
         self._cached_message = message

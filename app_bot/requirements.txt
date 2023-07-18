@@ -1,4 +1,4 @@
-PyYAML==6.0
+PyYAML==6.0.1
 Pyrogram==2.0.106
 addict==2.4.0
 tenacity==8.2.2

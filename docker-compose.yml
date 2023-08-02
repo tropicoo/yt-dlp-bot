@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
     ports:
       - "1984:8000"
-    command: bash -c "python start.py && uvicorn main:app --host 0.0.0.0 --port 8000"
+    command: bash -c "python start.py && python main.py"
     depends_on:
       - postgres
       - rabbitmq

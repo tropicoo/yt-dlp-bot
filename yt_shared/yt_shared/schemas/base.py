@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel, ConfigDict
 
 from yt_shared.enums import RabbitPayloadType
 
@@ -6,14 +6,11 @@ from yt_shared.enums import RabbitPayloadType
 class RealBaseModel(BaseModel):
     """Base Pydantic model. All models should inherit from this."""
 
-    class Config:
-        extra = Extra.forbid
+    model_config = ConfigDict(extra='forbid')
 
-    def json(self, *args, **kwargs) -> str:
-        """By default, dump without whitespaces."""
-        if 'separators' not in kwargs:
-            kwargs['separators'] = (',', ':')
-        return super().json(*args, **kwargs)
+
+class BaseOrmModel(RealBaseModel):
+    model_config = ConfigDict(from_attributes=True, **RealBaseModel.model_config)
 
 
 class BaseRabbitPayloadModel(RealBaseModel):

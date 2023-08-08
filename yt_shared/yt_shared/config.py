@@ -1,7 +1,8 @@
 import logging
 from typing import KeysView
 
-from pydantic import BaseSettings, validator
+from pydantic import field_validator
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -44,8 +45,8 @@ class Settings(BaseSettings):
     TMP_DOWNLOAD_DIR: str
     TMP_DOWNLOADED_DIR: str
 
+    @field_validator('LOG_LEVEL')
     @classmethod
-    @validator('LOG_LEVEL')
     def validate_log_level_value(cls, value: str) -> str:
         valid_values: KeysView[str] = logging._nameToLevel.keys()  # noqa
         if value not in valid_values:

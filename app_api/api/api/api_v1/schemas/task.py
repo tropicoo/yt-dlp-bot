@@ -3,9 +3,7 @@ from datetime import datetime
 
 from pydantic import StrictBool, StrictFloat, StrictInt, StrictStr
 from yt_shared.enums import DownMediaType, TaskSource, TaskStatus
-from yt_shared.schemas.base import RealBaseModel
-
-from api.api.api_v1.schemas.base import BaseOrmModel
+from yt_shared.schemas.base import BaseOrmModel, RealBaseModel
 
 
 class CacheSchema(BaseOrmModel):

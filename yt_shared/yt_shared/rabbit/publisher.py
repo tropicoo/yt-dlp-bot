@@ -29,7 +29,7 @@ class RmqPublisher(metaclass=Singleton):
         return isinstance(confirm, Basic.Ack)
 
     async def send_for_download(self, media_payload: InbMediaPayload) -> bool:
-        message = aio_pika.Message(body=media_payload.json().encode())
+        message = aio_pika.Message(body=media_payload.model_dump_json().encode())
         exchange = self._rabbit_mq.exchanges[INPUT_EXCHANGE]
         confirm = await exchange.publish(
             message, routing_key=INPUT_QUEUE, mandatory=True
@@ -40,14 +40,14 @@ class RmqPublisher(metaclass=Singleton):
         self, error_payload: ErrorDownloadPayload | ErrorGeneralPayload
     ) -> bool:
         err_exchange = self._rabbit_mq.exchanges[ERROR_EXCHANGE]
-        err_message = aio_pika.Message(body=error_payload.json().encode())
+        err_message = aio_pika.Message(body=error_payload.model_dump_json().encode())
         confirm = await err_exchange.publish(
             err_message, routing_key=ERROR_QUEUE, mandatory=True
         )
         return self._is_sent(confirm)
 
     async def send_download_finished(self, success_payload: SuccessPayload) -> bool:
-        message = aio_pika.Message(body=success_payload.json().encode())
+        message = aio_pika.Message(body=success_payload.model_dump_json().encode())
         exchange = self._rabbit_mq.exchanges[SUCCESS_EXCHANGE]
         confirm = await exchange.publish(
             message, routing_key=SUCCESS_QUEUE, mandatory=True

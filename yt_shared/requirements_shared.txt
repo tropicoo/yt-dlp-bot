@@ -4,5 +4,5 @@ aio-pika==9.2.1
 aiohttp==3.8.5
 asyncpg==0.28.0
 pydantic==2.1.1
-pydantic_settings==2.0.2
+pydantic_settings==2.0.3
 uvloop==0.17.0

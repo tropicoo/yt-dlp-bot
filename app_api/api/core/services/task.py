@@ -34,7 +34,7 @@ class TaskService:
     async def get_latest_task(self, include_meta: bool) -> Task:
         schema = self._get_schema(include_meta)
         task = await self._repository.get_latest_task(include_meta)
-        return schema.from_orm(task)
+        return schema.model_validate(task)
 
     async def get_task(
         self,
@@ -43,7 +43,7 @@ class TaskService:
     ) -> Task:
         schema = self._get_schema(include_meta)
         task = await self._repository.get_task(id, include_meta)
-        return schema.from_orm(task)
+        return schema.model_validate(task)
 
     async def get_all_tasks(
         self,
@@ -56,7 +56,7 @@ class TaskService:
         tasks = await self._repository.get_all_tasks(
             include_meta, status, limit, offset
         )
-        return [schema.from_orm(task) for task in tasks]
+        return [schema.model_validate(task) for task in tasks]
 
     @staticmethod
     async def create_task_non_db(
@@ -79,4 +79,4 @@ class TaskService:
         return CreateTaskOut(id=task_id, url=task.url, added_at=added_at, source=source)
 
     async def get_stats(self):
-        return TasksStatsSchema.from_orm(await self._repository.get_stats())
+        return TasksStatsSchema.model_validate(await self._repository.get_stats())

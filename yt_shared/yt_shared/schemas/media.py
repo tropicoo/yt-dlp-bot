@@ -8,7 +8,7 @@ from pydantic import (
     StrictFloat,
     StrictInt,
     StrictStr,
-    root_validator,
+    model_validator,
 )
 
 from yt_shared.enums import DownMediaType, MediaFileType, TaskSource, TelegramChatType
@@ -19,7 +19,7 @@ from yt_shared.utils.common import format_bytes
 class InbMediaPayload(RealBaseModel):
     """RabbitMQ incoming media payload from Telegram Bot or API service."""
 
-    id: uuid.UUID | None
+    id: uuid.UUID | None = None
     from_chat_id: StrictInt | None
     from_chat_type: TelegramChatType | None
     from_user_id: StrictInt | None
@@ -68,7 +68,8 @@ class Video(BaseMedia):
     height: int | None = None
     thumb_path: StrictStr | None = None
 
-    @root_validator(pre=False)
+    @model_validator(mode='before')
+    @classmethod
     def _set_fields(cls, values: dict) -> dict:
         if not values['thumb_name']:
             values['thumb_name'] = f'{values["filename"]}-thumb.jpg'
@@ -85,7 +86,8 @@ class DownMedia(RealBaseModel):
     root_path: StrictStr
     meta: dict
 
-    @root_validator(pre=True)
+    @model_validator(mode='before')
+    @classmethod
     def _validate(cls, values: dict) -> dict:
         if values['audio'] is None and values['video'] is None:
             raise ValueError('Provide audio, video or both.')

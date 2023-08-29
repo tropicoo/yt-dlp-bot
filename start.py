@@ -93,11 +93,11 @@ async def is_port_open(host: str, port: int) -> bool:
 
 async def check_reachability(service: BaseService) -> None:
     while True:
-        print(f'Waiting for {service.name} to be reachable on port {service.port}')
+        print(f'[{service.name}] Waiting to be reachable on port {service.port}')
         if await is_port_open(host=service.host, port=service.port):
             break
         await asyncio.sleep(DEFAULT_SLEEP_TIME)
-    print(f'Connection to {service.name} on port {service.port} verified')
+    print(f'[{service.name}] Connection on port {service.port} verified')
 
 
 async def main() -> None:

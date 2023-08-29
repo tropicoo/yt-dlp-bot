@@ -35,4 +35,4 @@ class YtdlpVersionChecker:
     async def get_current_version(self, db: AsyncSession) -> CurrentVersion:
         ytdlp_ = await self._ytdlp_repository.get_current_version(db)
         self._log.info('Current yt-dlp version: %s', ytdlp_.current_version)
-        return CurrentVersion.from_orm(ytdlp_)
+        return CurrentVersion.model_validate(ytdlp_)

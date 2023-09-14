@@ -60,7 +60,7 @@ class VideoBot(Client):
         self, text: str, user_ids: Iterable[int], parse_mode: ParseMode = ParseMode.HTML
     ) -> None:
         coros = []
-        self._log.debug('Sending message "%s" to users %s', text, user_ids)
+        self._log.debug('Sending message "%s" to chat ids %s', text, user_ids)
         for user_id in user_ids:
             coros.append(self.send_message(user_id, text, parse_mode=parse_mode))
         results = await asyncio.gather(*coros, return_exceptions=True)

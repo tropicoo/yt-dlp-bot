@@ -66,8 +66,9 @@ class WorkerLauncher:
             settings.TMP_DOWNLOAD_ROOT_PATH, settings.TMP_DOWNLOADED_DIR
         )
         self._log.info(
-            'Creating intermediate directories %s if not exist',
-            (tmp_download_path, tmp_downloaded_path),
+            'Creating intermediate directories %s, %s if not exist',
+            tmp_download_path,
+            tmp_downloaded_path,
         )
         os.makedirs(tmp_download_path, exist_ok=True)
         os.makedirs(tmp_downloaded_path, exist_ok=True)

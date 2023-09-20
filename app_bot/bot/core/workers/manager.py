@@ -5,15 +5,15 @@ from typing import TYPE_CHECKING
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.workers.abstract import RabbitWorkerType
-from bot.core.workers.error import ErrorResultWorker
-from bot.core.workers.success import SuccessResultWorker
+from bot.core.workers.error import ErrorDownloadResultWorker
+from bot.core.workers.success import SuccessDownloadResultWorker
 
 if TYPE_CHECKING:
     from bot.core.bot import VideoBot
 
 
 class RabbitWorkerManager:
-    _TASK_TYPES = (ErrorResultWorker, SuccessResultWorker)
+    _TASK_TYPES = (ErrorDownloadResultWorker, SuccessDownloadResultWorker)
 
     def __init__(self, bot: 'VideoBot') -> None:
         self._log = logging.getLogger(self.__class__.__name__)

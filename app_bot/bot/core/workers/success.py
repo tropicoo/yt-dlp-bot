@@ -1,21 +1,21 @@
 from yt_shared.rabbit.rabbit_config import SUCCESS_QUEUE
-from yt_shared.schemas.success import SuccessPayload
+from yt_shared.schemas.success import SuccessDownloadPayload
 from yt_shared.utils.tasks.tasks import create_task
 
-from bot.core.handlers.success import SuccessHandler
-from bot.core.workers.abstract import AbstractResultWorker, RabbitWorkerType
+from bot.core.handlers.success import SuccessDownloadHandler
+from bot.core.workers.abstract import AbstractDownloadResultWorker, RabbitWorkerType
 
 
-class SuccessResultWorker(AbstractResultWorker):
+class SuccessDownloadResultWorker(AbstractDownloadResultWorker):
     TYPE = RabbitWorkerType.SUCCESS
     QUEUE_TYPE = SUCCESS_QUEUE
-    SCHEMA_CLS = (SuccessPayload,)
-    HANDLER_CLS = SuccessHandler
+    SCHEMA_CLS = (SuccessDownloadPayload,)
+    HANDLER_CLS = SuccessDownloadHandler
 
-    async def _process_body(self, body: SuccessPayload) -> None:
+    async def _process_body(self, body: SuccessDownloadPayload) -> None:
         self._spawn_handler_task(body)
 
-    def _spawn_handler_task(self, body: SuccessPayload) -> None:
+    def _spawn_handler_task(self, body: SuccessDownloadPayload) -> None:
         task_name = self.HANDLER_CLS.__class__.__name__
         create_task(
             self.HANDLER_CLS(body=body, bot=self._bot).handle(),

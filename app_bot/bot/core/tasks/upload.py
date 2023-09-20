@@ -14,12 +14,12 @@ from yt_shared.repositories.task import TaskRepository
 from yt_shared.schemas.base import RealBaseModel
 from yt_shared.schemas.cache import CacheSchema
 from yt_shared.schemas.media import BaseMedia, Video
-from yt_shared.schemas.success import SuccessPayload
+from yt_shared.schemas.success import SuccessDownloadPayload
 from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.config.config import get_main_config
-from bot.core.config.schema import AnonymousUserSchema, UserSchema
+from bot.core.config.schema import AnonymousUserSchema, UserSchema, VideoCaptionSchema
 from bot.core.utils import bold
 
 if TYPE_CHECKING:
@@ -36,8 +36,8 @@ class BaseUploadContext(RealBaseModel):
 
 
 class VideoUploadContext(BaseUploadContext):
-    height: StrictInt
-    width: StrictInt
+    height: StrictInt | StrictFloat
+    width: StrictInt | StrictFloat
     thumb: StrictStr | None = None
 
 
@@ -54,13 +54,19 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
         users: list[AnonymousUserSchema | UserSchema],
         bot: 'VideoBot',
         semaphore: asyncio.Semaphore,
-        context: SuccessPayload,
+        context: SuccessDownloadPayload,
     ) -> None:
         super().__init__()
         self._config = get_main_config()
         self._media_object = media_object
-        self._filename = media_object.filename
-        self._filepath = media_object.filepath
+
+        if media_object.is_converted:
+            self._filename = media_object.converted_filename
+            self._filepath = media_object.converted_filepath
+        else:
+            self._filename = media_object.filename
+            self._filepath = media_object.filepath
+
         self._bot = bot
         self._users = users
         self._semaphore = semaphore
@@ -244,23 +250,23 @@ class VideoUploadTask(AbstractUploadTask):
             type=MessageMediaType.VIDEO,
         )
 
+    def _get_caption_conf(self) -> VideoCaptionSchema:
+        if self._users[0].is_anonymous_user:
+            return self._bot.conf.telegram.api.video_caption
+        return self._users[0].upload.video_caption
+
     def _generate_file_caption(self) -> str:
         caption_items = []
-        if self._users[0].is_anonymous_user:
-            caption_conf = self._bot.conf.telegram.api.video_caption
-        else:
-            caption_conf = self._users[0].upload.video_caption
+        caption_conf = self._get_caption_conf()
 
         if caption_conf.include_title:
-            caption_items.append(f'{bold("Title:")} {self._media_object.title}')
+            caption_items.append(f'📝 {self._media_object.title}')
         if caption_conf.include_filename:
-            caption_items.append(f'{bold("Filename:")} {self._filename}')
+            caption_items.append(f'ℹ️ {self._filename}')
         if caption_conf.include_link:
-            caption_items.append(f'{bold("URL:")} {self._ctx.context.url}')
+            caption_items.append(f'👀 {self._ctx.context.url}')
         if caption_conf.include_size:
-            caption_items.append(
-                f'{bold("Size:")} {self._media_object.file_size_human()}'
-            )
+            caption_items.append(f'💾 {self._media_object.file_size_human()}')
         return '\n'.join(caption_items)
 
     def _generate_send_media_coroutine(self, chat_id: int) -> Coroutine:
@@ -269,8 +275,8 @@ class VideoUploadTask(AbstractUploadTask):
             'caption': self._media_ctx.caption,
             'file_name': self._media_ctx.filename,
             'duration': int(self._media_ctx.duration),
-            'height': self._media_ctx.height,
-            'width': self._media_ctx.width,
+            'height': int(self._media_ctx.height),
+            'width': int(self._media_ctx.width),
         }
 
         if self._media_ctx.thumb:

@@ -3,8 +3,8 @@ import logging
 from typing import TYPE_CHECKING
 
 from yt_shared.enums import TaskSource, TelegramChatType
-from yt_shared.schemas.error import ErrorDownloadPayload, ErrorGeneralPayload
-from yt_shared.schemas.success import SuccessPayload
+from yt_shared.schemas.error import ErrorDownloadGeneralPayload, ErrorDownloadPayload
+from yt_shared.schemas.success import SuccessDownloadPayload
 
 from bot.core.config.schema import AnonymousUserSchema, UserSchema
 
@@ -12,10 +12,12 @@ if TYPE_CHECKING:
     from bot.core.bot import VideoBot
 
 
-class AbstractHandler(metaclass=abc.ABCMeta):
+class AbstractDownloadHandler(metaclass=abc.ABCMeta):
     def __init__(
         self,
-        body: SuccessPayload | ErrorDownloadPayload | ErrorGeneralPayload,
+        body: SuccessDownloadPayload
+        | ErrorDownloadPayload
+        | ErrorDownloadGeneralPayload,
         bot: 'VideoBot',
     ) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
@@ -23,11 +25,8 @@ class AbstractHandler(metaclass=abc.ABCMeta):
         self._bot = bot
         self._receiving_users = self._get_receiving_users()
 
-    async def handle(self) -> None:
-        await self._handle()
-
     @abc.abstractmethod
-    async def _handle(self, *args, **kwargs) -> None:
+    async def handle(self) -> None:
         pass
 
     def _get_sender_id(self) -> int | None:

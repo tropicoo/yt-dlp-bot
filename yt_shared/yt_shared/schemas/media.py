@@ -45,12 +45,21 @@ class BaseMedia(RealBaseModel):
     saved_to_storage: StrictBool = False
     storage_path: StrictStr | None = None
 
+    is_converted: StrictBool = False
+    converted_filepath: StrictStr | None = None
+    converted_filename: StrictStr | None = None
+
     def file_size_human(self) -> str:
         return format_bytes(num=self.file_size)
 
     def mark_as_saved_to_storage(self, storage_path: str) -> None:
         self.storage_path = storage_path
         self.saved_to_storage = True
+
+    def mark_as_converted(self, filepath: str) -> None:
+        self.converted_filepath = filepath
+        self.converted_filename = filepath.rsplit("/", 1)[-1]
+        self.is_converted = True
 
 
 class Audio(BaseMedia):
@@ -64,8 +73,8 @@ class Video(BaseMedia):
 
     file_type: Literal[MediaFileType.VIDEO] = MediaFileType.VIDEO
     thumb_name: StrictStr | None = None
-    width: int | None = None
-    height: int | None = None
+    width: int | float | None = None
+    height: int | float | None = None
     thumb_path: StrictStr | None = None
 
     @model_validator(mode='before')

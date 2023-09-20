@@ -230,7 +230,7 @@ class MediaDownloader:
 
     def _get_video_context(
         self, meta: dict
-    ) -> tuple[float | None, int | None, int | None]:
+    ) -> tuple[float | None, int | float | None, int | float | None]:
         if meta['_type'] == self._PLAYLIST_TYPE:
             if not len(meta['entries']):
                 raise ValueError(

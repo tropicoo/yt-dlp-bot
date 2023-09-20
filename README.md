@@ -2,7 +2,7 @@
 
 Simple and reliable self-hosted YouTube Download Telegram Bot.
 
-Version: 1.4.2. [Release details](RELEASES.md).
+Version: 1.4.3. [Release details](RELEASES.md).
 
 ![frames](.assets/download_success.png)
 

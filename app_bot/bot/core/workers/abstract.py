@@ -20,7 +20,7 @@ class RabbitWorkerType(enum.Enum):
     SUCCESS = 'SUCCESS'
 
 
-class AbstractResultWorker(AbstractTask):
+class AbstractDownloadResultWorker(AbstractTask):
     TYPE: RabbitWorkerType | None = None
     QUEUE_TYPE: str | None = None
     SCHEMA_CLS: tuple[Type[BaseModel]] = ()
@@ -58,8 +58,9 @@ class AbstractResultWorker(AbstractTask):
     async def _deserialize_message(self, message: IncomingMessage) -> BaseModel:
         for schema_cls in self.SCHEMA_CLS:
             try:
-                return schema_cls.parse_raw(message.body)
+                return schema_cls.model_validate_json(message.body)
             except Exception:
+                # Skip unmatched schema class that failed to parse the body.
                 pass
         else:
             self._log.error('Failed to decode message body: %s', message.body)

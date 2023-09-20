@@ -19,8 +19,10 @@ from yt_shared.utils.tasks.tasks import create_task
 from worker.core.config import settings
 from worker.core.downloader import MediaDownloader
 from worker.core.exceptions import DownloadVideoServiceError
+from worker.core.tasks.encode import EncodeToH264Task
 from worker.core.tasks.ffprobe_context import GetFfprobeContextTask
 from worker.core.tasks.thumbnail import MakeThumbnailTask
+from worker.utils import is_instagram
 
 
 class MediaService:
@@ -127,6 +129,20 @@ class MediaService:
 
         if media_payload.save_to_storage:
             coro_tasks.append(self._create_copy_file_task(video))
+
+        # Instagram returns VP9+AAC in MP4 container for logged users and needs
+        # to be encoded to H264 since Telegram doesn't play VP9 on iOS
+        if settings.INSTAGRAM_ENCODE_TO_H264 and is_instagram(media_payload.url):
+            coro_tasks.append(
+                create_task(
+                    EncodeToH264Task(media=media).run(),
+                    task_name=EncodeToH264Task.__class__.__name__,
+                    logger=self._log,
+                    exception_message='Task "%s" raised an exception',
+                    exception_message_args=(EncodeToH264Task.__class__.__name__,),
+                )
+            )
+
         await asyncio.gather(*coro_tasks)
 
         file = await self._repository.save_file(db, task, media.video, media.meta)
@@ -192,9 +208,16 @@ class MediaService:
         )
 
     async def _copy_file_to_storage(self, file: BaseMedia) -> None:
-        dst = os.path.join(settings.STORAGE_PATH, file.filename)
-        self._log.info('Copying "%s" to storage "%s"', file.filepath, dst)
-        await asyncio.to_thread(shutil.copy2, file.filepath, dst)
+        if file.is_converted:
+            filename = file.converted_filename
+            filepath = file.converted_filepath
+        else:
+            filename = file.filename
+            filepath = file.filepath
+
+        dst = os.path.join(settings.STORAGE_PATH, filename)
+        self._log.info('Copying "%s" to storage "%s"', filepath, dst)
+        await asyncio.to_thread(shutil.copy2, filepath, dst)
         file.mark_as_saved_to_storage(storage_path=dst)
 
     def _err_file_cleanup(self, video: DownMedia) -> None:

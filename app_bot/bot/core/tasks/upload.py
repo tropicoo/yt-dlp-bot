@@ -18,7 +18,7 @@ from yt_shared.schemas.success import SuccessDownloadPayload
 from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.utils.tasks.tasks import create_task
 
-from bot.core.config.config import get_main_config
+from bot.core.config.config import get_main_config, settings
 from bot.core.config.schema import AnonymousUserSchema, UserSchema, VideoCaptionSchema
 from bot.core.utils import bold
 
@@ -88,6 +88,16 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
         except Exception:
             self._log.exception('Exception in upload task for "%s"', self._filename)
             raise
+
+    @abc.abstractmethod
+    def _generate_caption_items(self) -> list[str]:
+        pass
+
+    def _generate_file_caption(self) -> str:
+        caption = '\n'.join(self._generate_caption_items())
+        if len(caption) > settings.TG_MAX_CAPTION_SIZE:
+            return caption[: settings.TG_MAX_CAPTION_SIZE]
+        return caption
 
     async def _send_upload_text(self) -> None:
         text = (
@@ -223,14 +233,13 @@ class AudioUploadTask(AbstractUploadTask):
 
         self._create_cache_task(cache_object=audio)
 
-    def _generate_file_caption(self) -> str:
-        caption_items = (
+    def _generate_caption_items(self) -> list[str]:
+        return [
             f'{bold("Title:")} {self._media_object.title}',
             f'{bold("Filename:")} {self._filename}',
             f'{bold("URL:")} {self._ctx.context.url}',
             f'{bold("Size:")} {self._media_object.file_size_human()}',
-        )
-        return '\n'.join(caption_items)
+        ]
 
 
 class VideoUploadTask(AbstractUploadTask):
@@ -255,7 +264,7 @@ class VideoUploadTask(AbstractUploadTask):
             return self._bot.conf.telegram.api.video_caption
         return self._users[0].upload.video_caption
 
-    def _generate_file_caption(self) -> str:
+    def _generate_caption_items(self) -> list[str]:
         caption_items = []
         caption_conf = self._get_caption_conf()
 
@@ -267,7 +276,7 @@ class VideoUploadTask(AbstractUploadTask):
             caption_items.append(f'👀 {self._ctx.context.url}')
         if caption_conf.include_size:
             caption_items.append(f'💾 {self._media_object.file_size_human()}')
-        return '\n'.join(caption_items)
+        return caption_items
 
     def _generate_send_media_coroutine(self, chat_id: int) -> Coroutine:
         kwargs = {

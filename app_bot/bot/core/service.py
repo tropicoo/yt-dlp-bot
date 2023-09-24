@@ -24,6 +24,7 @@ class UrlService:
         payload = InbMediaPayload(
             url=url.url,
             message_id=url.message_id,
+            acknowledge_message_id=url.acknowledge_message_id,
             from_user_id=url.from_user_id,
             from_chat_id=url.from_chat_id,
             from_chat_type=url.from_chat_type,
@@ -42,7 +43,12 @@ class UrlParser:
         self._log = logging.getLogger(self.__class__.__name__)
 
     @staticmethod
-    def parse_urls(urls: list[str], message: Message, user: UserSchema) -> list[URL]:
+    def parse_urls(
+        urls: list[str], context: dict[str, Message | UserSchema]
+    ) -> list[URL]:
+        message: Message = context['message']
+        user: UserSchema = context['user']
+        acknowledge_message: Message = context['acknowledge_message']
         return [
             URL(
                 url=url,
@@ -50,6 +56,7 @@ class UrlParser:
                 from_chat_type=TelegramChatType(message.chat.type.value),
                 from_user_id=message.from_user.id,
                 message_id=message.id,
+                acknowledge_message_id=acknowledge_message.id,
                 save_to_storage=user.save_to_storage,
                 download_media_type=user.download_media_type,
             )

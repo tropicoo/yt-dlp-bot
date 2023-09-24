@@ -24,6 +24,7 @@ class InbMediaPayload(RealBaseModel):
     from_chat_type: TelegramChatType | None
     from_user_id: StrictInt | None
     message_id: StrictInt | None
+    acknowledge_message_id: StrictInt | None
     url: StrictStr
     source: TaskSource
     save_to_storage: StrictBool

@@ -35,10 +35,16 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             self._cleanup()
 
     async def _handle(self) -> None:
-        coro_tasks = []
+        coro_tasks = [self._delete_acknowledge_message()]
         for media_object in self._body.media.get_media_objects():
             coro_tasks.append(self._handle_media_object(media_object))
         await asyncio.gather(*coro_tasks)
+
+    async def _delete_acknowledge_message(self) -> None:
+        await self._bot.delete_messages(
+            chat_id=self._body.from_chat_id,
+            message_ids=[self._body.context.acknowledge_message_id],
+        )
 
     async def _publish_error_message(self, err: Exception) -> None:
         err_payload = ErrorDownloadGeneralPayload(

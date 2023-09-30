@@ -26,7 +26,3 @@ def is_file_empty(filepath: str) -> bool:
 def get_cookies_opts_if_not_empty() -> list[str]:
     """Return yt-dlp cookies option with cookies filepath."""
     return [] if is_file_empty(_COOKIES_FILEPATH) else ['--cookies', _COOKIES_FILEPATH]
-
-
-def get_media_format_options() -> str:
-    pass

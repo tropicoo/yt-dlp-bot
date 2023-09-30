@@ -6,14 +6,14 @@ from worker.core.tasks.abstract import AbstractFfBinaryTask
 
 
 class EncodeToH264Task(AbstractFfBinaryTask):
-    _CMD = 'ffmpeg -y -loglevel error -i "{filepath}" -c:v libx264 -pix_fmt yuv420p -preset veryfast -crf 25 -movflags +faststart -c:a copy "{output}"'
     _EXT = 'mp4'
     _CMD_TIMEOUT = 120
 
-    def __init__(self, media: DownMedia):
+    def __init__(self, media: DownMedia, cmd_tpl: str) -> None:
         super().__init__(file_path=media.video.filepath)
         self._media = media
         self._video = media.video
+        self._CMD = cmd_tpl  # lol
 
     async def run(self) -> None:
         await self._encode_video()

@@ -22,8 +22,6 @@ DEFAULT_YTDL_OPTS = [
     '--ignore-errors',
     '--verbose',
     *get_cookies_opts_if_not_empty(),
-    '--format-sort',
-    'vcodec:h264',
 ]
 
 AUDIO_YTDL_OPTS = [

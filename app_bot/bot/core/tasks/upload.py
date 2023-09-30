@@ -269,13 +269,13 @@ class VideoUploadTask(AbstractUploadTask):
         caption_conf = self._get_caption_conf()
 
         if caption_conf.include_title:
-            caption_items.append(f'📝 {self._media_object.title}')
+            caption_items.append(self._media_object.title)
         if caption_conf.include_filename:
-            caption_items.append(f'ℹ️ {self._filename}')
+            caption_items.append(self._filename)
         if caption_conf.include_link:
-            caption_items.append(f'👀 {self._ctx.context.url}')
+            caption_items.append(self._ctx.context.url)
         if caption_conf.include_size:
-            caption_items.append(f'💾 {self._media_object.file_size_human()}')
+            caption_items.append(self._media_object.file_size_human())
         return caption_items
 
     def _generate_send_media_coroutine(self, chat_id: int) -> Coroutine:

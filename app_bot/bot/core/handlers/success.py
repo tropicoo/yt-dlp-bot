@@ -9,7 +9,8 @@ from yt_shared.rabbit.publisher import RmqPublisher
 from yt_shared.schemas.error import ErrorDownloadGeneralPayload
 from yt_shared.schemas.media import BaseMedia
 from yt_shared.schemas.success import SuccessDownloadPayload
-from yt_shared.utils.file import remove_dir
+from yt_shared.utils.common import format_bytes
+from yt_shared.utils.file import file_size, remove_dir
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.handlers.abstract import AbstractDownloadHandler
@@ -43,7 +44,7 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
     async def _delete_acknowledge_message(self) -> None:
         await self._bot.delete_messages(
             chat_id=self._body.from_chat_id,
-            message_ids=[self._body.context.acknowledge_message_id],
+            message_ids=[self._body.context.ack_message_id],
         )
 
     async def _publish_error_message(self, err: Exception) -> None:
@@ -83,7 +84,10 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             'Cleaning up task "%s": removing download content directory "%s" with files %s',
             self._body.task_id,
             root_path,
-            os.listdir(root_path),
+            {
+                fn: format_bytes(file_size(os.path.join(root_path, fn)))
+                for fn in os.listdir(root_path)
+            },
         )
         remove_dir(root_path)
 

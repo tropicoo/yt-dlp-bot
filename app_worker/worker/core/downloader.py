@@ -2,37 +2,26 @@ import glob
 import logging
 import os
 import shutil
-from copy import deepcopy
 from tempfile import TemporaryDirectory
+from typing import TYPE_CHECKING
 
 import yt_dlp
 from yt_shared.enums import DownMediaType
 from yt_shared.schemas.media import Audio, DownMedia, Video
-from yt_shared.utils.common import random_string
+from yt_shared.utils.common import format_bytes, random_string
 from yt_shared.utils.file import file_size
 
 from worker.core.config import settings
 from worker.core.exceptions import MediaDownloaderError
-from worker.utils import cli_to_api
+
+if TYPE_CHECKING:
+    from ytdl_opts.per_host._base import AbstractHostConfig
+
 
 try:
-    from ytdl_opts.user import (
-        AUDIO_FORMAT_YTDL_OPTS,
-        AUDIO_YTDL_OPTS,
-        DEFAULT_YTDL_OPTS,
-        FINAL_AUDIO_FORMAT,
-        FINAL_THUMBNAIL_FORMAT,
-        VIDEO_YTDL_OPTS,
-    )
+    from ytdl_opts.user import FINAL_THUMBNAIL_FORMAT
 except ImportError:
-    from ytdl_opts.default import (
-        AUDIO_FORMAT_YTDL_OPTS,
-        AUDIO_YTDL_OPTS,
-        DEFAULT_YTDL_OPTS,
-        FINAL_AUDIO_FORMAT,
-        FINAL_THUMBNAIL_FORMAT,
-        VIDEO_YTDL_OPTS,
-    )
+    from ytdl_opts.default import FINAL_AUDIO_FORMAT, FINAL_THUMBNAIL_FORMAT
 
 
 class MediaDownloader:
@@ -51,49 +40,34 @@ class MediaDownloader:
             settings.TMP_DOWNLOAD_ROOT_PATH, settings.TMP_DOWNLOADED_DIR
         )
 
-    def download(self, url: str, media_type: DownMediaType) -> DownMedia:
+    def download(
+        self, host_conf: 'AbstractHostConfig', media_type: DownMediaType
+    ) -> DownMedia:
         try:
-            return self._download(url=url, media_type=media_type)
+            return self._download(host_conf=host_conf, media_type=media_type)
         except Exception:
-            self._log.error('Failed to download %s', url)
+            self._log.error('Failed to download %s', host_conf.url)
             raise
 
-    def _configure_ytdl_opts(
-        self, media_type: DownMediaType, curr_tmp_dir: str
-    ) -> dict:
-        ytdl_opts = deepcopy(DEFAULT_YTDL_OPTS)
-        match media_type:  # noqa: E999
-            case DownMediaType.AUDIO:
-                ytdl_opts.extend(AUDIO_YTDL_OPTS)
-                ytdl_opts.extend(AUDIO_FORMAT_YTDL_OPTS)
-            case DownMediaType.VIDEO:
-                ytdl_opts.extend(VIDEO_YTDL_OPTS)
-            case DownMediaType.AUDIO_VIDEO:
-                ytdl_opts.extend(AUDIO_YTDL_OPTS)
-                ytdl_opts.extend(VIDEO_YTDL_OPTS)
-                ytdl_opts.append(self._KEEP_VIDEO_OPTION)
-
-        ytdl_opts = cli_to_api(ytdl_opts)
-        ytdl_opts['outtmpl']['default'] = os.path.join(
-            curr_tmp_dir,
-            ytdl_opts['outtmpl']['default'],
-        )
-        return ytdl_opts
-
-    def _download(self, url: str, media_type: DownMediaType) -> DownMedia:
+    def _download(
+        self, host_conf: 'AbstractHostConfig', media_type: DownMediaType
+    ) -> DownMedia:
+        url = host_conf.url
         self._log.info('Downloading %s, media_type %s', url, media_type)
         tmp_down_path = os.path.join(
             settings.TMP_DOWNLOAD_ROOT_PATH, settings.TMP_DOWNLOAD_DIR
         )
         with TemporaryDirectory(prefix='tmp_media_dir-', dir=tmp_down_path) as tmp_dir:
             curr_tmp_dir = os.path.join(tmp_down_path, tmp_dir)
-            ytdl_opts = self._configure_ytdl_opts(
+
+            ytdl_opts_model = host_conf.build_config(
                 media_type=media_type, curr_tmp_dir=curr_tmp_dir
             )
-            with yt_dlp.YoutubeDL(ytdl_opts) as ytdl:
+
+            with yt_dlp.YoutubeDL(ytdl_opts_model.ytdl_opts) as ytdl:
                 self._log.info('Downloading %s', url)
                 self._log.info('Downloading to %s', curr_tmp_dir)
-                self._log.info('Downloading with options %s', ytdl_opts)
+                self._log.info('Downloading with options %s', ytdl_opts_model.ytdl_opts)
 
                 meta: dict | None = ytdl.extract_info(url, download=True)
                 current_files = os.listdir(curr_tmp_dir)
@@ -223,7 +197,12 @@ class MediaDownloader:
         """Try to find downloaded audio or thumbnail file."""
         verbose_name = self._EXT_TO_NAME[extension]
         for file_name in glob.glob(f"*.{extension}", root_dir=root_path):
-            self._log.info('Found downloaded %s: "%s"', verbose_name, file_name)
+            self._log.info(
+                'Found downloaded %s: "%s" [%s]',
+                verbose_name,
+                file_name,
+                format_bytes(file_size(os.path.join(root_path, file_name))),
+            )
             return file_name
         self._log.info('Downloaded %s not found in "%s"', verbose_name, root_path)
         return None

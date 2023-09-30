@@ -2,6 +2,8 @@ import asyncio
 import logging
 import os
 import shutil
+from typing import TYPE_CHECKING
+from urllib.parse import urlsplit
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from yt_shared.enums import DownMediaType, TaskStatus
@@ -22,7 +24,10 @@ from worker.core.exceptions import DownloadVideoServiceError
 from worker.core.tasks.encode import EncodeToH264Task
 from worker.core.tasks.ffprobe_context import GetFfprobeContextTask
 from worker.core.tasks.thumbnail import MakeThumbnailTask
-from worker.utils import is_instagram
+from ytdl_opts.per_host._registry import HostConfRegistry
+
+if TYPE_CHECKING:
+    from ytdl_opts.per_host._base import AbstractHostConfig
 
 
 class MediaService:
@@ -45,24 +50,45 @@ class MediaService:
     async def _process(
         self, media_payload: InbMediaPayload, task: Task, db: AsyncSession
     ) -> DownMedia:
+        host_conf = self._get_host_conf(url=task.url)
         await self._repository.save_as_processing(db, task)
-        media = await self._start_download(task, media_payload, db)
+        media = await self._start_download(
+            task=task, media_payload=media_payload, host_conf=host_conf, db=db
+        )
         try:
-            await self._post_process_media(media, task, media_payload, db)
+            await self._post_process_media(
+                media=media,
+                task=task,
+                media_payload=media_payload,
+                host_conf=host_conf,
+                db=db,
+            )
         except Exception:
             self._log.exception('Failed to post-process media %s', media)
             self._err_file_cleanup(media)
             raise
         return media
 
+    def _get_host_conf(self, url: str) -> 'AbstractHostConfig':
+        host_to_cls_map = HostConfRegistry.get_host_to_cls_map()
+        self._log.info('Registry: %s', HostConfRegistry.get_registry())
+        self._log.info('Host to CLS map: %s', host_to_cls_map)
+        host_cls = host_to_cls_map.get(urlsplit(url).netloc, host_to_cls_map[None])
+        return host_cls(url=url)
+
     async def _start_download(
-        self, task: Task, media_payload: InbMediaPayload, db: AsyncSession
+        self,
+        task: Task,
+        media_payload: InbMediaPayload,
+        host_conf: 'AbstractHostConfig',
+        db: AsyncSession,
     ) -> DownMedia:
         try:
             return await asyncio.get_running_loop().run_in_executor(
                 None,
                 lambda: self._downloader.download(
-                    task.url, media_type=media_payload.download_media_type
+                    host_conf=host_conf,
+                    media_type=media_payload.download_media_type,
                 ),
             )
         except Exception as err:
@@ -75,16 +101,25 @@ class MediaService:
         media: DownMedia,
         task: Task,
         media_payload: InbMediaPayload,
+        host_conf: 'AbstractHostConfig',
         db: AsyncSession,
     ) -> None:
         def post_process_audio():
             return self._post_process_audio(
-                media=media, media_payload=media_payload, task=task, db=db
+                media=media,
+                media_payload=media_payload,
+                task=task,
+                host_conf=host_conf,
+                db=db,
             )
 
         def post_process_video():
             return self._post_process_video(
-                media=media, media_payload=media_payload, task=task, db=db
+                media=media,
+                media_payload=media_payload,
+                task=task,
+                host_conf=host_conf,
+                db=db,
             )
 
         match media.media_type:  # noqa: E999
@@ -102,6 +137,7 @@ class MediaService:
         media: DownMedia,
         media_payload: InbMediaPayload,
         task: Task,
+        host_conf: 'AbstractHostConfig',
         db: AsyncSession,
     ) -> None:
         """Post-process downloaded media files, e.g. make thumbnail and copy to storage."""
@@ -130,12 +166,12 @@ class MediaService:
         if media_payload.save_to_storage:
             coro_tasks.append(self._create_copy_file_task(video))
 
-        # Instagram returns VP9+AAC in MP4 container for logged users and needs
-        # to be encoded to H264 since Telegram doesn't play VP9 on iOS
-        if settings.INSTAGRAM_ENCODE_TO_H264 and is_instagram(media_payload.url):
+        if host_conf.ENCODE_VIDEO:
             coro_tasks.append(
                 create_task(
-                    EncodeToH264Task(media=media).run(),
+                    EncodeToH264Task(
+                        media=media, cmd_tpl=host_conf.FFMPEG_VIDEO_OPTS
+                    ).run(),
                     task_name=EncodeToH264Task.__class__.__name__,
                     logger=self._log,
                     exception_message='Task "%s" raised an exception',
@@ -153,6 +189,7 @@ class MediaService:
         media: DownMedia,
         media_payload: InbMediaPayload,
         task: Task,
+        host_conf: 'AbstractHostConfig',
         db: AsyncSession,
     ) -> None:
         coro_tasks = [self._repository.save_file(db, task, media.audio, media.meta)]

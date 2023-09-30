@@ -4,11 +4,11 @@ from uuid import UUID
 from sqlalchemy import insert, select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
+from yt_shared.constants import ASYNC_LOCK
 from yt_shared.enums import TaskStatus
 from yt_shared.models import Cache, File, Task
 from yt_shared.schemas.cache import CacheSchema
 from yt_shared.schemas.media import BaseMedia, InbMediaPayload, Video
-from yt_shared.utils.common import ASYNC_LOCK
 
 
 class TaskRepository:

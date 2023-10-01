@@ -2,7 +2,6 @@ import asyncio
 import logging
 import os
 import shutil
-from typing import TYPE_CHECKING
 from urllib.parse import urlsplit
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,10 +23,8 @@ from worker.core.exceptions import DownloadVideoServiceError
 from worker.core.tasks.encode import EncodeToH264Task
 from worker.core.tasks.ffprobe_context import GetFfprobeContextTask
 from worker.core.tasks.thumbnail import MakeThumbnailTask
+from ytdl_opts.per_host._base import AbstractHostConfig
 from ytdl_opts.per_host._registry import HostConfRegistry
-
-if TYPE_CHECKING:
-    from ytdl_opts.per_host._base import AbstractHostConfig
 
 
 class MediaService:
@@ -69,7 +66,7 @@ class MediaService:
             raise
         return media
 
-    def _get_host_conf(self, url: str) -> 'AbstractHostConfig':
+    def _get_host_conf(self, url: str) -> AbstractHostConfig:
         host_to_cls_map = HostConfRegistry.get_host_to_cls_map()
         self._log.info('Registry: %s', HostConfRegistry.get_registry())
         self._log.info('Host to CLS map: %s', host_to_cls_map)
@@ -80,7 +77,7 @@ class MediaService:
         self,
         task: Task,
         media_payload: InbMediaPayload,
-        host_conf: 'AbstractHostConfig',
+        host_conf: AbstractHostConfig,
         db: AsyncSession,
     ) -> DownMedia:
         try:
@@ -101,7 +98,7 @@ class MediaService:
         media: DownMedia,
         task: Task,
         media_payload: InbMediaPayload,
-        host_conf: 'AbstractHostConfig',
+        host_conf: AbstractHostConfig,
         db: AsyncSession,
     ) -> None:
         def post_process_audio():
@@ -137,7 +134,7 @@ class MediaService:
         media: DownMedia,
         media_payload: InbMediaPayload,
         task: Task,
-        host_conf: 'AbstractHostConfig',
+        host_conf: AbstractHostConfig,
         db: AsyncSession,
     ) -> None:
         """Post-process downloaded media files, e.g. make thumbnail and copy to storage."""
@@ -189,7 +186,7 @@ class MediaService:
         media: DownMedia,
         media_payload: InbMediaPayload,
         task: Task,
-        host_conf: 'AbstractHostConfig',
+        host_conf: AbstractHostConfig,
         db: AsyncSession,
     ) -> None:
         coro_tasks = [self._repository.save_file(db, task, media.audio, media.meta)]

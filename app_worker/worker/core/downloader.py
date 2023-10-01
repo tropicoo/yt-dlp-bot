@@ -3,7 +3,6 @@ import logging
 import os
 import shutil
 from tempfile import TemporaryDirectory
-from typing import TYPE_CHECKING
 
 import yt_dlp
 from yt_shared.enums import DownMediaType
@@ -13,10 +12,7 @@ from yt_shared.utils.file import file_size
 
 from worker.core.config import settings
 from worker.core.exceptions import MediaDownloaderError
-
-if TYPE_CHECKING:
-    from ytdl_opts.per_host._base import AbstractHostConfig
-
+from ytdl_opts.per_host._base import AbstractHostConfig
 
 try:
     from ytdl_opts.user import FINAL_THUMBNAIL_FORMAT
@@ -41,7 +37,7 @@ class MediaDownloader:
         )
 
     def download(
-        self, host_conf: 'AbstractHostConfig', media_type: DownMediaType
+        self, host_conf: AbstractHostConfig, media_type: DownMediaType
     ) -> DownMedia:
         try:
             return self._download(host_conf=host_conf, media_type=media_type)
@@ -50,7 +46,7 @@ class MediaDownloader:
             raise
 
     def _download(
-        self, host_conf: 'AbstractHostConfig', media_type: DownMediaType
+        self, host_conf: AbstractHostConfig, media_type: DownMediaType
     ) -> DownMedia:
         url = host_conf.url
         self._log.info('Downloading %s, media_type %s', url, media_type)

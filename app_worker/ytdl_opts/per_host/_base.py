@@ -13,6 +13,7 @@ try:
     from ytdl_opts.user import (
         AUDIO_FORMAT_YTDL_OPTS,
         AUDIO_YTDL_OPTS,
+        DEFAULT_VIDEO_FORMAT_SORT_OPT,
         DEFAULT_YTDL_OPTS,
         FINAL_AUDIO_FORMAT,
         FINAL_THUMBNAIL_FORMAT,
@@ -22,6 +23,7 @@ except ImportError:
     from ytdl_opts.default import (
         AUDIO_FORMAT_YTDL_OPTS,
         AUDIO_YTDL_OPTS,
+        DEFAULT_VIDEO_FORMAT_SORT_OPT,
         DEFAULT_YTDL_OPTS,
         FINAL_AUDIO_FORMAT,
         FINAL_THUMBNAIL_FORMAT,
@@ -65,7 +67,7 @@ class AbstractHostConfig:
     FINAL_THUMBNAIL_FORMAT = FINAL_THUMBNAIL_FORMAT
 
     DEFAULT_VIDEO_YTDL_OPTS = VIDEO_YTDL_OPTS
-    DEFAULT_VIDEO_FORMAT_SORT_OPT = ['--format-sort', 'res,vcodec:h265,h264']
+    DEFAULT_VIDEO_FORMAT_SORT_OPT = DEFAULT_VIDEO_FORMAT_SORT_OPT
 
     FFMPEG_AUDIO_OPTS: str | None = None
     FFMPEG_VIDEO_OPTS: str | None = None

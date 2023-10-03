@@ -24,6 +24,11 @@ DEFAULT_YTDL_OPTS = [
     *get_cookies_opts_if_not_empty(),
 ]
 
+DEFAULT_VIDEO_FORMAT_SORT_OPT = [
+    '--format-sort',
+    'res,vcodec:h265,h264',
+]
+
 AUDIO_YTDL_OPTS = [
     '--extract-audio',
     '--audio-quality',

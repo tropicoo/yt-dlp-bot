@@ -15,7 +15,7 @@ from worker.core.exceptions import MediaDownloaderError
 from ytdl_opts.per_host._base import AbstractHostConfig
 
 try:
-    from ytdl_opts.user import FINAL_THUMBNAIL_FORMAT
+    from ytdl_opts.user import FINAL_AUDIO_FORMAT, FINAL_THUMBNAIL_FORMAT
 except ImportError:
     from ytdl_opts.default import FINAL_AUDIO_FORMAT, FINAL_THUMBNAIL_FORMAT
 

@@ -5,7 +5,7 @@ from ytdl_opts.per_host._base import AbstractHostConfig
 
 class HostConfRegistry(type):
     REGISTRY: dict[str, type[AbstractHostConfig]] = {}
-    HOST_TO_CLS_MAP = {}
+    HOST_TO_CLS_MAP: dict[str | None, type[AbstractHostConfig]] = {}
 
     def __new__(
         mcs: Type['HostConfRegistry'],
@@ -33,6 +33,7 @@ class HostConfRegistry(type):
     ) -> None:
         if hostnames is None:
             mcs.HOST_TO_CLS_MAP[None] = host_cls
-        else:
-            for host in hostnames:
-                mcs.HOST_TO_CLS_MAP[host] = host_cls
+            return
+
+        for host in hostnames:
+            mcs.HOST_TO_CLS_MAP[host] = host_cls

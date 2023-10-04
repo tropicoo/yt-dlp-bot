@@ -62,6 +62,7 @@ def get_main_config() -> ConfigSchema:
 
 class BotSettings(Settings):
     TG_MAX_MSG_SIZE: int
+    TG_MAX_CAPTION_SIZE: int
 
 
 settings = BotSettings()

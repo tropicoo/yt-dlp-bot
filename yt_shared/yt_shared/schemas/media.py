@@ -14,6 +14,7 @@ from pydantic import (
 from yt_shared.enums import DownMediaType, MediaFileType, TaskSource, TelegramChatType
 from yt_shared.schemas.base import RealBaseModel
 from yt_shared.utils.common import format_bytes
+from yt_shared.utils.file import file_size
 
 
 class InbMediaPayload(RealBaseModel):
@@ -24,7 +25,9 @@ class InbMediaPayload(RealBaseModel):
     from_chat_type: TelegramChatType | None
     from_user_id: StrictInt | None
     message_id: StrictInt | None
+    ack_message_id: StrictInt | None
     url: StrictStr
+    original_url: StrictStr
     source: TaskSource
     save_to_storage: StrictBool
     download_media_type: DownMediaType
@@ -45,12 +48,28 @@ class BaseMedia(RealBaseModel):
     saved_to_storage: StrictBool = False
     storage_path: StrictStr | None = None
 
+    is_converted: StrictBool = False
+    converted_filepath: StrictStr | None = None
+    converted_filename: StrictStr | None = None
+    converted_file_size: StrictInt | None = None
+
     def file_size_human(self) -> str:
-        return format_bytes(num=self.file_size)
+        return format_bytes(num=self.current_file_size())
+
+    def current_file_size(self) -> int:
+        if self.converted_file_size is not None:
+            return self.converted_file_size
+        return self.file_size
 
     def mark_as_saved_to_storage(self, storage_path: str) -> None:
         self.storage_path = storage_path
         self.saved_to_storage = True
+
+    def mark_as_converted(self, filepath: str) -> None:
+        self.converted_filepath = filepath
+        self.converted_filename = filepath.rsplit("/", 1)[-1]
+        self.converted_file_size = file_size(filepath)
+        self.is_converted = True
 
 
 class Audio(BaseMedia):
@@ -64,8 +83,8 @@ class Video(BaseMedia):
 
     file_type: Literal[MediaFileType.VIDEO] = MediaFileType.VIDEO
     thumb_name: StrictStr | None = None
-    width: int | None = None
-    height: int | None = None
+    width: int | float | None = None
+    height: int | float | None = None
     thumb_path: StrictStr | None = None
 
     @model_validator(mode='before')

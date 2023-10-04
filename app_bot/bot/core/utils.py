@@ -3,7 +3,8 @@ import asyncio
 import random
 import string
 from datetime import datetime
-from typing import Generator
+from typing import Generator, Iterable
+from urllib.parse import urlparse
 from uuid import uuid4
 
 from pyrogram.enums import ChatType
@@ -87,3 +88,7 @@ def split_telegram_message(
                 break
     else:
         yield text
+
+
+def can_remove_url_params(url: str, matching_hosts: Iterable[str]) -> bool:
+    return urlparse(url).netloc in set(matching_hosts)

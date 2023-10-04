@@ -3,6 +3,7 @@
 **/*.yml
 !app_bot/config.yml
 
+.editorconfig
 .assets
 .dockerignore
 .github

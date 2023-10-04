@@ -5,9 +5,9 @@ from yt_dlp import version as ytdlp_version
 from yt_shared.db.session import get_db
 from yt_shared.models import Task
 from yt_shared.rabbit.publisher import RmqPublisher
-from yt_shared.schemas.error import ErrorDownloadPayload, ErrorGeneralPayload
+from yt_shared.schemas.error import ErrorDownloadGeneralPayload, ErrorDownloadPayload
 from yt_shared.schemas.media import DownMedia, InbMediaPayload
-from yt_shared.schemas.success import SuccessPayload
+from yt_shared.schemas.success import SuccessDownloadPayload
 
 from worker.core.exceptions import DownloadVideoServiceError, GeneralVideoServiceError
 from worker.core.media_service import MediaService
@@ -45,7 +45,7 @@ class PayloadHandler:
     async def _send_finished_task(
         self, task: Task, media: DownMedia, media_payload: InbMediaPayload
     ) -> None:
-        success_payload = SuccessPayload(
+        success_payload = SuccessDownloadPayload(
             task_id=task.id,
             media=media,
             message_id=task.message_id,
@@ -84,7 +84,7 @@ class PayloadHandler:
         media_payload: InbMediaPayload,
     ) -> None:
         task: Task | None = getattr(err, 'task', None)
-        err_payload = ErrorGeneralPayload(
+        err_payload = ErrorDownloadGeneralPayload(
             task_id=task.id if task else 'N/A',
             message_id=media_payload.message_id,
             from_chat_id=media_payload.from_chat_id,

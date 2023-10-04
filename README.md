@@ -1,8 +1,8 @@
-## yt-dlp-bot - YouTube Download Telegram Bot
+## yt-dlp-bot - YouTube Download Telegram Bot 🇺🇦
 
 Simple and reliable self-hosted YouTube Download Telegram Bot.
 
-Version: 1.4.2. [Release details](RELEASES.md).
+Version: 1.4.3. [Release details](RELEASES.md).
 
 ![frames](.assets/download_success.png)
 
@@ -15,13 +15,11 @@ Version: 1.4.2. [Release details](RELEASES.md).
 
 ## 😂 Features
 
-* Download audio and videos from any [yt-dlp](https://github.com/yt-dlp/yt-dlp)
-  supported website to your storage
-* Upload downloaded audio and videos back to the Telegram chat
-* Interact with the bot from private or group chat (any user within the chat with the
-  bot can send the links)
-* Trigger video download by sending link to an API
-* Track download tasks via API
+* Download audio and videos from [yt-dlp](https://github.com/yt-dlp/yt-dlp) supported sites to your storage.
+* Upload downloaded media to Telegram.
+* Interact with the bot in private or group chats.
+* Trigger video downloads via link to the API.
+* Track download tasks using the API.
 
 ## ⚙ Quick Setup
 
@@ -34,11 +32,10 @@ Version: 1.4.2. [Release details](RELEASES.md).
 6. Write your Telegram user or group ID to the `allowed_users` -> `id` by replacing dummy
    value and change `forward_group_id` value if you want to forward the video to
    some group/channel when upload is enabled. Bot should be added to the group/channel to be able to send messages.
-7. Change download media type for the user/group: `AUDIO`, `VIDEO` or `AUDIO_VIDEO` 
+7. Change download media type for the user/group: `AUDIO`, `VIDEO` or `AUDIO_VIDEO`
    in `app_bot/config.yml`'s variable `download_media_type`. Default `VIDEO`
-8. If you want your downloaded audio/video to be uploaded back to the Telegram,
-   set `upload_video_file` config variable for your user/group in the `app_bot/config.yml`
-   to `True`
+8. If you want your downloaded audio/video to be uploaded back to the Telegram, set `upload_video_file` config variable 
+   for your user/group in the `app_bot/config.yml` to `True`
 9. Media `STORAGE_PATH` environment variable is located in
    the `envs/.env_worker` file. By default, it's `/filestorage` path inside the
    container. What you want is to map the real path to this inside
@@ -50,7 +47,7 @@ Version: 1.4.2. [Release details](RELEASES.md).
        volumes:
          - "D:/Videos:/filestorage"
    ```
-10. Change application's `LOG_LEVEL` in `envs/.env_common` if needed
+10. Change application's `LOG_LEVEL` in `envs/.env_common` to `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` if needed
 
 ## 🏃 Run
 

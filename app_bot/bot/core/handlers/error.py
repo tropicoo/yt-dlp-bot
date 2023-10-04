@@ -3,16 +3,16 @@ import html
 
 from pyrogram.enums import ParseMode
 from yt_shared.enums import RabbitPayloadType
-from yt_shared.schemas.error import ErrorDownloadPayload, ErrorGeneralPayload
+from yt_shared.schemas.error import ErrorDownloadGeneralPayload, ErrorDownloadPayload
 
 from bot.core.config import settings
-from bot.core.handlers.abstract import AbstractHandler
+from bot.core.handlers.abstract import AbstractDownloadHandler
 from bot.core.utils import split_telegram_message
 from bot.version import __version__
 
 
-class ErrorHandler(AbstractHandler):
-    _body: ErrorDownloadPayload | ErrorGeneralPayload
+class ErrorDownloadHandler(AbstractDownloadHandler):
+    _body: ErrorDownloadPayload | ErrorDownloadGeneralPayload
     _ERR_MSG_TPL = (
         '🛑 <b>{header}</b>\n\n'
         'ℹ <b>Task ID:</b> <code>{task_id}</code>\n'
@@ -31,9 +31,6 @@ class ErrorHandler(AbstractHandler):
     }
 
     async def handle(self) -> None:
-        await self._handle()
-
-    async def _handle(self) -> None:
         self._send_error_text()
 
     def _send_error_text(self) -> None:

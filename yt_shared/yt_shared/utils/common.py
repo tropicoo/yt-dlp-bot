@@ -6,8 +6,6 @@ from functools import partial, wraps
 from string import ascii_lowercase
 from typing import Any, Callable
 
-ASYNC_LOCK = asyncio.Lock()
-
 _UNIT_SIZE_NAMES = ('', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi')
 _BASE = 1024.0
 

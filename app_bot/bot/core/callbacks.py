@@ -39,16 +39,23 @@ class TelegramCallback:
                 self._log.debug('No urls to download, skipping message')
                 return
 
-        urls = self._url_parser.parse_urls(urls=urls, message=message, user=user)
-        await self._url_service.process_urls(urls)
-        await self._send_acknowledge_message(message=message, url_count=len(urls))
+        ack_message = await self._send_acknowledge_message(
+            message=message, url_count=len(urls)
+        )
+        context = {
+            'message': message,
+            'user': user,
+            'ack_message': ack_message,
+        }
+        url_objects = self._url_parser.parse_urls(urls=urls, context=context)
+        await self._url_service.process_urls(url_objects)
 
     async def _send_acknowledge_message(
         self,
         message: Message,
         url_count: int,
-    ) -> None:
-        await message.reply(
+    ) -> Message:
+        return await message.reply(
             text=self._format_acknowledge_text(url_count),
             parse_mode=ParseMode.HTML,
             reply_to_message_id=message.id,

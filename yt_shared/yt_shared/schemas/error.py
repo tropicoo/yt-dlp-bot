@@ -8,7 +8,7 @@ from yt_shared.schemas.base import BaseRabbitPayloadModel
 from yt_shared.schemas.media import InbMediaPayload
 
 
-class ErrorGeneralPayload(BaseRabbitPayloadModel):
+class ErrorDownloadGeneralPayload(BaseRabbitPayloadModel):
     type: Literal[RabbitPayloadType.GENERAL_ERROR] = RabbitPayloadType.GENERAL_ERROR
     task_id: uuid.UUID | StrictStr | None
     from_chat_id: StrictInt | None
@@ -23,6 +23,6 @@ class ErrorGeneralPayload(BaseRabbitPayloadModel):
     yt_dlp_version: StrictStr | None
 
 
-class ErrorDownloadPayload(ErrorGeneralPayload):
+class ErrorDownloadPayload(ErrorDownloadGeneralPayload):
     type: Literal[RabbitPayloadType.DOWNLOAD_ERROR] = RabbitPayloadType.DOWNLOAD_ERROR
     task_id: uuid.UUID

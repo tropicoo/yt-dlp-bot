@@ -6,7 +6,7 @@ from yt_shared.schemas.media import InbMediaPayload
 from worker.core.payload_handler import PayloadHandler
 
 
-class _RMQCallbacks:
+class RMQCallbacks:
     """RabbitMQ's callbacks."""
 
     def __init__(self) -> None:
@@ -17,7 +17,7 @@ class _RMQCallbacks:
         try:
             await self._process_incoming_message(message)
         except Exception:
-            self._log.exception('Critical exception in worker rabbit callback')
+            self._log.exception('Critical exception in worker RabbitMQ callback')
             await message.reject(requeue=False)
 
     async def _process_incoming_message(self, message: IncomingMessage) -> None:
@@ -33,7 +33,7 @@ class _RMQCallbacks:
 
     def _deserialize_message(self, message: IncomingMessage) -> InbMediaPayload | None:
         try:
-            return InbMediaPayload.parse_raw(message.body)
+            return InbMediaPayload.model_validate_json(message.body)
         except Exception:
             self._log.exception('Failed to deserialize message body: %s', message.body)
             return None
@@ -44,4 +44,4 @@ class _RMQCallbacks:
         await message.reject(requeue=False)
 
 
-rmq_callbacks = _RMQCallbacks()
+rmq_callbacks = RMQCallbacks()

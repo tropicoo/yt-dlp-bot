@@ -1,3 +1,22 @@
+## Release 1.4.3
+
+Release date: September 20, 2023
+
+## New Features
+
+- Encode Instagram VP9 videos to H264 (not played in Telegram on iOS)
+- New environment variable in `envs/.env_worker`: `INSTAGRAM_ENCODE_TO_H264=True`
+
+## Important
+
+N/A
+
+## Misc
+
+- Maintenance and refactor
+
+---
+
 ## Release 1.4.2
 
 Release date: July 06, 2023

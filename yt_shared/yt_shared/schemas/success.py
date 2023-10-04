@@ -8,7 +8,7 @@ from yt_shared.schemas.base import BaseRabbitPayloadModel
 from yt_shared.schemas.media import DownMedia, InbMediaPayload
 
 
-class SuccessPayload(BaseRabbitPayloadModel):
+class SuccessDownloadPayload(BaseRabbitPayloadModel):
     """Payload with downloaded media context."""
 
     type: Literal[RabbitPayloadType.SUCCESS] = RabbitPayloadType.SUCCESS

@@ -6,19 +6,20 @@ from pyrogram.enums import ParseMode
 from yt_shared.emoji import SUCCESS_EMOJI
 from yt_shared.enums import MediaFileType, TaskSource
 from yt_shared.rabbit.publisher import RmqPublisher
-from yt_shared.schemas.error import ErrorGeneralPayload
+from yt_shared.schemas.error import ErrorDownloadGeneralPayload
 from yt_shared.schemas.media import BaseMedia
-from yt_shared.schemas.success import SuccessPayload
-from yt_shared.utils.file import remove_dir
+from yt_shared.schemas.success import SuccessDownloadPayload
+from yt_shared.utils.common import format_bytes
+from yt_shared.utils.file import file_size, remove_dir
 from yt_shared.utils.tasks.tasks import create_task
 
-from bot.core.handlers.abstract import AbstractHandler
+from bot.core.handlers.abstract import AbstractDownloadHandler
 from bot.core.tasks.upload import AudioUploadTask, VideoUploadTask
 from bot.core.utils import bold
 
 
-class SuccessHandler(AbstractHandler):
-    _body: SuccessPayload
+class SuccessDownloadHandler(AbstractDownloadHandler):
+    _body: SuccessDownloadPayload
     _UPLOAD_TASK_MAP = {
         MediaFileType.AUDIO: AudioUploadTask,
         MediaFileType.VIDEO: VideoUploadTask,
@@ -29,16 +30,25 @@ class SuccessHandler(AbstractHandler):
         self._rmq_publisher = RmqPublisher()
 
     async def handle(self) -> None:
-        coro_tasks = []
         try:
-            for media_object in self._body.media.get_media_objects():
-                coro_tasks.append(self._handle(media_object))
-            await asyncio.gather(*coro_tasks)
+            await self._handle()
         finally:
             self._cleanup()
 
+    async def _handle(self) -> None:
+        coro_tasks = [self._delete_acknowledge_message()]
+        for media_object in self._body.media.get_media_objects():
+            coro_tasks.append(self._handle_media_object(media_object))
+        await asyncio.gather(*coro_tasks)
+
+    async def _delete_acknowledge_message(self) -> None:
+        await self._bot.delete_messages(
+            chat_id=self._body.from_chat_id,
+            message_ids=[self._body.context.ack_message_id],
+        )
+
     async def _publish_error_message(self, err: Exception) -> None:
-        err_payload = ErrorGeneralPayload(
+        err_payload = ErrorDownloadGeneralPayload(
             task_id=self._body.task_id,
             message_id=self._body.message_id,
             from_chat_id=self._body.from_chat_id,
@@ -53,7 +63,7 @@ class SuccessHandler(AbstractHandler):
         )
         await self._rmq_publisher.send_download_error(err_payload)
 
-    async def _handle(self, media_object: BaseMedia) -> None:
+    async def _handle_media_object(self, media_object: BaseMedia) -> None:
         try:
             await self._send_success_text(media_object)
             if self._upload_is_enabled():
@@ -61,7 +71,7 @@ class SuccessHandler(AbstractHandler):
                 await self._create_upload_task(media_object)
             else:
                 self._log.warning(
-                    'File %s will not be uploaded due to upload configuration',
+                    'File "%s" will not be uploaded due to upload configuration',
                     media_object.filepath,
                 )
         except Exception as err:
@@ -74,7 +84,10 @@ class SuccessHandler(AbstractHandler):
             'Cleaning up task "%s": removing download content directory "%s" with files %s',
             self._body.task_id,
             root_path,
-            os.listdir(root_path),
+            {
+                fn: format_bytes(file_size(os.path.join(root_path, fn)))
+                for fn in os.listdir(root_path)
+            },
         )
         remove_dir(root_path)
 
@@ -139,7 +152,7 @@ class SuccessHandler(AbstractHandler):
         file_size = os.stat(media_obj.filepath).st_size
         if file_size > max_file_size:
             err_msg = (
-                f'{media_obj.file_type} file size {file_size} bytes bigger than '
+                f'{media_obj.file_type} file size of {file_size} bytes bigger than '
                 f'allowed {max_file_size} bytes. Will not upload'
             )
             self._log.warning(err_msg)

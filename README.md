@@ -133,7 +133,6 @@ documentations lives at `http://127.0.0.1:1984/docs`.
 | `/v1/tasks/f828714a-5c50-45de-87c0-3b51b7e04039?include_meta=True` | `GET`    | Get info about task by ID                                                                                                                  |
 | `/v1/tasks/latest?include_meta=True`                               | `GET`    | Get info about latest task                                                                                                                 |
 | `/v1/tasks/f828714a-5c50-45de-87c0-3b51b7e04039`                   | `DELETE` | Delete task by ID                                                                                                                          |
-| `/v1/tasks/latest?include_meta=True`                               | `GET`    | Get info about the latest task                                                                                                             |
 | `/v1/tasks`                                                        | `POST`   | Create a download task by sending json payload `{"url": "<URL>"}`                                                                          |
 | `/v1/tasks/stats`                                                  | `GET`    | Get overall tasks stats                                                                                                                    |
 

@@ -94,10 +94,7 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
         pass
 
     def _generate_file_caption(self) -> str:
-        caption = '\n'.join(self._generate_caption_items())
-        if len(caption) > settings.TG_MAX_CAPTION_SIZE:
-            return caption[: settings.TG_MAX_CAPTION_SIZE]
-        return caption
+        return '\n'.join(self._generate_caption_items())[: settings.TG_MAX_CAPTION_SIZE]
 
     async def _send_upload_text(self) -> None:
         text = (

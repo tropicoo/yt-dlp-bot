@@ -1,3 +1,27 @@
+## Release 1.4.4
+
+Release date: November 11, 2023
+
+## New Features
+
+- New boolean config variable per user `is_admin`. Currently, admin users will receive update message when `yt-dlp` needs update.
+  ```yaml
+  allowed_users:
+    - id: 11111111111
+      is_admin: !!bool True
+      ***
+  ```
+
+## Important
+
+- Every user in the config must include this new config variable whether it's `True` or `False`
+
+## Misc
+
+N/A
+
+---
+
 ## Release 1.4.3
 
 Release date: September 20, 2023

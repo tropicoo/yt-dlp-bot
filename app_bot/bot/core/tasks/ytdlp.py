@@ -72,7 +72,7 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
             f'Current version: {bold(ctx.current.version)}\n'
             f'Rebuild worker with {code("docker compose build --no-cache worker")}'
         )
-        await self._bot.send_message_all(text)
+        await self._bot.send_message_admins(text)
 
     async def _notify_up_to_date(
         self, ctx: VersionContext, user_ids: list[int]

@@ -27,9 +27,13 @@ class VideoBot(Client):
         self._log = logging.getLogger(self.__class__.__name__)
         self._log.info('Initializing bot client')
 
-        self.allowed_users: dict[int, UserSchema] = {
-            user.id: user for user in self.conf.telegram.allowed_users
-        }
+        self.allowed_users: dict[int, UserSchema] = {}
+        self.admin_users: dict[int, UserSchema] = {}
+
+        for user in self.conf.telegram.allowed_users:
+            self.allowed_users[user.id] = user
+            if user.is_admin:
+                self.admin_users[user.id] = user
 
     async def run_forever(self) -> None:
         """Firstly 'await bot.start()' should be called."""
@@ -75,5 +79,15 @@ class VideoBot(Client):
         await self.send_message_to_users(
             text=text,
             user_ids=self.allowed_users.keys(),
+            parse_mode=parse_mode,
+        )
+
+    async def send_message_admins(
+        self, text: str, parse_mode: ParseMode = ParseMode.HTML
+    ) -> None:
+        """Send message to all defined user IDs in config.json."""
+        await self.send_message_to_users(
+            text=text,
+            user_ids=self.admin_users.keys(),
             parse_mode=parse_mode,
         )

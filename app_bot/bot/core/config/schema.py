@@ -38,6 +38,7 @@ class UploadSchema(RealBaseModel):
 
 
 class UserSchema(AnonymousUserSchema):
+    is_admin: StrictBool
     send_startup_message: StrictBool
     download_media_type: DownMediaType
     save_to_storage: StrictBool

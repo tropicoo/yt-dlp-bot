@@ -3,6 +3,7 @@ import os
 import traceback
 
 from pyrogram.enums import ParseMode
+from pyrogram.errors import MessageIdInvalid, MessageNotModified
 from yt_shared.emoji import SUCCESS_EMOJI
 from yt_shared.enums import MediaFileType, TaskSource
 from yt_shared.rabbit.publisher import RmqPublisher
@@ -19,6 +20,8 @@ from bot.core.utils import bold
 
 
 class SuccessDownloadHandler(AbstractDownloadHandler):
+    """Handle successfully downloaded media context."""
+
     _body: SuccessDownloadPayload
     _UPLOAD_TASK_MAP = {
         MediaFileType.AUDIO: AudioUploadTask,
@@ -36,16 +39,35 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             self._cleanup()
 
     async def _handle(self) -> None:
-        coro_tasks = [self._delete_acknowledge_message()]
+        coro_tasks = []
         for media_object in self._body.media.get_media_objects():
             coro_tasks.append(self._handle_media_object(media_object))
-        await asyncio.gather(*coro_tasks)
+        try:
+            await asyncio.gather(*coro_tasks)
+        finally:
+            await self._delete_acknowledge_message()
 
     async def _delete_acknowledge_message(self) -> None:
         await self._bot.delete_messages(
             chat_id=self._body.from_chat_id,
             message_ids=[self._body.context.ack_message_id],
         )
+
+    async def _set_upload_message(self) -> None:
+        try:
+            await self._bot.edit_message_text(
+                chat_id=self._body.from_chat_id,
+                message_id=self._body.context.ack_message_id,
+                text=f'⬆️ {bold("Uploading")}',
+            )
+        except (MessageIdInvalid, MessageNotModified) as err:
+            # Expected behaviour when several links where pasted in one message and
+            # the acknowledgment message was deleted after the first successful upload
+            self._log.warning(
+                'Could not edit the message id "%s": %s',
+                self._body.context.ack_message_id,
+                err,
+            )
 
     async def _publish_error_message(self, err: Exception) -> None:
         err_payload = ErrorDownloadGeneralPayload(
@@ -68,7 +90,11 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             await self._send_success_text(media_object)
             if self._upload_is_enabled():
                 self._validate_file_size_for_upload(media_object)
-                await self._create_upload_task(media_object)
+                coros = (
+                    self._create_upload_task(media_object),
+                    self._set_upload_message(),
+                )
+                await asyncio.gather(*coros)
             else:
                 self._log.warning(
                     'File "%s" will not be uploaded due to upload configuration',
@@ -149,10 +175,10 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
         if not os.path.exists(media_obj.filepath):
             raise ValueError(f'{media_obj.file_type} {media_obj.filepath} not found')
 
-        file_size = os.stat(media_obj.filepath).st_size
-        if file_size > max_file_size:
+        _file_size = media_obj.current_file_size()
+        if _file_size > max_file_size:
             err_msg = (
-                f'{media_obj.file_type} file size of {file_size} bytes bigger than '
+                f'{media_obj.file_type} file size of {_file_size} bytes bigger than '
                 f'allowed {max_file_size} bytes. Will not upload'
             )
             self._log.warning(err_msg)

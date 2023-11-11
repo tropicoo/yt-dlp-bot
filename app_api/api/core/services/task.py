@@ -69,6 +69,7 @@ class TaskService:
         payload = InbMediaPayload(
             id=task_id,
             url=task.url,
+            original_url=task.url,
             added_at=added_at,
             source=source,
             download_media_type=task.download_media_type,

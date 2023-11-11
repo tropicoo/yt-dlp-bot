@@ -17,8 +17,8 @@ class RabbitMQ:
         self._log = logging.getLogger(self.__class__.__name__)
         self._config = get_rabbit_config()
 
-        self.connection: RobustConnection = None
-        self.channel: RobustChannel = None
+        self.connection: RobustConnection | None = None
+        self.channel: RobustChannel | None = None
         self.exchanges: dict[str, AbstractRobustExchange] = {}
         self.queues: dict[str, AbstractRobustQueue] = {}
 
@@ -30,7 +30,7 @@ class RabbitMQ:
 
     async def _set_connection(self) -> None:
         self.connection = await aio_pika.connect_robust(
-            settings.RABBITMQ_URI,
+            url=settings.RABBITMQ_URI,
             loop=get_running_loop(),
             reconnect_interval=self.RABBITMQ_RECONNECT_INTERVAL,
         )

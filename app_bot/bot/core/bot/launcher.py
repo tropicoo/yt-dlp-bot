@@ -31,10 +31,12 @@ class BotLauncher:
 
     def _setup_handlers(self) -> None:
         cb = TelegramCallback()
+        allowed_users = list(self._bot.allowed_users.keys())
+
         self._bot.add_handler(
             MessageHandler(
                 cb.on_start,
-                filters=filters.user(list(self._bot.allowed_users.keys()))
+                filters=filters.user(allowed_users)
                 & filters.command(['start', 'help']),
             ),
         )
@@ -43,10 +45,7 @@ class BotLauncher:
                 cb.on_message,
                 filters=(
                     filters.regex(self.REGEX_NOT_START_WITH_SLASH)
-                    & (
-                        filters.user(list(self._bot.allowed_users.keys()))
-                        | filters.chat(list(self._bot.allowed_users.keys()))
-                    )
+                    & (filters.user(allowed_users) | filters.chat(allowed_users))
                 ),
             ),
         )

@@ -8,7 +8,7 @@ import yt_dlp
 from yt_shared.enums import DownMediaType
 from yt_shared.schemas.media import Audio, DownMedia, Video
 from yt_shared.utils.common import format_bytes, random_string
-from yt_shared.utils.file import file_size
+from yt_shared.utils.file import file_size, list_files
 
 from worker.core.config import settings
 from worker.core.exceptions import MediaDownloaderError
@@ -76,7 +76,9 @@ class MediaDownloader:
 
             self._log.info('Finished downloading %s', url)
             self._log.debug('Downloaded "%s" meta: %s', url, meta_sanitized)
-            self._log.info('Content of "%s": %s', curr_tmp_dir, current_files)
+            self._log.info(
+                'Content of "%s": %s', curr_tmp_dir, list_files(curr_tmp_dir)
+            )
 
             destination_dir = os.path.join(
                 self._tmp_downloaded_dest_dir,

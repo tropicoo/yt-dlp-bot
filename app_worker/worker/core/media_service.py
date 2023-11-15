@@ -66,10 +66,9 @@ class MediaService:
             raise
         return media
 
-    def _get_host_conf(self, url: str) -> AbstractHostConfig:
+    @staticmethod
+    def _get_host_conf(url: str) -> AbstractHostConfig:
         host_to_cls_map = HostConfRegistry.get_host_to_cls_map()
-        self._log.info('Registry: %s', HostConfRegistry.get_registry())
-        self._log.info('Host to CLS map: %s', host_to_cls_map)
         host_cls = host_to_cls_map.get(urlsplit(url).netloc, host_to_cls_map[None])
         return host_cls(url=url)
 

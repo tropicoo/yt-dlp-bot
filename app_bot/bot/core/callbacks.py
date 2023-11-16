@@ -29,7 +29,13 @@ class TelegramCallback:
     async def on_message(self, client: VideoBot, message: Message) -> None:
         """Receive video URL and send to the download worker."""
         self._log.debug('Received Telegram Message: %s', message)
-        urls = message.text.splitlines()
+        text = message.text
+        if not text:
+            self._log.warning('Received empty text: %s', message)
+            await self._send_on_empty_message(message)
+            return
+
+        urls = text.splitlines()
         user = client.allowed_users[get_user_id(message)]
         if user.use_url_regex_match:
             urls = self._url_parser.filter_urls(
@@ -57,6 +63,14 @@ class TelegramCallback:
     ) -> Message:
         return await message.reply(
             text=self._format_acknowledge_text(url_count),
+            parse_mode=ParseMode.HTML,
+            reply_to_message_id=message.id,
+        )
+
+    @staticmethod
+    async def _send_on_empty_message(message: Message) -> None:
+        await message.reply(
+            text='❓ Did you send anything?',
             parse_mode=ParseMode.HTML,
             reply_to_message_id=message.id,
         )

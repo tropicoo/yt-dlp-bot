@@ -18,7 +18,7 @@ from yt_shared.utils.file import file_size
 
 
 class InbMediaPayload(RealBaseModel):
-    """RabbitMQ incoming media payload from Telegram Bot or API service."""
+    """RabbitMQ inbound media payload from Telegram Bot or API service."""
 
     id: uuid.UUID | None = None
     from_chat_id: StrictInt | None

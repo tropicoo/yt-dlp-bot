@@ -29,7 +29,8 @@ class WorkerLauncher:
         await self._run_forever()
 
     async def _run_forever(self) -> None:
-        await asyncio.sleep(self._RUN_FOREVER_SLEEP_SECONDS)
+        while True:
+            await asyncio.sleep(self._RUN_FOREVER_SLEEP_SECONDS)
 
     async def _perform_setup(self) -> None:
         await asyncio.gather(

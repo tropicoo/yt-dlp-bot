@@ -31,8 +31,7 @@ class TelegramCallback:
         self._log.debug('Received Telegram Message: %s', message)
         text = message.text
         if not text:
-            self._log.warning('Received empty text: %s', message)
-            await self._send_on_empty_message(message)
+            self._log.debug('Forwarded message, skipping')
             return
 
         urls = text.splitlines()
@@ -63,14 +62,6 @@ class TelegramCallback:
     ) -> Message:
         return await message.reply(
             text=self._format_acknowledge_text(url_count),
-            parse_mode=ParseMode.HTML,
-            reply_to_message_id=message.id,
-        )
-
-    @staticmethod
-    async def _send_on_empty_message(message: Message) -> None:
-        await message.reply(
-            text='❓ Did you send anything?',
             parse_mode=ParseMode.HTML,
             reply_to_message_id=message.id,
         )

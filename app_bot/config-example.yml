@@ -8,7 +8,7 @@ telegram:
     - "^http(s)?:\\/\\/.+$"
   allowed_users:  # Multiple users/groups are allowed.
     - id: 11111111111  # User or group ID.
-      is_admin: !! bool True
+      is_admin: !!bool True
       send_startup_message: !!bool True
       download_media_type: "VIDEO"
       save_to_storage: !!bool False

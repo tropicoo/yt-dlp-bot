@@ -3,12 +3,13 @@ import logging
 import os
 import shutil
 from tempfile import TemporaryDirectory
+from typing import Callable
 
 import yt_dlp
 from yt_shared.enums import DownMediaType
 from yt_shared.schemas.media import Audio, DownMedia, Video
 from yt_shared.utils.common import format_bytes, random_string
-from yt_shared.utils.file import file_size, list_files
+from yt_shared.utils.file import file_size, list_files, remove_dir
 
 from worker.core.config import settings
 from worker.core.exceptions import MediaDownloaderError
@@ -66,9 +67,14 @@ class MediaDownloader:
                 self._log.info('Downloading with options %s', ytdl_opts_model.ytdl_opts)
 
                 meta: dict | None = ytdl.extract_info(url, download=True)
+                if not meta:
+                    err_msg = f'Error during media download. Check logs. URL: "{url}"'
+                    self._log.error('%s. Meta: %s', err_msg, meta)
+                    raise MediaDownloaderError(err_msg)
+
                 current_files = os.listdir(curr_tmp_dir)
                 if not current_files:
-                    err_msg = f'Nothing downloaded. Is URL valid? "{url}"'
+                    err_msg = f'Nothing downloaded. Is URL valid? URL: "{url}"'
                     self._log.error(err_msg)
                     raise MediaDownloaderError(err_msg)
 
@@ -113,15 +119,24 @@ class MediaDownloader:
         curr_tmp_dir: str,
         destination_dir: str,
     ) -> tuple[Audio | None, Video | None]:
-        def get_audio():
-            return self._create_audio_dto(
-                meta=meta, curr_tmp_dir=curr_tmp_dir, destination_dir=destination_dir
-            )
+        def get_audio() -> Audio:
+            return create_dto(self._create_audio_dto)
 
-        def get_video():
-            return self._create_video_dto(
-                meta=meta, curr_tmp_dir=curr_tmp_dir, destination_dir=destination_dir
-            )
+        def get_video() -> Video:
+            return create_dto(self._create_video_dto)
+
+        def create_dto(
+            func: Callable[[dict, str, str], Audio | Video]
+        ) -> Audio | Video:
+            try:
+                return func(
+                    meta,
+                    curr_tmp_dir,
+                    destination_dir,
+                )
+            except Exception:
+                remove_dir(destination_dir)
+                raise
 
         match media_type:  # noqa: E999
             case DownMediaType.AUDIO:

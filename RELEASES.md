@@ -1,3 +1,20 @@
+## Release 1.4.5
+
+Release date: November 23, 2023
+
+## New Features
+
+N/A
+
+## Important
+
+N/A
+
+## Misc
+
+- Improved error handling
+
+---
 ## Release 1.4.4
 
 Release date: November 11, 2023

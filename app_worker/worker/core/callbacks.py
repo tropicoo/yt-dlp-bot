@@ -18,6 +18,8 @@ class RMQCallbacks:
             await self._process_incoming_message(message)
         except Exception:
             self._log.exception('Critical exception in worker RabbitMQ callback')
+            if not message.processed:
+                await message.reject(requeue=False)
 
     async def _process_incoming_message(self, message: IncomingMessage) -> None:
         self._log.info('[x] Received message %s', message.body)

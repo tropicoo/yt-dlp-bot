@@ -18,7 +18,6 @@ class RMQCallbacks:
             await self._process_incoming_message(message)
         except Exception:
             self._log.exception('Critical exception in worker RabbitMQ callback')
-            await message.reject(requeue=False)
 
     async def _process_incoming_message(self, message: IncomingMessage) -> None:
         self._log.info('[x] Received message %s', message.body)
@@ -27,8 +26,8 @@ class RMQCallbacks:
             await self._reject_invalid_message(message)
             return
 
-        await self._payload_handler.handle(media_payload=media_payload)
         await message.ack()
+        await self._payload_handler.handle(media_payload=media_payload)
         self._log.info('Processing done with payload: %s', media_payload)
 
     def _deserialize_message(self, message: IncomingMessage) -> InbMediaPayload | None:

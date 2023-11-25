@@ -52,12 +52,12 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             message_ids=[self._body.context.ack_message_id],
         )
 
-    async def _set_upload_message(self) -> None:
+    async def _set_upload_message(self, media_object: BaseMedia) -> None:
         try:
             await self._bot.edit_message_text(
                 chat_id=self._body.from_chat_id,
                 message_id=self._body.context.ack_message_id,
-                text=f'⬆️ {bold("Uploading")}',
+                text=f'⬆️ {bold(f"Uploading {media_object.file_size_human()}")}',
             )
         except (MessageIdInvalid, MessageNotModified) as err:
             # Expected behaviour when several links where pasted in one message and
@@ -91,7 +91,7 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
                 self._validate_file_size_for_upload(media_object)
                 coros = (
                     self._create_upload_task(media_object),
-                    self._set_upload_message(),
+                    self._set_upload_message(media_object),
                 )
                 await asyncio.gather(*coros)
             else:

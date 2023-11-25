@@ -23,21 +23,16 @@ class RMQCallbacks:
 
     async def _process_incoming_message(self, message: IncomingMessage) -> None:
         self._log.info('[x] Received message %s', message.body)
-        media_payload = self._deserialize_message(message)
-        if not media_payload:
+        try:
+            media_payload = InbMediaPayload.model_validate_json(message.body)
+        except Exception:
+            self._log.exception('Failed to deserialize message body: %s', message.body)
             await self._reject_invalid_message(message)
             return
 
         await message.ack()
         await self._payload_handler.handle(media_payload=media_payload)
         self._log.info('Processing done with payload: %s', media_payload)
-
-    def _deserialize_message(self, message: IncomingMessage) -> InbMediaPayload | None:
-        try:
-            return InbMediaPayload.model_validate_json(message.body)
-        except Exception:
-            self._log.exception('Failed to deserialize message body: %s', message.body)
-            return None
 
     async def _reject_invalid_message(self, message: IncomingMessage) -> None:
         body = message.body

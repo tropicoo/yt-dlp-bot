@@ -44,7 +44,7 @@ AUDIO_FORMAT_YTDL_OPTS = [
 
 VIDEO_YTDL_OPTS = [
     '--format',
-    'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4',
+    'bestvideo[ext=mp4][filesize<=2000MB]+bestaudio[ext=m4a]/mp4',
     '--write-thumbnail',
     '--convert-thumbnails',
     FINAL_THUMBNAIL_FORMAT,

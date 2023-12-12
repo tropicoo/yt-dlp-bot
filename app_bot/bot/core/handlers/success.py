@@ -44,9 +44,9 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
         try:
             await asyncio.gather(*coro_tasks)
         finally:
-            await self._delete_acknowledge_message()
+            await self._delete_acknowledgment_message()
 
-    async def _delete_acknowledge_message(self) -> None:
+    async def _delete_acknowledgment_message(self) -> None:
         await self._bot.delete_messages(
             chat_id=self._body.from_chat_id,
             message_ids=[self._body.context.ack_message_id],

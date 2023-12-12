@@ -209,7 +209,7 @@ class MediaDownloader:
     def _find_downloaded_file(self, root_path: str, extension: str) -> str | None:
         """Try to find downloaded audio or thumbnail file."""
         verbose_name = self._EXT_TO_NAME[extension]
-        for file_name in glob.glob(f"*.{extension}", root_dir=root_path):
+        for file_name in glob.glob(f'*.{extension}', root_dir=root_path):
             self._log.info(
                 'Found downloaded %s: "%s" [%s]',
                 verbose_name,

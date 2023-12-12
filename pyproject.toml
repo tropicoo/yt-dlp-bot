@@ -7,3 +7,8 @@ line-length = 88
 select = ["F", "E", "W", "I001"]
 ignore = ["E501"]  # Skip line length violations
 src = ["app_api", "app_bot", "app_worker"]
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "single"
+line-ending = "lf"

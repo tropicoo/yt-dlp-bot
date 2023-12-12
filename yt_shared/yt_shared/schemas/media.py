@@ -67,7 +67,7 @@ class BaseMedia(RealBaseModel):
 
     def mark_as_converted(self, filepath: str) -> None:
         self.converted_filepath = filepath
-        self.converted_filename = filepath.rsplit("/", 1)[-1]
+        self.converted_filename = filepath.rsplit('/', 1)[-1]
         self.converted_file_size = file_size(filepath)
         self.is_converted = True
 

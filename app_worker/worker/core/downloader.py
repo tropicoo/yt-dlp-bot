@@ -68,13 +68,13 @@ class MediaDownloader:
 
                 meta: dict | None = ytdl.extract_info(url, download=True)
                 if not meta:
-                    err_msg = f'Error during media download. Check logs. URL: "{url}"'
+                    err_msg = f'Error during media download. Check logs.'
                     self._log.error('%s. Meta: %s', err_msg, meta)
                     raise MediaDownloaderError(err_msg)
 
                 current_files = os.listdir(curr_tmp_dir)
                 if not current_files:
-                    err_msg = f'Nothing downloaded. Is URL valid? URL: "{url}"'
+                    err_msg = f'Nothing downloaded. Is URL valid?'
                     self._log.error(err_msg)
                     raise MediaDownloaderError(err_msg)
 

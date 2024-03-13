@@ -19,8 +19,8 @@ from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.config.config import get_main_config, settings
-from bot.core.config.schema import AnonymousUserSchema, UserSchema, VideoCaptionSchema
-from bot.core.utils import bold
+from bot.core.schema import AnonymousUserSchema, UserSchema, VideoCaptionSchema
+from bot.core.utils import bold, is_user_upload_silent
 
 if TYPE_CHECKING:
     from bot.core.bot import VideoBot
@@ -45,7 +45,7 @@ class AudioUploadContext(BaseUploadContext):
     pass
 
 
-class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
+class AbstractUploadTask(AbstractTask, abc.ABC):
     _UPLOAD_ACTION: ChatAction
 
     def __init__(
@@ -103,16 +103,15 @@ class AbstractUploadTask(AbstractTask, metaclass=abc.ABCMeta):
         )
         coros = []
         for user in self._users:
-            if user.upload.silent:
-                continue
-            kwargs = {
-                'chat_id': user.id,
-                'text': text,
-                'parse_mode': ParseMode.HTML,
-            }
-            if self._ctx.message_id:
-                kwargs['reply_to_message_id'] = self._ctx.message_id
-            coros.append(self._bot.send_message(**kwargs))
+            if not is_user_upload_silent(user=user, conf=self._bot.conf):
+                kwargs = {
+                    'chat_id': user.id,
+                    'text': text,
+                    'parse_mode': ParseMode.HTML,
+                }
+                if self._ctx.message_id:
+                    kwargs['reply_to_message_id'] = self._ctx.message_id
+                coros.append(self._bot.send_message(**kwargs))
         await asyncio.gather(*coros)
 
     def _get_forward_chat_ids(self) -> list[int]:
@@ -257,7 +256,7 @@ class VideoUploadTask(AbstractUploadTask):
         )
 
     def _get_caption_conf(self) -> VideoCaptionSchema:
-        if self._users[0].is_anonymous_user:
+        if isinstance(self._users[0], AnonymousUserSchema):
             return self._bot.conf.telegram.api.video_caption
         return self._users[0].upload.video_caption
 

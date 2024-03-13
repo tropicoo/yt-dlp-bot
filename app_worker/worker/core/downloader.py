@@ -68,13 +68,13 @@ class MediaDownloader:
 
                 meta: dict | None = ytdl.extract_info(url, download=True)
                 if not meta:
-                    err_msg = f'Error during media download. Check logs.'
+                    err_msg = 'Error during media download. Check logs.'
                     self._log.error('%s. Meta: %s', err_msg, meta)
                     raise MediaDownloaderError(err_msg)
 
                 current_files = os.listdir(curr_tmp_dir)
                 if not current_files:
-                    err_msg = f'Nothing downloaded. Is URL valid?'
+                    err_msg = 'Nothing downloaded. Is URL valid?'
                     self._log.error(err_msg)
                     raise MediaDownloaderError(err_msg)
 
@@ -126,7 +126,7 @@ class MediaDownloader:
             return create_dto(self._create_video_dto)
 
         def create_dto(
-            func: Callable[[dict, str, str], Audio | Video]
+            func: Callable[[dict, str, str], Audio | Video],
         ) -> Audio | Video:
             try:
                 return func(

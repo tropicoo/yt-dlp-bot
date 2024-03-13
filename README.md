@@ -1,6 +1,6 @@
-## yt-dlp-bot - YouTube Download Telegram Bot 🇺🇦
+## yt-dlp-bot - Video Download Telegram Bot 🇺🇦
 
-Simple and reliable self-hosted YouTube Download Telegram Bot.
+Simple and reliable self-hosted Video Download Telegram Bot.
 
 Version: 1.4.5. [Release details](RELEASES.md).
 
@@ -15,11 +15,15 @@ Version: 1.4.5. [Release details](RELEASES.md).
 
 ## 😂 Features
 
-* Download audio and videos from [yt-dlp](https://github.com/yt-dlp/yt-dlp) supported sites to your storage.
+* Download audio and free videos with Creative Commons (CC) License from [yt-dlp](https://github.com/yt-dlp/yt-dlp) sites to your storage.
 * Upload downloaded media to Telegram.
 * Interact with the bot in private or group chats.
 * Trigger video downloads via link to the API.
 * Track download tasks using the API.
+
+## Disclaimer
+
+- Intended to use only with videos that are under Creative Commons (CC) License
 
 ## ⚙ Quick Setup
 
@@ -145,7 +149,7 @@ documentations lives at `http://127.0.0.1:1984/docs`.
    [
        {
            "id": "7ab91ef7-461c-4ef6-a35b-d3704fe28e6c",
-           "url": "https://youtu.be/jMetnwUZBJQ",
+           "url": "https://www.youtube.com/watch?v=PavYAOpVpJI",
            "status": "DONE",
            "source": "BOT",
            "added_at": "2022-02-14T02:29:55.981622",
@@ -156,24 +160,7 @@ documentations lives at `http://127.0.0.1:1984/docs`.
                "id": "4b1c63ed-3e32-43e6-a0b7-c7fc8713b268",
                "created": "2022-02-14T02:29:59.597839",
                "updated": "2022-02-14T02:29:59.597845",
-               "name": "Ana Flora Vs. Dj Brizi - Conversa Fiada",
-               "ext": "mp4"
-           }
-       },
-       {
-           "id": "952bfb7f-1ab3-4db9-8114-eb9995d0cf8d",
-           "url": "https://youtu.be/AWy1qiTF64M",
-           "status": "DONE",
-           "source": "API",
-           "added_at": "2022-02-14T00:36:21.398624",
-           "created": "2022-02-14T00:36:21.410999",
-           "updated": "2022-02-14T00:36:23.535844",
-           "message_id": null,
-           "file": {
-               "id": "ad1fef96-ce1c-4c5e-a426-58e2d5d3e907",
-               "created": "2022-02-14T00:36:23.537706",
-               "updated": "2022-02-14T00:36:23.537715",
-               "name": "Rufford Ford | part 47",
+               "name": "[Drone Freestyle] Mountain Landscape With Snow | Free Stock Footage | Creative Common Video",
                "ext": "mp4"
            }
        }
@@ -184,7 +171,7 @@ documentations lives at `http://127.0.0.1:1984/docs`.
    Request
    ```json
    {
-       "url": "https://www.youtube.com/watch?v=zGDzdps75ns",
+       "url": "https://www.youtube.com/watch?v=PavYAOpVpJI",
        "download_media_type": "AUDIO_VIDEO",
        "save_to_storage": false
    }
@@ -193,7 +180,7 @@ documentations lives at `http://127.0.0.1:1984/docs`.
    ```json
    {
        "id": "5ac05808-b29c-40d6-b250-07e3e769d8a6",
-       "url": "https://youtu.be/AWy1qiTF64M",
+       "url": "https://www.youtube.com/watch?v=PavYAOpVpJI",
        "source": "API",
        "added_at": "2022-02-14T00:35:25.419962+00:00"
    }

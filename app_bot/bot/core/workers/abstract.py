@@ -1,4 +1,5 @@
 """RabbitMQ Queue abstract worker module."""
+
 import abc
 import enum
 from typing import TYPE_CHECKING, Type

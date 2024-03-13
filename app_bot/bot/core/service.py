@@ -10,7 +10,7 @@ from yt_shared.rabbit.publisher import RmqPublisher
 from yt_shared.schemas.media import InbMediaPayload
 from yt_shared.schemas.url import URL
 
-from bot.core.config.schema import UserSchema
+from bot.core.schema import UserSchema
 from bot.core.utils import can_remove_url_params
 
 

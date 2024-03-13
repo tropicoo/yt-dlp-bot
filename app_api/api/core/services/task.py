@@ -74,6 +74,11 @@ class TaskService:
             source=source,
             download_media_type=task.download_media_type,
             save_to_storage=task.save_to_storage,
+            from_chat_id=None,
+            from_chat_type=None,
+            from_user_id=None,
+            message_id=None,
+            ack_message_id=None,
         )
         if not await publisher.send_for_download(payload):
             raise TaskServiceError('Failed to create task')

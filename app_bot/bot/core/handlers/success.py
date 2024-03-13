@@ -15,7 +15,7 @@ from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.handlers.abstract import AbstractDownloadHandler
 from bot.core.tasks.upload import AudioUploadTask, VideoUploadTask
-from bot.core.utils import bold
+from bot.core.utils import bold, is_user_upload_silent
 
 
 class SuccessDownloadHandler(AbstractDownloadHandler):
@@ -47,12 +47,16 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             await self._delete_acknowledgment_message()
 
     async def _delete_acknowledgment_message(self) -> None:
-        await self._bot.delete_messages(
-            chat_id=self._body.from_chat_id,
-            message_ids=[self._body.context.ack_message_id],
-        )
+        if self._body.from_chat_id and self._body.context.ack_message_id:
+            await self._bot.delete_messages(
+                chat_id=self._body.from_chat_id,
+                message_ids=self._body.context.ack_message_id,
+            )
 
     async def _set_upload_message(self, media_object: BaseMedia) -> None:
+        if not (self._body.from_chat_id and self._body.context.ack_message_id):
+            return
+
         try:
             await self._bot.edit_message_text(
                 chat_id=self._body.from_chat_id,
@@ -142,16 +146,15 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
     async def _send_success_text(self, media_object: BaseMedia) -> None:
         text = self._create_success_text(media_object)
         for user in self._receiving_users:
-            if user.upload.silent:
-                continue
-            kwargs = {
-                'chat_id': user.id,
-                'text': text,
-                'parse_mode': ParseMode.HTML,
-            }
-            if self._body.message_id:
-                kwargs['reply_to_message_id'] = self._body.message_id
-            await self._bot.send_message(**kwargs)
+            if not is_user_upload_silent(user=user, conf=self._bot.conf):
+                kwargs = {
+                    'chat_id': user.id,
+                    'text': text,
+                    'parse_mode': ParseMode.HTML,
+                }
+                if self._body.message_id:
+                    kwargs['reply_to_message_id'] = self._body.message_id
+                await self._bot.send_message(**kwargs)
 
     def _upload_is_enabled(self) -> bool:
         """Check whether upload is allowed for particular user configuration."""

@@ -6,6 +6,7 @@ More here https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/options.py or 'yt-
 If you want to change any of these values or add new ones, copy all content to the `user.py` in the same
 directory as this file, and edit the values.
 """
+
 from worker.utils import get_cookies_opts_if_not_empty
 
 FINAL_AUDIO_FORMAT = 'mp3'

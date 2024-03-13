@@ -8,8 +8,8 @@ import yaml
 from pydantic import ValidationError
 from yt_shared.config import Settings
 
-from bot.core.config.schema import ConfigSchema
 from bot.core.exceptions import ConfigError
+from bot.core.schema import ConfigSchema
 
 
 class ConfigLoader:

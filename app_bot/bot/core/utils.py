@@ -1,4 +1,5 @@
 """Utils module."""
+
 import asyncio
 import random
 import string
@@ -11,6 +12,7 @@ from pyrogram.enums import ChatType
 from pyrogram.types import Message
 
 from bot.core.config import settings
+from bot.core.schema import AnonymousUserSchema, ConfigSchema, UserSchema
 
 
 async def shallow_sleep_async(sleep_time: float = 0.1) -> None:
@@ -92,3 +94,15 @@ def split_telegram_message(
 
 def can_remove_url_params(url: str, matching_hosts: Iterable[str]) -> bool:
     return urlparse(url).netloc in set(matching_hosts)
+
+
+def is_user_upload_silent(
+    user: UserSchema | AnonymousUserSchema, conf: ConfigSchema
+) -> bool:
+    if isinstance(user, AnonymousUserSchema):
+        if conf.telegram.api.silent:
+            return True
+    elif user.upload.silent:
+        return True
+    else:
+        return False

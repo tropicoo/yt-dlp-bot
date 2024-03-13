@@ -7,7 +7,7 @@ from pyrogram.enums import ParseMode
 from pyrogram.errors import RPCError
 
 from bot.core.config.config import get_main_config
-from bot.core.config.schema import UserSchema
+from bot.core.schema import UserSchema
 from bot.core.utils import bold
 
 

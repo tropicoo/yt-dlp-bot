@@ -6,13 +6,13 @@ from yt_shared.enums import TaskSource, TelegramChatType
 from yt_shared.schemas.error import ErrorDownloadGeneralPayload, ErrorDownloadPayload
 from yt_shared.schemas.success import SuccessDownloadPayload
 
-from bot.core.config.schema import AnonymousUserSchema, UserSchema
+from bot.core.schema import AnonymousUserSchema, UserSchema
 
 if TYPE_CHECKING:
     from bot.core.bot import VideoBot
 
 
-class AbstractDownloadHandler(metaclass=abc.ABCMeta):
+class AbstractDownloadHandler(abc.ABC):
     def __init__(
         self,
         body: SuccessDownloadPayload

@@ -1,3 +1,5 @@
+import abc
+
 from pydantic import (
     StrictBool,
     StrictInt,
@@ -13,12 +15,12 @@ _LANG_CODE_LEN = 2
 _LANG_CODE_REGEX = rf'^[a-z]{{{_LANG_CODE_LEN}}}$'
 
 
-class AnonymousUserSchema(RealBaseModel):
+class _BaseUserSchema(RealBaseModel, abc.ABC):
     id: StrictInt
 
-    @property
-    def is_anonymous_user(self) -> bool:
-        return True
+
+class AnonymousUserSchema(_BaseUserSchema):
+    pass
 
 
 class VideoCaptionSchema(RealBaseModel):
@@ -37,17 +39,13 @@ class UploadSchema(RealBaseModel):
     video_caption: VideoCaptionSchema
 
 
-class UserSchema(AnonymousUserSchema):
+class UserSchema(_BaseUserSchema):
     is_admin: StrictBool
     send_startup_message: StrictBool
     download_media_type: DownMediaType
     save_to_storage: StrictBool
     use_url_regex_match: StrictBool
     upload: UploadSchema
-
-    @property
-    def is_anonymous_user(self) -> bool:
-        return False
 
 
 class ApiSchema(RealBaseModel):

@@ -2,7 +2,7 @@ import abc
 import logging
 
 
-class AbstractTask(metaclass=abc.ABCMeta):
+class AbstractTask(abc.ABC):
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
 

@@ -9,13 +9,13 @@ from bot.core.workers.error import ErrorDownloadResultWorker
 from bot.core.workers.success import SuccessDownloadResultWorker
 
 if TYPE_CHECKING:
-    from bot.core.bot import VideoBot
+    from bot.bot.client import VideoBotClient
 
 
 class RabbitWorkerManager:
     _TASK_TYPES = (ErrorDownloadResultWorker, SuccessDownloadResultWorker)
 
-    def __init__(self, bot: 'VideoBot') -> None:
+    def __init__(self, bot: 'VideoBotClient') -> None:
         self._log = logging.getLogger(self.__class__.__name__)
         self._bot = bot
         self._workers: dict[RabbitWorkerType, Task] = {}

@@ -4,7 +4,7 @@ from pyrogram.enums import ParseMode
 from pyrogram.types import Message
 from yt_shared.emoji import SUCCESS_EMOJI
 
-from bot.core.bot import VideoBot
+from bot.bot.client import VideoBotClient
 from bot.core.service import UrlParser, UrlService
 from bot.core.utils import bold, get_user_id
 
@@ -19,14 +19,14 @@ class TelegramCallback:
         self._url_service = UrlService()
 
     @staticmethod
-    async def on_start(client: VideoBot, message: Message) -> None:
+    async def on_start(client: VideoBotClient, message: Message) -> None:
         await message.reply(
             bold('Send video URL to start processing'),
             parse_mode=ParseMode.HTML,
             reply_to_message_id=message.id,
         )
 
-    async def on_message(self, client: VideoBot, message: Message) -> None:
+    async def on_message(self, client: VideoBotClient, message: Message) -> None:
         """Receive video URL and send to the download worker."""
         self._log.debug('Received Telegram Message: %s', message)
         text = message.text

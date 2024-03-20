@@ -23,7 +23,7 @@ from bot.core.schema import AnonymousUserSchema, UserSchema, VideoCaptionSchema
 from bot.core.utils import bold, is_user_upload_silent
 
 if TYPE_CHECKING:
-    from bot.core.bot import VideoBot
+    from bot.bot.client import VideoBotClient
 
 
 class BaseUploadContext(RealBaseModel):
@@ -52,7 +52,7 @@ class AbstractUploadTask(AbstractTask, abc.ABC):
         self,
         media_object: BaseMedia,
         users: list[AnonymousUserSchema | UserSchema],
-        bot: 'VideoBot',
+        bot: 'VideoBotClient',
         semaphore: asyncio.Semaphore,
         context: SuccessDownloadPayload,
     ) -> None:

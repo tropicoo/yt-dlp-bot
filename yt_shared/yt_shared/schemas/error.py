@@ -1,23 +1,17 @@
 import uuid
 from typing import Literal
 
-from pydantic import StrictInt, StrictStr
+from pydantic import StrictStr
 
-from yt_shared.enums import RabbitPayloadType, TelegramChatType
-from yt_shared.schemas.base import BaseRabbitPayloadModel
-from yt_shared.schemas.media import InbMediaPayload
+from yt_shared.enums import RabbitPayloadType
+from yt_shared.schemas.base_rabbit import BaseRabbitDownloadPayload
 
 
-class ErrorDownloadGeneralPayload(BaseRabbitPayloadModel):
+class ErrorDownloadGeneralPayload(BaseRabbitDownloadPayload):
     type: Literal[RabbitPayloadType.GENERAL_ERROR] = RabbitPayloadType.GENERAL_ERROR
     task_id: uuid.UUID | StrictStr | None
-    from_chat_id: StrictInt | None
-    from_chat_type: TelegramChatType | None
-    from_user_id: StrictInt | None
-    message_id: StrictInt | None
     message: StrictStr
     url: StrictStr
-    context: InbMediaPayload
     exception_msg: StrictStr
     exception_type: StrictStr
     yt_dlp_version: StrictStr | None

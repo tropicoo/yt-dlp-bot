@@ -1,3 +1,22 @@
+## Release 1.5
+
+Release date: March 20, 2024
+
+## New Features
+
+N/A
+
+## Important
+
+N/A
+
+## Misc
+
+- Migrated from Pyrogram to Pyrofork
+- Migrated from Python 3.11 to 3.12
+
+---
+
 ## Release 1.4.5
 
 Release date: November 23, 2023
@@ -15,6 +34,7 @@ N/A
 - Improved error handling
 
 ---
+
 ## Release 1.4.4
 
 Release date: November 11, 2023

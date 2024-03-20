@@ -5,8 +5,9 @@ from pyrogram.handlers import MessageHandler
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.utils.tasks.tasks import create_task
 
-from bot.core.bot import VideoBot
+from bot.bot.client import VideoBotClient
 from bot.core.callbacks import TelegramCallback
+from bot.core.config.config import get_main_config
 from bot.core.tasks.ytdlp import YtdlpNewVersionNotifyTask
 from bot.core.workers.manager import RabbitWorkerManager
 
@@ -19,7 +20,14 @@ class BotLauncher:
     def __init__(self) -> None:
         """Constructor."""
         self._log = logging.getLogger(self.__class__.__name__)
-        self._bot = VideoBot()
+        self._conf = get_main_config()
+        self._bot = VideoBotClient(
+            name='default_name',
+            api_id=self._conf.telegram.api_id,
+            api_hash=self._conf.telegram.api_hash,
+            bot_token=self._conf.telegram.token,
+            conf=self._conf,
+        )
         self._rabbit_mq = get_rabbitmq()
         self._rabbit_worker_manager = RabbitWorkerManager(bot=self._bot)
 

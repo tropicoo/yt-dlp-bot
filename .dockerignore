@@ -13,4 +13,4 @@
 **/*Dockerfile*
 LICENSE
 README.md
-pyproject.toml
+.ruff.toml

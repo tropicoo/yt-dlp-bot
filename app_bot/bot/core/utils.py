@@ -100,9 +100,5 @@ def is_user_upload_silent(
     user: UserSchema | AnonymousUserSchema, conf: ConfigSchema
 ) -> bool:
     if isinstance(user, AnonymousUserSchema):
-        if conf.telegram.api.silent:
-            return True
-    elif user.upload.silent:
-        return True
-    else:
-        return False
+        return conf.telegram.api.silent
+    return user.upload.silent

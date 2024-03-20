@@ -6,26 +6,20 @@ from pyrogram import Client
 from pyrogram.enums import ParseMode
 from pyrogram.errors import RPCError
 
-from bot.core.config.config import get_main_config
-from bot.core.schema import UserSchema
+from bot.core.schema import ConfigSchema, UserSchema
 from bot.core.utils import bold
 
 
-class VideoBot(Client):
+class VideoBotClient(Client):
     """Extended Pyrogram's `Client` class."""
 
     _RUN_FOREVER_SLEEP_SECONDS = 86400
 
-    def __init__(self) -> None:
-        self.conf = get_main_config()
-        super().__init__(
-            name='default_name',
-            api_id=self.conf.telegram.api_id,
-            api_hash=self.conf.telegram.api_hash,
-            bot_token=self.conf.telegram.token,
-        )
+    def __init__(self, *args, conf: ConfigSchema, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self._log = logging.getLogger(self.__class__.__name__)
         self._log.info('Initializing bot client')
+        self.conf = conf
 
         self.allowed_users: dict[int, UserSchema] = {}
         self.admin_users: dict[int, UserSchema] = {}

@@ -5,7 +5,7 @@ import asyncio
 
 import uvloop
 
-from bot.core.bot import BotLauncher
+from bot.bot.launcher import BotLauncher
 from bot.core.log import setup_logging
 
 

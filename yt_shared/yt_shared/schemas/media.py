@@ -1,3 +1,4 @@
+import abc
 import uuid
 from datetime import datetime, timezone
 from typing import Literal
@@ -34,7 +35,7 @@ class InbMediaPayload(RealBaseModel):
     added_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class BaseMedia(RealBaseModel):
+class BaseMedia(RealBaseModel, abc.ABC):
     """Model representing abstract downloaded media with common fields."""
 
     file_type: MediaFileType

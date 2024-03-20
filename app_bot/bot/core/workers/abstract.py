@@ -13,7 +13,7 @@ from bot.core.config.config import get_main_config
 from bot.core.exceptions import InvalidBodyError
 
 if TYPE_CHECKING:
-    from bot.core.bot import VideoBot
+    from bot.bot.client import VideoBotClient
 
 
 class RabbitWorkerType(enum.Enum):
@@ -26,7 +26,7 @@ class AbstractDownloadResultWorker(AbstractTask):
     QUEUE_TYPE: str | None = None
     SCHEMA_CLS: tuple[Type[BaseModel]] = ()
 
-    def __init__(self, bot: 'VideoBot') -> None:
+    def __init__(self, bot: 'VideoBotClient') -> None:
         super().__init__()
         self._conf = get_main_config()
         self._bot = bot

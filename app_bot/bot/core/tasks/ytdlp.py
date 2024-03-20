@@ -12,11 +12,11 @@ from bot.core.config.config import get_main_config
 from bot.core.utils import bold, code
 
 if TYPE_CHECKING:
-    from bot.core.bot import VideoBot
+    from bot.bot import VideoBotClient
 
 
 class YtdlpNewVersionNotifyTask(AbstractTask):
-    def __init__(self, bot: 'VideoBot') -> None:
+    def __init__(self, bot: 'VideoBotClient') -> None:
         super().__init__()
         self._bot = bot
         self._version_checker = YtdlpVersionChecker()

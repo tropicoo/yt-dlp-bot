@@ -8,7 +8,7 @@ from api.api.api_v1.schemas.ytdlp import YTDLPLatestVersion
 router = APIRouter()
 
 
-@router.get('/')
+@router.get('/', response_model_by_alias=False)
 async def yt_dlp_version(db: AsyncSession = Depends(get_db)) -> YTDLPLatestVersion:
     ctx = await YtdlpVersionChecker().get_version_context(db)
     return YTDLPLatestVersion(

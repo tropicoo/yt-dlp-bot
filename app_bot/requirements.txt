@@ -2,4 +2,5 @@ PyYAML==6.0.1
 addict==2.4.0
 pyrofork==2.3.19.post2
 tenacity==8.2.3
+tgcrypto==1.2.5
 typing_extensions==4.10.0

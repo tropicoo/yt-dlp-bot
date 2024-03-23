@@ -95,7 +95,7 @@ class AbstractHostConfig:
 
         ytdl_opts = deepcopy(self.DEFAULT_YTDL_OPTS)
 
-        match media_type:  # noqa: E999
+        match media_type:
             case DownMediaType.AUDIO:
                 ytdl_opts.extend(self.AUDIO_YTDL_OPTS)
                 ytdl_opts.extend(self.AUDIO_FORMAT_YTDL_OPTS)

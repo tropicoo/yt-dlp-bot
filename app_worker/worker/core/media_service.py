@@ -118,7 +118,7 @@ class MediaService:
                 db=db,
             )
 
-        match media.media_type:  # noqa: E999
+        match media.media_type:
             case DownMediaType.AUDIO:
                 await post_process_audio()
             case DownMediaType.VIDEO:

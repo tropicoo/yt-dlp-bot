@@ -138,7 +138,7 @@ class MediaDownloader:
                 remove_dir(destination_dir)
                 raise
 
-        match media_type:  # noqa: E999
+        match media_type:
             case DownMediaType.AUDIO:
                 return get_audio(), None
             case DownMediaType.VIDEO:

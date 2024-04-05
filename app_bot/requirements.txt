@@ -3,4 +3,4 @@ addict==2.4.0
 pyrofork==2.3.20
 tenacity==8.2.3
 tgcrypto-pyrofork==1.2.6
-typing_extensions==4.10.0
+typing_extensions==4.11.0

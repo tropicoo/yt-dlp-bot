@@ -24,6 +24,7 @@ setup(
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
     description='Common shared utils for yt downloader bot',
     install_requires=get_requirements(),

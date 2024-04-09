@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from yt_shared.clients.github import YtDlpGithubClient
+from yt_shared.clients.github import YtdlpGithubClient
 from yt_shared.repositories.ytdlp import YtdlpRepository
 from yt_shared.schemas.ytdlp import CurrentVersion, LatestVersion, VersionContext
 
@@ -15,7 +15,7 @@ class YtdlpVersionChecker:
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
         self._ytdlp_repository = YtdlpRepository()
-        self._ytdlp_client = YtDlpGithubClient()
+        self._ytdlp_client = YtdlpGithubClient()
 
     async def get_version_context(self, db: AsyncSession) -> VersionContext:
         latest, current = await asyncio.gather(

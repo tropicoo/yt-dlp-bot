@@ -1,11 +1,15 @@
+[tool.ruff]
 line-length = 88
+indent-width = 4
+target-version = "py312"
 src = ["app_api", "app_bot", "app_worker"]
+required-version = ">=0.3.4"
 
-[lint]
-select = ["F", "E", "W", "I001"]
+[tool.ruff.lint]
+select = ["F", "E", "W", "I001", "RET", "SLF001"]
 ignore = ["E501"]  # Skip line length violations
 
-[format]
+[tool.ruff.format]
 indent-style = "space"
 quote-style = "single"
 line-ending = "lf"

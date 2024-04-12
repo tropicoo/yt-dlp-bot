@@ -3,6 +3,6 @@ SQLAlchemy==2.0.29
 aio-pika==9.4.1
 aiohttp==3.9.3
 asyncpg==0.29.0
-pydantic==2.6.4
+pydantic==2.7.0
 pydantic_settings==2.2.1
 uvloop==0.19.0

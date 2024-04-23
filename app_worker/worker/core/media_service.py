@@ -251,6 +251,8 @@ class MediaService:
         dst = os.path.join(settings.STORAGE_PATH, filename)
         self._log.info('Copying "%s" to storage "%s"', filepath, dst)
         await asyncio.to_thread(shutil.copy2, filepath, dst)
+        self._log.info('Deleting... "%s"', filepath)
+        await asyncio.to_thread(os.remove, filepath)
         file.mark_as_saved_to_storage(storage_path=dst)
 
     def _err_file_cleanup(self, video: DownMedia) -> None:

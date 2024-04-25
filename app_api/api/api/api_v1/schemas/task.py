@@ -1,9 +1,10 @@
 import uuid
 from datetime import datetime
 
-from pydantic import StrictBool, StrictFloat, StrictInt, StrictStr
+from pydantic import Field, StrictFloat, StrictInt, StrictStr
+from typing_extensions import Annotated
 from yt_shared.enums import DownMediaType, TaskSource, TaskStatus
-from yt_shared.schemas.base import BaseOrmModel, RealBaseModel
+from yt_shared.schemas.base import BaseOrmModel, StrictRealBaseModel
 
 
 class CacheSchema(BaseOrmModel):
@@ -52,15 +53,17 @@ class TaskSchema(TaskSimpleSchema):
     files: list[FileSchema]
 
 
-class CreateTaskIn(RealBaseModel):
-    url: StrictStr
-    download_media_type: DownMediaType
-    save_to_storage: StrictBool
+class CreateTaskIn(StrictRealBaseModel):
+    url: str = ...
+    download_media_type: Annotated[DownMediaType, Field(strict=False)] = ...
+    save_to_storage: bool = ...
+    custom_filename: str = ...
+    automatic_extension: bool = ...
 
 
-class CreateTaskOut(RealBaseModel):
+class CreateTaskOut(StrictRealBaseModel):
     id: uuid.UUID
-    url: StrictStr
+    url: str
     source: TaskSource
     added_at: datetime
 

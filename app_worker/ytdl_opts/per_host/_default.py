@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from yt_shared.enums import DownMediaType
 
 from ytdl_opts.per_host._base import AbstractHostConfig, BaseHostConfModel
@@ -15,7 +17,7 @@ class DefaultHost(AbstractHostConfig, metaclass=HostConfRegistry):
     ENCODE_VIDEO = False
 
     def build_config(
-        self, media_type: DownMediaType, curr_tmp_dir: str
+        self, media_type: DownMediaType, curr_tmp_dir: Path
     ) -> DefaultHostModel:
         return DefaultHostModel(
             hostnames=self.HOSTNAMES,

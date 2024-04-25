@@ -12,24 +12,22 @@ from yt_shared.schemas.media import BaseMedia, InbMediaPayload, Video
 
 
 class TaskRepository:
-    def __init__(self) -> None:
+    def __init__(self, session: AsyncSession) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
+        self._session = session
 
-    async def get_or_create_task(
-        self, db: AsyncSession, media_payload: InbMediaPayload
-    ) -> Task:
+    async def get_or_create_task(self, media_payload: InbMediaPayload) -> Task:
         if media_payload.id is None:
-            return await self._create_task(db, media_payload)
+            return await self._create_task(media_payload)
 
         stmt = select(Task).filter_by(id=media_payload.id)
-        task = await db.execute(stmt)
+        task = await self._session.execute(stmt)
         try:
             return task.scalar_one()
         except NoResultFound:
-            return await self._create_task(db, media_payload)
+            return await self._create_task(media_payload)
 
-    @staticmethod
-    async def _create_task(db: AsyncSession, media_payload: InbMediaPayload) -> Task:
+    async def _create_task(self, media_payload: InbMediaPayload) -> Task:
         task = Task(
             id=media_payload.id,
             url=media_payload.url,
@@ -38,14 +36,11 @@ class TaskRepository:
             message_id=media_payload.message_id,
             added_at=media_payload.added_at,
         )
-        db.add(task)
-        await db.commit()
+        self._session.add(task)
+        await self._session.commit()
         return task
 
-    @staticmethod
-    async def save_file_cache(
-        db: AsyncSession, file_id: str | UUID, cache: CacheSchema
-    ) -> None:
+    async def save_file_cache(self, file_id: str | UUID, cache: CacheSchema) -> None:
         stmt = insert(Cache).values(
             cache_id=cache.cache_id,
             cache_unique_id=cache.cache_unique_id,
@@ -53,16 +48,13 @@ class TaskRepository:
             date_timestamp=cache.date_timestamp,
             file_id=file_id,
         )
-        await db.execute(stmt)
-        await db.commit()
+        await self._session.execute(stmt)
+        await self._session.commit()
 
-    @staticmethod
-    async def save_file(
-        db: AsyncSession, task: Task, media: BaseMedia, meta: dict
-    ) -> File:
+    async def save_file(self, task: Task, media: BaseMedia, meta: dict) -> File:
         file = File(
             title=media.title,
-            name=media.filename,
+            name=media.current_filename,
             duration=media.duration,
             meta=meta,
             task_id=task.id,
@@ -73,23 +65,20 @@ class TaskRepository:
             file.height = media.height
             file.thumb_name = media.thumb_name
 
-        db.add(file)
+        self._session.add(file)
         async with ASYNC_LOCK:
-            await db.flush([file])
+            await self._session.flush([file])
         return file
 
-    @staticmethod
-    async def save_as_done(db: AsyncSession, task: Task) -> None:
+    async def save_as_done(self, task: Task) -> None:
         task.status = TaskStatus.DONE
-        await db.commit()
+        await self._session.commit()
 
-    @staticmethod
-    async def save_as_processing(db: AsyncSession, task: Task) -> None:
+    async def save_as_processing(self, task: Task) -> None:
         task.status = TaskStatus.PROCESSING
-        await db.commit()
+        await self._session.commit()
 
-    @staticmethod
-    async def save_as_failed(db: AsyncSession, task: Task, error_message: str) -> None:
+    async def save_as_failed(self, task: Task, error_message: str) -> None:
         task.status = TaskStatus.FAILED
         task.error = error_message
-        await db.commit()
+        await self._session.commit()

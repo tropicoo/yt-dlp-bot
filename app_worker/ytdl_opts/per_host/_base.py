@@ -1,10 +1,9 @@
-import abc
 import logging
-import os
+from abc import abstractmethod
 from copy import deepcopy
+from pathlib import Path
 
-import pydantic
-from pydantic import StrictBool, StrictStr
+from pydantic import BaseModel, ConfigDict
 from yt_shared.enums import DownMediaType
 
 from worker.utils import cli_to_api
@@ -31,16 +30,17 @@ except ImportError:
     )
 
 
-class BaseHostConfModel(pydantic.BaseModel):
+class BaseHostConfModel(BaseModel):
     # TODO: Add validators.
+    model_config = ConfigDict(strict=True, frozen=True)
 
     hostnames: tuple[str, ...]
 
-    encode_audio: StrictBool
-    encode_video: StrictBool
+    encode_audio: bool
+    encode_video: bool
 
-    ffmpeg_audio_opts: StrictStr | None
-    ffmpeg_video_opts: StrictStr | None
+    ffmpeg_audio_opts: str | None
+    ffmpeg_video_opts: str | None
 
     ytdl_opts: dict
 
@@ -82,13 +82,13 @@ class AbstractHostConfig:
         if not self.ALLOW_NULL_HOSTNAMES and not self.HOSTNAMES:
             raise ValueError('Hostname(s) must be set before instantiation.')
 
-    @abc.abstractmethod
+    @abstractmethod
     def build_config(
         self, media_type: DownMediaType, curr_tmp_dir: str
     ) -> BaseHostConfModel:
         pass
 
-    def _build_ytdl_opts(self, media_type: DownMediaType, curr_tmp_dir: str) -> dict:
+    def _build_ytdl_opts(self, media_type: DownMediaType, curr_tmp_dir: Path) -> dict:
         def _add_video_opts(ytdl_opts_: list[str]) -> None:
             ytdl_opts_.extend(self.DEFAULT_VIDEO_YTDL_OPTS)
             ytdl_opts_.extend(self._build_custom_ytdl_video_opts())
@@ -107,12 +107,11 @@ class AbstractHostConfig:
                 ytdl_opts.append(self.KEEP_VIDEO_OPTION)
 
         ytdl_opts = cli_to_api(ytdl_opts)
-        ytdl_opts['outtmpl']['default'] = os.path.join(
-            curr_tmp_dir,
-            ytdl_opts['outtmpl']['default'],
+        ytdl_opts['outtmpl']['default'] = str(
+            curr_tmp_dir / ytdl_opts['outtmpl']['default']
         )
         return ytdl_opts
 
-    @abc.abstractmethod
+    @abstractmethod
     def _build_custom_ytdl_video_opts(self) -> list[str]:
         pass

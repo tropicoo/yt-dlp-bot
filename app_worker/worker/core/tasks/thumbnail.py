@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from yt_shared.schemas.media import Video
 
 from worker.core.config import settings
@@ -8,7 +10,7 @@ class MakeThumbnailTask(AbstractFfBinaryTask):
     _CMD = 'ffmpeg -y -loglevel error -i "{filepath}" -ss {time_point} -vframes 1 -q:v 7 "{thumbpath}"'
 
     def __init__(
-        self, thumbnail_path: str, *args, duration: float, video_ctx: Video, **kwargs
+        self, thumbnail_path: Path, *args, duration: float, video_ctx: Video, **kwargs
     ) -> None:
         super().__init__(*args, **kwargs)
         self._thumbnail_path = thumbnail_path

@@ -5,10 +5,12 @@ from yt_dlp import version as ytdlp_version
 from yt_shared.db.session import get_db
 from yt_shared.models import Task
 from yt_shared.rabbit.publisher import RmqPublisher
+from yt_shared.repositories.task import TaskRepository
 from yt_shared.schemas.error import ErrorDownloadGeneralPayload, ErrorDownloadPayload
 from yt_shared.schemas.media import DownMedia, InbMediaPayload
 from yt_shared.schemas.success import SuccessDownloadPayload
 
+from worker.core.downloader import MediaDownloader
 from worker.core.exceptions import DownloadVideoServiceError, GeneralVideoServiceError
 from worker.core.media_service import MediaService
 
@@ -16,7 +18,6 @@ from worker.core.media_service import MediaService
 class PayloadHandler:
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
-        self._media_service = MediaService()
         self._rmq_publisher = RmqPublisher()
 
     async def handle(self, media_payload: InbMediaPayload) -> None:
@@ -27,8 +28,13 @@ class PayloadHandler:
 
     async def _handle(self, media_payload: InbMediaPayload) -> None:
         async for session in get_db():
+            media_service = MediaService(
+                media_payload=media_payload,
+                downloader=MediaDownloader(),
+                task_repository=TaskRepository(session),
+            )
             try:
-                media, task = await self._media_service.process(media_payload, session)
+                media, task = await media_service.process()
             except DownloadVideoServiceError as err:
                 await self._send_failed_video_download_task(err, media_payload)
                 return

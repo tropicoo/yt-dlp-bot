@@ -1,10 +1,10 @@
 import asyncio
 import logging
-import os
 import shutil
+import time
+from pathlib import Path
 from urllib.parse import urlsplit
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from yt_shared.enums import DownMediaType, TaskStatus
 from yt_shared.models import Task
 from yt_shared.repositories.task import TaskRepository
@@ -14,6 +14,7 @@ from yt_shared.schemas.media import (
     InbMediaPayload,
     Video,
 )
+from yt_shared.utils.common import gen_random_str
 from yt_shared.utils.file import remove_dir
 from yt_shared.utils.tasks.tasks import create_task
 
@@ -28,37 +29,37 @@ from ytdl_opts.per_host._registry import HostConfRegistry
 
 
 class MediaService:
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        media_payload: InbMediaPayload,
+        downloader: MediaDownloader,
+        task_repository: TaskRepository,
+    ) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
-        self._downloader = MediaDownloader()
-        self._repository = TaskRepository()
+        self._downloader = downloader
+        self._repository = task_repository
+        self._media_payload = media_payload
 
     async def process(
-        self, media_payload: InbMediaPayload, db: AsyncSession
+        self,
     ) -> tuple[DownMedia | None, Task | None]:
-        task = await self._repository.get_or_create_task(db, media_payload)
+        task = await self._repository.get_or_create_task(self._media_payload)
         if task.status != TaskStatus.PENDING.value:
             return None, None
         return (
-            await self._process(media_payload=media_payload, task=task, db=db),
+            await self._process(task=task),
             task,
         )
 
-    async def _process(
-        self, media_payload: InbMediaPayload, task: Task, db: AsyncSession
-    ) -> DownMedia:
+    async def _process(self, task: Task) -> DownMedia:
         host_conf = self._get_host_conf(url=task.url)
-        await self._repository.save_as_processing(db, task)
-        media = await self._start_download(
-            task=task, media_payload=media_payload, host_conf=host_conf, db=db
-        )
+        await self._repository.save_as_processing(task)
+        media = await self._start_download(task=task, host_conf=host_conf)
         try:
             await self._post_process_media(
                 media=media,
                 task=task,
-                media_payload=media_payload,
                 host_conf=host_conf,
-                db=db,
             )
         except Exception:
             self._log.exception('Failed to post-process media %s', media)
@@ -75,47 +76,41 @@ class MediaService:
     async def _start_download(
         self,
         task: Task,
-        media_payload: InbMediaPayload,
         host_conf: AbstractHostConfig,
-        db: AsyncSession,
     ) -> DownMedia:
         try:
             return await asyncio.get_running_loop().run_in_executor(
                 None,
                 lambda: self._downloader.download(
                     host_conf=host_conf,
-                    media_type=media_payload.download_media_type,
+                    media_payload=self._media_payload,
                 ),
             )
         except Exception as err:
-            self._log.exception('Failed to download media. Context: %s', media_payload)
-            await self._handle_download_exception(err, task, db)
+            self._log.exception(
+                'Failed to download media. Context: %s', self._media_payload
+            )
+            await self._handle_download_exception(err, task)
             raise DownloadVideoServiceError(message=str(err), task=task)
 
     async def _post_process_media(
         self,
         media: DownMedia,
         task: Task,
-        media_payload: InbMediaPayload,
         host_conf: AbstractHostConfig,
-        db: AsyncSession,
     ) -> None:
         def post_process_audio():
             return self._post_process_audio(
                 media=media,
-                media_payload=media_payload,
                 task=task,
                 host_conf=host_conf,
-                db=db,
             )
 
         def post_process_video():
             return self._post_process_video(
                 media=media,
-                media_payload=media_payload,
                 task=task,
                 host_conf=host_conf,
-                db=db,
             )
 
         match media.media_type:
@@ -126,15 +121,13 @@ class MediaService:
             case DownMediaType.AUDIO_VIDEO:
                 await asyncio.gather(*(post_process_audio(), post_process_video()))
 
-        await self._repository.save_as_done(db, task)
+        await self._repository.save_as_done(task)
 
     async def _post_process_video(
         self,
         media: DownMedia,
-        media_payload: InbMediaPayload,
         task: Task,
         host_conf: AbstractHostConfig,
-        db: AsyncSession,
     ) -> None:
         """Post-process downloaded media files, e.g. make thumbnail and copy to storage."""
         video = media.video
@@ -149,17 +142,17 @@ class MediaService:
 
         coro_tasks = []
         if not video.thumb_path:
-            thumb_path = os.path.join(media.root_path, video.thumb_name)
+            thumb_path = Path(media.root_path) / Path(video.thumb_name)
             coro_tasks.append(
                 self._create_thumb_task(
-                    file_path=video.filepath,
+                    file_path=video.current_filepath,
                     thumb_path=thumb_path,
                     duration=video.duration,
                     video_ctx=video,
                 )
             )
 
-        if media_payload.save_to_storage:
+        if self._media_payload.save_to_storage:
             coro_tasks.append(self._create_copy_file_task(video))
 
         if host_conf.ENCODE_VIDEO:
@@ -177,26 +170,24 @@ class MediaService:
 
         await asyncio.gather(*coro_tasks)
 
-        file = await self._repository.save_file(db, task, media.video, media.meta)
+        file = await self._repository.save_file(task, media.video, media.meta)
         video.orm_file_id = file.id
 
     async def _post_process_audio(
         self,
         media: DownMedia,
-        media_payload: InbMediaPayload,
         task: Task,
         host_conf: AbstractHostConfig,
-        db: AsyncSession,
     ) -> None:
-        coro_tasks = [self._repository.save_file(db, task, media.audio, media.meta)]
-        if media_payload.save_to_storage:
+        coro_tasks = [self._repository.save_file(task, media.audio, media.meta)]
+        if self._media_payload.save_to_storage:
             coro_tasks.append(self._create_copy_file_task(media.audio))
         results = await asyncio.gather(*coro_tasks)
         file = results[0]
         media.audio.orm_file_id = file.id
 
     async def _set_probe_ctx(self, video: Video) -> None:
-        probe_ctx = await GetFfprobeContextTask(video.filepath).run()
+        probe_ctx = await GetFfprobeContextTask(video.current_filepath).run()
         if not probe_ctx:
             return
 
@@ -225,8 +216,8 @@ class MediaService:
 
     def _create_thumb_task(
         self,
-        file_path: str,
-        thumb_path: str,
+        file_path: Path,
+        thumb_path: Path,
         duration: float,
         video_ctx: Video,
     ) -> asyncio.Task:
@@ -241,16 +232,17 @@ class MediaService:
         )
 
     async def _copy_file_to_storage(self, file: BaseMedia) -> None:
-        if file.is_converted:
-            filename = file.converted_filename
-            filepath = file.converted_filepath
-        else:
-            filename = file.filename
-            filepath = file.filepath
+        dst = settings.STORAGE_PATH / file.current_filename
+        if dst.is_file():
+            self._log.warning('Destination file in storage already exists: %s', dst)
+            dst = (
+                dst.parent
+                / f'{dst.stem}-{int(time.time())}-{gen_random_str()}{dst.suffix}'
+            )
+            self._log.warning('Adding current timestamp to filename: %s', dst)
 
-        dst = os.path.join(settings.STORAGE_PATH, filename)
-        self._log.info('Copying "%s" to storage "%s"', filepath, dst)
-        await asyncio.to_thread(shutil.copy2, filepath, dst)
+        self._log.info('Copying "%s" to storage "%s"', file.current_filepath, dst)
+        await asyncio.to_thread(shutil.copy2, file.current_filepath, dst)
         file.mark_as_saved_to_storage(storage_path=dst)
 
     def _err_file_cleanup(self, video: DownMedia) -> None:
@@ -258,7 +250,5 @@ class MediaService:
         self._log.info('Performing error cleanup: removing %s', video.root_path)
         remove_dir(video.root_path)
 
-    async def _handle_download_exception(
-        self, err: Exception, task: Task, db: AsyncSession
-    ) -> None:
-        await self._repository.save_as_failed(db=db, task=task, error_message=str(err))
+    async def _handle_download_exception(self, err: Exception, task: Task) -> None:
+        await self._repository.save_as_failed(task=task, error_message=str(err))

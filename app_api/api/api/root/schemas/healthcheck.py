@@ -1,6 +1,7 @@
-from pydantic import StrictStr
-from yt_shared.schemas.base import RealBaseModel
+from typing import Literal
+
+from yt_shared.schemas.base import StrictRealBaseModel
 
 
-class HealthcheckSchema(RealBaseModel):
-    status: StrictStr = 'OK'
+class HealthcheckSchema(StrictRealBaseModel):
+    status: Literal['OK'] = 'OK'

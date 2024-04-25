@@ -1,15 +1,15 @@
 import glob
 import logging
-import os
 import shutil
+from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Callable
 
 import yt_dlp
 from yt_shared.enums import DownMediaType
-from yt_shared.schemas.media import Audio, DownMedia, Video
-from yt_shared.utils.common import format_bytes, random_string
-from yt_shared.utils.file import file_size, list_files, remove_dir
+from yt_shared.schemas.media import Audio, DownMedia, InbMediaPayload, Video
+from yt_shared.utils.common import format_bytes, gen_random_str
+from yt_shared.utils.file import file_size, list_files_human, remove_dir
 
 from worker.core.config import settings
 from worker.core.exceptions import MediaDownloaderError
@@ -33,29 +33,28 @@ class MediaDownloader:
 
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
-        self._tmp_downloaded_dest_dir = os.path.join(
-            settings.TMP_DOWNLOAD_ROOT_PATH, settings.TMP_DOWNLOADED_DIR
+        self._tmp_downloaded_dest_dir = (
+            settings.TMP_DOWNLOAD_ROOT_PATH / settings.TMP_DOWNLOADED_DIR
         )
 
     def download(
-        self, host_conf: AbstractHostConfig, media_type: DownMediaType
+        self, host_conf: AbstractHostConfig, media_payload: InbMediaPayload
     ) -> DownMedia:
         try:
-            return self._download(host_conf=host_conf, media_type=media_type)
+            return self._download(host_conf=host_conf, media_payload=media_payload)
         except Exception:
             self._log.error('Failed to download %s', host_conf.url)
             raise
 
     def _download(
-        self, host_conf: AbstractHostConfig, media_type: DownMediaType
+        self, host_conf: AbstractHostConfig, media_payload: InbMediaPayload
     ) -> DownMedia:
+        media_type = media_payload.download_media_type
         url = host_conf.url
         self._log.info('Downloading %s, media_type %s', url, media_type)
-        tmp_down_path = os.path.join(
-            settings.TMP_DOWNLOAD_ROOT_PATH, settings.TMP_DOWNLOAD_DIR
-        )
+        tmp_down_path = settings.TMP_DOWNLOAD_ROOT_PATH / settings.TMP_DOWNLOAD_DIR
         with TemporaryDirectory(prefix='tmp_media_dir-', dir=tmp_down_path) as tmp_dir:
-            curr_tmp_dir = os.path.join(tmp_down_path, tmp_dir)
+            curr_tmp_dir = tmp_down_path / tmp_dir
 
             ytdl_opts_model = host_conf.build_config(
                 media_type=media_type, curr_tmp_dir=curr_tmp_dir
@@ -72,7 +71,7 @@ class MediaDownloader:
                     self._log.error('%s. Meta: %s', err_msg, meta)
                     raise MediaDownloaderError(err_msg)
 
-                current_files = os.listdir(curr_tmp_dir)
+                current_files = list(curr_tmp_dir.iterdir())
                 if not current_files:
                     err_msg = 'Nothing downloaded. Is URL valid?'
                     self._log.error(err_msg)
@@ -83,25 +82,25 @@ class MediaDownloader:
             self._log.info('Finished downloading %s', url)
             self._log.debug('Downloaded "%s" meta: %s', url, meta_sanitized)
             self._log.info(
-                'Content of "%s": %s', curr_tmp_dir, list_files(curr_tmp_dir)
+                'Content of "%s": %s', curr_tmp_dir, list_files_human(curr_tmp_dir)
             )
 
-            destination_dir = os.path.join(
-                self._tmp_downloaded_dest_dir,
-                random_string(number=self._DESTINATION_TMP_DIR_NAME_LEN),
+            destination_dir = self._tmp_downloaded_dest_dir / gen_random_str(
+                length=self._DESTINATION_TMP_DIR_NAME_LEN
             )
-            os.mkdir(destination_dir)
+            destination_dir.mkdir()
 
             audio, video = self._create_media_dtos(
                 media_type=media_type,
                 meta=meta,
                 curr_tmp_dir=curr_tmp_dir,
                 destination_dir=destination_dir,
+                custom_video_filename=media_payload.custom_filename,
             )
             self._log.info(
                 'Removing temporary download directory "%s" with leftover files %s',
                 curr_tmp_dir,
-                os.listdir(curr_tmp_dir),
+                list_files_human(curr_tmp_dir),
             )
 
         return DownMedia(
@@ -118,6 +117,7 @@ class MediaDownloader:
         meta: dict,
         curr_tmp_dir: str,
         destination_dir: str,
+        custom_video_filename: str | None = None,
     ) -> tuple[Audio | None, Video | None]:
         def get_audio() -> Audio:
             return create_dto(self._create_audio_dto)
@@ -126,14 +126,10 @@ class MediaDownloader:
             return create_dto(self._create_video_dto)
 
         def create_dto(
-            func: Callable[[dict, str, str], Audio | Video],
+            func: Callable[[dict, str, str, str | None], Audio | Video],
         ) -> Audio | Video:
             try:
-                return func(
-                    meta,
-                    curr_tmp_dir,
-                    destination_dir,
-                )
+                return func(meta, curr_tmp_dir, destination_dir, custom_video_filename)
             except Exception:
                 remove_dir(destination_dir)
                 raise
@@ -151,35 +147,41 @@ class MediaDownloader:
     def _create_video_dto(
         self,
         meta: dict,
-        curr_tmp_dir: str,
-        destination_dir: str,
+        curr_tmp_dir: Path,
+        destination_dir: Path,
+        custom_video_filename: str | None = None,
     ) -> Video:
         video_filename = self._get_video_filename(meta)
-        video_filepath = os.path.join(curr_tmp_dir, video_filename)
+        video_filepath = curr_tmp_dir / video_filename
 
-        self._log.info('Moving "%s" to "%s"', video_filepath, destination_dir)
-        shutil.move(video_filepath, destination_dir)
+        if custom_video_filename:
+            dest_path = destination_dir / custom_video_filename
+        else:
+            dest_path = destination_dir / video_filename
 
-        thumb_path: str | None = None
+        self._log.info('Moving "%s" to "%s"', video_filepath, dest_path)
+        shutil.move(video_filepath, dest_path)
+
+        thumb_path: Path | None = None
         thumb_name = self._find_downloaded_file(
             root_path=curr_tmp_dir,
             extension=FINAL_THUMBNAIL_FORMAT,
         )
         if thumb_name:
-            _thumb_path = os.path.join(curr_tmp_dir, thumb_name)
+            _thumb_path = curr_tmp_dir / thumb_name
             shutil.move(_thumb_path, destination_dir)
-            thumb_path = os.path.join(destination_dir, thumb_name)
+            thumb_path = destination_dir / thumb_name
 
         duration, width, height = self._get_video_context(meta)
-        filepath = os.path.join(destination_dir, video_filename)
         return Video(
             title=meta['title'],
-            filename=video_filename,
+            original_filename=video_filename,
+            custom_filename=custom_video_filename,
             duration=duration,
             width=width,
             height=height,
-            filepath=filepath,
-            file_size=file_size(filepath),
+            directory_path=destination_dir,
+            file_size=file_size(dest_path),
             thumb_path=thumb_path,
             thumb_name=thumb_name,
         )
@@ -187,26 +189,26 @@ class MediaDownloader:
     def _create_audio_dto(
         self,
         meta: dict,
-        curr_tmp_dir: str,
-        destination_dir: str,
+        curr_tmp_dir: Path,
+        destination_dir: Path,
+        custom_video_filename: str | None = None,  # TODO: Make for audio.
     ) -> Audio:
         audio_filename = self._find_downloaded_file(
             root_path=curr_tmp_dir,
             extension=FINAL_AUDIO_FORMAT,
         )
-        audio_filepath = os.path.join(curr_tmp_dir, audio_filename)
+        audio_filepath = curr_tmp_dir / audio_filename
         self._log.info('Moving "%s" to "%s"', audio_filepath, destination_dir)
         shutil.move(audio_filepath, destination_dir)
-        filepath = os.path.join(destination_dir, audio_filename)
         return Audio(
             title=meta['title'],
-            filename=audio_filename,
+            original_filename=audio_filename,
             duration=None,
-            filepath=filepath,
-            file_size=file_size(filepath),
+            directory_path=destination_dir,
+            file_size=file_size(destination_dir / audio_filename),
         )
 
-    def _find_downloaded_file(self, root_path: str, extension: str) -> str | None:
+    def _find_downloaded_file(self, root_path: Path, extension: str) -> str | None:
         """Try to find downloaded audio or thumbnail file."""
         verbose_name = self._EXT_TO_NAME[extension]
         for file_name in glob.glob(f'*.{extension}', root_dir=root_path):
@@ -214,7 +216,7 @@ class MediaDownloader:
                 'Found downloaded %s: "%s" [%s]',
                 verbose_name,
                 file_name,
-                format_bytes(file_size(os.path.join(root_path, file_name))),
+                format_bytes(file_size(root_path / file_name)),
             )
             return file_name
         self._log.info('Downloaded %s not found in "%s"', verbose_name, root_path)

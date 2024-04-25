@@ -1,58 +1,64 @@
-import abc
 import uuid
+from abc import ABC
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Literal
 
 from pydantic import (
+    ConfigDict,
+    DirectoryPath,
     Field,
-    StrictBool,
-    StrictFloat,
-    StrictInt,
-    StrictStr,
+    FilePath,
     model_validator,
 )
+from typing_extensions import Annotated, Self
 
 from yt_shared.enums import DownMediaType, MediaFileType, TaskSource, TelegramChatType
-from yt_shared.schemas.base import RealBaseModel
+from yt_shared.schemas.base import StrictRealBaseModel
 from yt_shared.utils.common import format_bytes
 from yt_shared.utils.file import file_size
 
 
-class InbMediaPayload(RealBaseModel):
+class InbMediaPayload(StrictRealBaseModel):
     """RabbitMQ inbound media payload from Telegram Bot or API service."""
 
+    model_config = ConfigDict(**StrictRealBaseModel.model_config, frozen=True)
+
     id: uuid.UUID | None = None
-    from_chat_id: StrictInt | None
+    from_chat_id: int | None
     from_chat_type: TelegramChatType | None
-    from_user_id: StrictInt | None
-    message_id: StrictInt | None
-    ack_message_id: StrictInt | None
-    url: StrictStr
-    original_url: StrictStr
+    from_user_id: int | None
+    message_id: int | None
+    ack_message_id: int | None
+    url: str
+    original_url: str
     source: TaskSource
-    save_to_storage: StrictBool
+    save_to_storage: bool
     download_media_type: DownMediaType
+    custom_filename: str | None
+    automatic_extension: bool
     added_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class BaseMedia(RealBaseModel, abc.ABC):
+class BaseMedia(StrictRealBaseModel, ABC):
     """Model representing abstract downloaded media with common fields."""
 
     file_type: MediaFileType
-    title: StrictStr
-    filename: StrictStr
-    filepath: StrictStr
-    file_size: StrictInt
-    duration: StrictFloat | None = None
+    title: str
+    original_filename: str
+    directory_path: Annotated[DirectoryPath, Field(strict=False)]
+    file_size: int
+    duration: float | None = None
     orm_file_id: uuid.UUID | None = None
 
-    saved_to_storage: StrictBool = False
-    storage_path: StrictStr | None = None
+    saved_to_storage: bool = False
+    storage_path: Annotated[Path, Field(strict=False)] | None = None
 
-    is_converted: StrictBool = False
-    converted_filepath: StrictStr | None = None
-    converted_filename: StrictStr | None = None
-    converted_file_size: StrictInt | None = None
+    is_converted: bool = False
+    converted_filename: str | None = None
+    converted_file_size: int | None = None
+
+    custom_filename: str | None = None
 
     def file_size_human(self) -> str:
         return format_bytes(num=self.current_file_size())
@@ -62,13 +68,30 @@ class BaseMedia(RealBaseModel, abc.ABC):
             return self.converted_file_size
         return self.file_size
 
-    def mark_as_saved_to_storage(self, storage_path: str) -> None:
+    @property
+    def current_filename(self) -> str:
+        if self.custom_filename:
+            return self.custom_filename
+        if self.is_converted:
+            return self.converted_filename
+        return self.original_filename
+
+    @property
+    def current_filepath(self) -> Path:
+        if self.custom_filename:
+            filename = self.custom_filename
+        elif self.is_converted:
+            filename = self.converted_filename
+        else:
+            filename = self.original_filename
+        return self.directory_path / filename
+
+    def mark_as_saved_to_storage(self, storage_path: Path) -> None:
         self.storage_path = storage_path
         self.saved_to_storage = True
 
-    def mark_as_converted(self, filepath: str) -> None:
-        self.converted_filepath = filepath
-        self.converted_filename = filepath.rsplit('/', 1)[-1]
+    def mark_as_converted(self, filepath: Path) -> None:
+        self.converted_filename = filepath.name
         self.converted_file_size = file_size(filepath)
         self.is_converted = True
 
@@ -83,35 +106,33 @@ class Video(BaseMedia):
     """Model representing downloaded video file with separate thumbnail."""
 
     file_type: Literal[MediaFileType.VIDEO] = MediaFileType.VIDEO
-    thumb_name: StrictStr | None = None
+    thumb_name: str | None = None
     width: int | float | None = None
     height: int | float | None = None
-    thumb_path: StrictStr | None = None
+    thumb_path: Annotated[FilePath, Field(strict=False)] | None = None
 
-    @model_validator(mode='before')
-    @classmethod
-    def _set_fields(cls, values: dict) -> dict:
-        if not values['thumb_name']:
-            values['thumb_name'] = f'{values["filename"]}-thumb.jpg'
-        return values
+    @model_validator(mode='after')
+    def set_thumb_name(self) -> Self:
+        if not self.thumb_name:
+            self.thumb_name = f'{self.current_filename}-thumb.jpg'
+        return self
 
 
-class DownMedia(RealBaseModel):
+class DownMedia(StrictRealBaseModel):
     """Downloaded media (audio, video with muxed audio or both) object context."""
 
     audio: Audio | None
     video: Video | None
 
-    media_type: DownMediaType
-    root_path: StrictStr
+    media_type: Annotated[DownMediaType, Field(strict=False)]
+    root_path: Annotated[DirectoryPath, Field(strict=False)]
     meta: dict
 
-    @model_validator(mode='before')
-    @classmethod
-    def _validate(cls, values: dict) -> dict:
-        if values['audio'] is None and values['video'] is None:
+    @model_validator(mode='after')
+    def validate_media(self) -> Self:
+        if not (self.audio or self.video):
             raise ValueError('Provide audio, video or both.')
-        return values
+        return self
 
     def get_media_objects(self) -> tuple[Audio | Video, ...]:
         return tuple(filter(None, (self.audio, self.video)))

@@ -1,9 +1,10 @@
 import asyncio
 import atexit
+import datetime
 import random
 import signal
 from functools import partial, wraps
-from string import ascii_lowercase
+from string import ascii_lowercase, digits
 from typing import Any, Callable
 
 _UNIT_SIZE_NAMES = ('', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi')
@@ -51,11 +52,20 @@ def wrap(func):
     return run
 
 
-def random_string(number: int) -> str:
-    return ''.join(random.choice(ascii_lowercase) for _ in range(number))
+def gen_random_str(length: int = 4, use_digits: bool = False) -> str:
+    if use_digits:
+        choices = ascii_lowercase + digits
+    else:
+        choices = ascii_lowercase
+
+    return ''.join(random.SystemRandom().choice(choices) for _ in range(length))
 
 
 def register_shutdown(callback: Callable) -> None:
     atexit.register(callback)
     signal.signal(signal.SIGTERM, callback)
     signal.signal(signal.SIGINT, callback)
+
+
+def remove_microseconds(dt_: datetime.datetime) -> datetime.datetime:
+    return dt_.replace(microsecond=0)

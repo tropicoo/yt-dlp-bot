@@ -1,5 +1,3 @@
-import os
-
 from yt_shared.schemas.media import DownMedia
 
 from worker.core.tasks.abstract import AbstractFfBinaryTask
@@ -14,7 +12,7 @@ class EncodeToH264Task(AbstractFfBinaryTask):
     def __init__(
         self, media: DownMedia, cmd_tpl: str, check_if_in_final_format: bool = True
     ) -> None:
-        super().__init__(file_path=media.video.filepath)
+        super().__init__(file_path=media.video.current_filepath)
         self._media = media
         self._video = media.video
         self._CMD = cmd_tpl  # lol
@@ -43,8 +41,8 @@ class EncodeToH264Task(AbstractFfBinaryTask):
         return False
 
     def _get_output_path(self) -> str:
-        filename = f'{self._video.filename.rsplit(".", 1)[0]}-h264.{self._EXT}'
-        return os.path.join(self._media.root_path, filename)
+        filename = f'{self._video.current_filename.rsplit(".", 1)[0]}-h264.{self._EXT}'
+        return self._media.root_path / filename
 
     async def _encode_video(self) -> None:
         output = self._get_output_path()

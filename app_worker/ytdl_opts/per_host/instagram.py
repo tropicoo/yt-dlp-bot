@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from yt_shared.constants import INSTAGRAM_HOSTS
 from yt_shared.enums import DownMediaType
 
@@ -22,7 +24,7 @@ class InstagramHost(AbstractHostConfig, metaclass=HostConfRegistry):
     FFMPEG_VIDEO_OPTS = 'ffmpeg -y -loglevel error -i "{filepath}" -c:v libx264 -pix_fmt yuv420p -preset veryfast -crf 22 -movflags +faststart -c:a copy "{output}"'
 
     def build_config(
-        self, media_type: DownMediaType, curr_tmp_dir: str
+        self, media_type: DownMediaType, curr_tmp_dir: Path
     ) -> InstagramHostModel:
         return InstagramHostModel(
             hostnames=self.HOSTNAMES,

@@ -1,8 +1,8 @@
-import os
+from pathlib import Path
 
 import yt_dlp
 
-_COOKIES_FILEPATH = '/app/cookies/cookies.txt'
+_COOKIES_FILEPATH = Path('/app/cookies/cookies.txt')
 
 
 def cli_to_api(opts: list) -> dict:
@@ -18,11 +18,13 @@ def cli_to_api(opts: list) -> dict:
     return diff
 
 
-def is_file_empty(filepath: str) -> bool:
+def is_file_empty(filepath: Path) -> bool:
     """Check whether the file is empty."""
-    return os.path.isfile(filepath) and os.path.getsize(filepath) == 0
+    return filepath.is_file() and filepath.stat().st_size == 0
 
 
 def get_cookies_opts_if_not_empty() -> list[str]:
     """Return yt-dlp cookies option with cookies filepath."""
-    return [] if is_file_empty(_COOKIES_FILEPATH) else ['--cookies', _COOKIES_FILEPATH]
+    if is_file_empty(_COOKIES_FILEPATH):
+        return []
+    return ['--cookies', str(_COOKIES_FILEPATH)]

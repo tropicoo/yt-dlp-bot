@@ -1,9 +1,9 @@
-import abc
 import asyncio
+from abc import ABC, abstractmethod
 from itertools import chain
 from typing import TYPE_CHECKING, Coroutine
 
-from pydantic import StrictBool, StrictFloat, StrictInt, StrictStr
+from pydantic import ConfigDict, FilePath
 from pyrogram.enums import ChatAction, MessageMediaType, ParseMode
 from pyrogram.types import Animation, Message
 from pyrogram.types import Audio as _Audio
@@ -27,25 +27,26 @@ if TYPE_CHECKING:
 
 
 class BaseUploadContext(RealBaseModel):
-    caption: StrictStr
-    filename: StrictStr
-    filepath: StrictStr
-    duration: StrictFloat
+    model_config = ConfigDict(**RealBaseModel.model_config, strict=True)
+    caption: str
+    filename: str
+    filepath: FilePath
+    duration: float
     type: MessageMediaType
-    is_cached: StrictBool = False
+    is_cached: bool = False
 
 
 class VideoUploadContext(BaseUploadContext):
-    height: StrictInt | StrictFloat
-    width: StrictInt | StrictFloat
-    thumb: StrictStr | None = None
+    height: int | float
+    width: int | float
+    thumb: FilePath | None = None
 
 
 class AudioUploadContext(BaseUploadContext):
     pass
 
 
-class AbstractUploadTask(AbstractTask, abc.ABC):
+class AbstractUploadTask(AbstractTask, ABC):
     _UPLOAD_ACTION: ChatAction
 
     def __init__(
@@ -60,12 +61,8 @@ class AbstractUploadTask(AbstractTask, abc.ABC):
         self._config = get_main_config()
         self._media_object = media_object
 
-        if media_object.is_converted:
-            self._filename = media_object.converted_filename
-            self._filepath = media_object.converted_filepath
-        else:
-            self._filename = media_object.filename
-            self._filepath = media_object.filepath
+        self._filename = media_object.current_filename
+        self._filepath = media_object.current_filepath
 
         self._bot = bot
         self._users = users
@@ -89,7 +86,7 @@ class AbstractUploadTask(AbstractTask, abc.ABC):
             self._log.exception('Exception in upload task for "%s"', self._filename)
             raise
 
-    @abc.abstractmethod
+    @abstractmethod
     def _generate_caption_items(self) -> list[str]:
         pass
 
@@ -127,11 +124,11 @@ class AbstractUploadTask(AbstractTask, abc.ABC):
         self._log.debug('Uploading to "%d" with context: %s', chat_id, self._media_ctx)
         return await self._generate_send_media_coroutine(chat_id)
 
-    @abc.abstractmethod
+    @abstractmethod
     def _generate_send_media_coroutine(self, chat_id: int) -> Coroutine:
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def _create_media_context(self) -> AudioUploadContext | VideoUploadContext:
         pass
 
@@ -170,7 +167,7 @@ class AbstractUploadTask(AbstractTask, abc.ABC):
             exception_message_args=(db_cache_task_name,),
         )
 
-    @abc.abstractmethod
+    @abstractmethod
     def _cache_data(self, message: Message) -> None:
         pass
 

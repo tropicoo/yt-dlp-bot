@@ -1,12 +1,9 @@
 """Utils module."""
 
 import asyncio
-import random
-import string
 from datetime import datetime
 from typing import Generator, Iterable
 from urllib.parse import urlparse
-from uuid import uuid4
 
 from pyrogram.enums import ChatType
 from pyrogram.types import Message
@@ -17,17 +14,6 @@ from bot.core.schema import AnonymousUserSchema, ConfigSchema, UserSchema
 
 async def shallow_sleep_async(sleep_time: float = 0.1) -> None:
     await asyncio.sleep(sleep_time)
-
-
-def gen_uuid() -> str:
-    return uuid4().hex
-
-
-def gen_random_str(length=4) -> str:
-    return ''.join(
-        random.SystemRandom().choice(string.ascii_lowercase + string.digits)
-        for _ in range(length)
-    )
 
 
 def format_ts(ts: float, time_format: str = '%a %b %d %H:%M:%S %Y') -> str:

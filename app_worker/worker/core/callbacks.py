@@ -3,7 +3,7 @@ import logging
 from aio_pika import IncomingMessage
 from yt_shared.schemas.media import InbMediaPayload
 
-from worker.core.payload_handler import PayloadHandler
+from worker.core.payload_handler import InboundPayloadHandler
 
 
 class RMQCallbacks:
@@ -11,7 +11,7 @@ class RMQCallbacks:
 
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
-        self._payload_handler = PayloadHandler()
+        self._payload_handler = InboundPayloadHandler()
 
     async def on_input_message(self, message: IncomingMessage) -> None:
         try:

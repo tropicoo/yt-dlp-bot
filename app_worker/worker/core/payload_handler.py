@@ -15,7 +15,7 @@ from worker.core.exceptions import DownloadVideoServiceError, GeneralVideoServic
 from worker.core.media_service import MediaService
 
 
-class PayloadHandler:
+class InboundPayloadHandler:
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
         self._rmq_publisher = RmqPublisher()

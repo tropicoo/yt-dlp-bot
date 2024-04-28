@@ -180,10 +180,9 @@ class AbstractUploadTask(AbstractTask, ABC):
         )
 
         async for db in get_db():
-            await TaskRepository().save_file_cache(
+            await TaskRepository(session=db).save_file_cache(
                 cache=cache,
                 file_id=self._media_object.orm_file_id,
-                db=db,
             )
 
 

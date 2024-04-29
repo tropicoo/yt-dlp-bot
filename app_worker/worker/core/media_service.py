@@ -141,7 +141,10 @@ class MediaService:
                 raise DownloadVideoServiceError(message=str(err), task=task)
 
         coro_tasks = []
-        if not video.thumb_path:
+
+        video_ar = video.aspect_ratio
+        thumb_ar = video.thumb_aspect_ratio
+        if not video.thumb_path or all([video_ar, thumb_ar, video_ar != thumb_ar]):
             thumb_path = Path(media.root_path) / Path(video.thumb_name)
             coro_tasks.append(
                 self._create_thumb_task(

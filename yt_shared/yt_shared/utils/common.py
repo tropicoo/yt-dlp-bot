@@ -69,3 +69,18 @@ def register_shutdown(callback: Callable) -> None:
 
 def remove_microseconds(dt_: datetime.datetime) -> datetime.datetime:
     return dt_.replace(microsecond=0)
+
+
+def calculate_aspect_ratio(width: int, height: int) -> tuple[int, int]:
+    # Calculate the greatest common divisor using Euclid's algorithm
+    def gcd(a: int, b: int) -> int:
+        while b:
+            a, b = b, a % b
+        return a
+
+    divisor = gcd(width, height)
+
+    aspect_width = width // divisor
+    aspect_height = height // divisor
+
+    return aspect_width, aspect_height

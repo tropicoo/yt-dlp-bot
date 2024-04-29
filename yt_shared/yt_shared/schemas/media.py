@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
 
+from PIL import Image
 from pydantic import (
     ConfigDict,
     DirectoryPath,
@@ -15,7 +16,7 @@ from typing_extensions import Annotated, Self
 
 from yt_shared.enums import DownMediaType, MediaFileType, TaskSource, TelegramChatType
 from yt_shared.schemas.base import StrictRealBaseModel
-from yt_shared.utils.common import format_bytes
+from yt_shared.utils.common import calculate_aspect_ratio, format_bytes
 from yt_shared.utils.file import file_size
 
 
@@ -116,6 +117,22 @@ class Video(BaseMedia):
         if not self.thumb_name:
             self.thumb_name = f'{self.current_filename}-thumb.jpg'
         return self
+
+    @property
+    def aspect_ratio(self) -> tuple[int, int] | None:
+        if self.width and self.height:
+            return calculate_aspect_ratio(
+                width=int(self.width), height=int(self.height)
+            )
+        return None
+
+    @property
+    def thumb_aspect_ratio(self) -> tuple[int, int] | None:
+        if not self.thumb_path:
+            return None
+        with Image.open(self.thumb_path) as thumb:
+            width, height = thumb.size
+        return calculate_aspect_ratio(width=width, height=height)
 
 
 class DownMedia(StrictRealBaseModel):

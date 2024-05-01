@@ -2,7 +2,7 @@
 
 Simple and reliable self-hosted Video Download Telegram Bot.
 
-Version: 1.5. [Release details](RELEASES.md).
+Version: 1.6. [Release details](RELEASES.md).
 
 ![frames](.assets/download_success.png)
 
@@ -173,7 +173,9 @@ documentations lives at `http://127.0.0.1:1984/docs`.
    {
        "url": "https://www.youtube.com/watch?v=PavYAOpVpJI",
        "download_media_type": "AUDIO_VIDEO",
-       "save_to_storage": false
+       "save_to_storage": false,
+       "custom_filename": "cool.mp4",
+       "automatic_extension": false
    }
    ```
    Response

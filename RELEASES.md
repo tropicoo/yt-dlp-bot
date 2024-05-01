@@ -1,3 +1,31 @@
+## Release 1.6
+
+Release date: April 25, 2024
+
+## New Features
+
+ - Ability to set custom video name in `POST` API request:
+   ```json
+    {
+        "url": "<VIDEO_URL>",
+        "download_media_type": "VIDEO",
+        "save_to_storage": true,
+        "custom_filename": "your cool custom name and extension.mp4",
+        "automatic_extension": false
+    }
+   ```
+ - Saving into storage with the same name won't overwrite the file but append timestamp to the filename.
+
+## Important
+
+N/A
+
+## Misc
+
+N/A
+
+---
+
 ## Release 1.5
 
 Release date: March 20, 2024

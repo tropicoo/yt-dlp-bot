@@ -1,5 +1,5 @@
-import abc
 import logging
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from yt_shared.enums import TaskSource, TelegramChatType
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from bot.bot import VideoBotClient
 
 
-class AbstractDownloadHandler(abc.ABC):
+class AbstractDownloadHandler(ABC):
     def __init__(
         self,
         body: BaseRabbitDownloadPayload,
@@ -22,7 +22,7 @@ class AbstractDownloadHandler(abc.ABC):
         self._bot = bot
         self._receiving_users = self._get_receiving_users()
 
-    @abc.abstractmethod
+    @abstractmethod
     async def handle(self) -> None:
         pass
 

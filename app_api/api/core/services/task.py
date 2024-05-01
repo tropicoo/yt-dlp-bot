@@ -51,7 +51,7 @@ class TaskService:
         status: list[TaskStatus] | None = None,
         limit: int = 100,
         offset: int = 0,
-    ) -> list[Task]:
+    ) -> list[TaskSimpleSchema | TaskSchema]:
         schema = self._get_schema(include_meta)
         tasks = await self._repository.get_all_tasks(
             include_meta, status, limit, offset
@@ -79,6 +79,8 @@ class TaskService:
             from_user_id=None,
             message_id=None,
             ack_message_id=None,
+            custom_filename=task.custom_filename,
+            automatic_extension=task.automatic_extension,
         )
         if not await publisher.send_for_download(payload):
             raise TaskServiceError('Failed to create task')

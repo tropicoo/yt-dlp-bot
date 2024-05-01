@@ -1,58 +1,52 @@
-import abc
+from abc import ABC
 
-from pydantic import (
-    StrictBool,
-    StrictInt,
-    StrictStr,
-    StringConstraints,
-    field_validator,
-)
+from pydantic import Field, PositiveInt, StringConstraints, field_validator
 from typing_extensions import Annotated
 from yt_shared.enums import DownMediaType
-from yt_shared.schemas.base import RealBaseModel
+from yt_shared.schemas.base import StrictBaseConfigModel
 
 _LANG_CODE_LEN = 2
 _LANG_CODE_REGEX = rf'^[a-z]{{{_LANG_CODE_LEN}}}$'
 
 
-class _BaseUserSchema(RealBaseModel, abc.ABC):
-    id: StrictInt
+class _BaseUserSchema(StrictBaseConfigModel, ABC):
+    id: int
 
 
 class AnonymousUserSchema(_BaseUserSchema):
     pass
 
 
-class VideoCaptionSchema(RealBaseModel):
-    include_title: StrictBool
-    include_filename: StrictBool
-    include_link: StrictBool
-    include_size: StrictBool
+class VideoCaptionSchema(StrictBaseConfigModel):
+    include_title: bool
+    include_filename: bool
+    include_link: bool
+    include_size: bool
 
 
-class UploadSchema(RealBaseModel):
-    upload_video_file: StrictBool
-    upload_video_max_file_size: StrictInt
-    forward_to_group: StrictBool
-    forward_group_id: StrictInt | None
-    silent: StrictBool
+class UploadSchema(StrictBaseConfigModel):
+    upload_video_file: bool
+    upload_video_max_file_size: PositiveInt
+    forward_to_group: bool
+    forward_group_id: int | None
+    silent: bool
     video_caption: VideoCaptionSchema
 
 
 class UserSchema(_BaseUserSchema):
-    is_admin: StrictBool
-    send_startup_message: StrictBool
-    download_media_type: DownMediaType
-    save_to_storage: StrictBool
-    use_url_regex_match: StrictBool
+    is_admin: bool
+    send_startup_message: bool
+    download_media_type: Annotated[DownMediaType, Field(strict=False)]
+    save_to_storage: bool
+    use_url_regex_match: bool
     upload: UploadSchema
 
 
-class ApiSchema(RealBaseModel):
-    upload_video_file: StrictBool
-    upload_video_max_file_size: StrictInt
+class ApiSchema(StrictBaseConfigModel):
+    upload_video_file: bool
+    upload_video_max_file_size: PositiveInt
     upload_to_chat_ids: list[AnonymousUserSchema]
-    silent: StrictBool
+    silent: bool
     video_caption: VideoCaptionSchema
 
     @field_validator('upload_to_chat_ids', mode='before')
@@ -61,25 +55,25 @@ class ApiSchema(RealBaseModel):
         return [AnonymousUserSchema(id=id_) for id_ in values]
 
 
-class TelegramSchema(RealBaseModel):
-    api_id: StrictInt
-    api_hash: StrictStr
-    token: StrictStr
+class TelegramSchema(StrictBaseConfigModel):
+    api_id: int
+    api_hash: str
+    token: str
     lang_code: Annotated[
         str, StringConstraints(pattern=_LANG_CODE_REGEX, to_lower=True)
     ]
-    max_upload_tasks: StrictInt
+    max_upload_tasks: PositiveInt
     url_validation_regexes: list[str]
     allowed_users: list[UserSchema]
     api: ApiSchema
 
 
-class YtdlpSchema(RealBaseModel):
-    version_check_enabled: StrictBool
-    version_check_interval: StrictInt
-    notify_users_on_new_version: StrictBool
+class YtdlpSchema(StrictBaseConfigModel):
+    version_check_enabled: bool
+    version_check_interval: PositiveInt
+    notify_users_on_new_version: bool
 
 
-class ConfigSchema(RealBaseModel):
+class ConfigSchema(StrictBaseConfigModel):
     telegram: TelegramSchema
     ytdlp: YtdlpSchema

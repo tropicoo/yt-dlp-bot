@@ -1,7 +1,6 @@
 """RabbitMQ Queue abstract worker module."""
 
-import abc
-import enum
+from abc import abstractmethod
 from typing import TYPE_CHECKING, Type
 
 from aio_pika import IncomingMessage
@@ -11,14 +10,10 @@ from yt_shared.utils.tasks.abstract import AbstractTask
 
 from bot.core.config.config import get_main_config
 from bot.core.exceptions import InvalidBodyError
+from bot.core.workers.enums import RabbitWorkerType
 
 if TYPE_CHECKING:
     from bot.bot.client import VideoBotClient
-
-
-class RabbitWorkerType(enum.Enum):
-    ERROR = 'ERROR'
-    SUCCESS = 'SUCCESS'
 
 
 class AbstractDownloadResultWorker(AbstractTask):
@@ -36,7 +31,7 @@ class AbstractDownloadResultWorker(AbstractTask):
     async def run(self) -> None:
         await self._watch_queue()
 
-    @abc.abstractmethod
+    @abstractmethod
     async def _process_body(self, body: BaseModel) -> bool:
         pass
 
@@ -48,7 +43,8 @@ class AbstractDownloadResultWorker(AbstractTask):
                     await self._process_message(message)
                 except Exception:
                     self._log.exception('Failed to process message %s', message.body)
-                    await message.nack(requeue=False)
+                    if not message.processed:
+                        await message.nack(requeue=False)
 
     async def _process_message(self, message: IncomingMessage) -> None:
         self._log.debug('[x] Received message %s', message.body)
@@ -64,7 +60,7 @@ class AbstractDownloadResultWorker(AbstractTask):
                 # Skip unmatched schema class that failed to parse the body.
                 pass
         else:
-            self._log.error('Failed to decode message body: %s', message.body)
+            self._log.error('Failed to decode message body')
             await self._reject_invalid_body(message)
             raise InvalidBodyError
 

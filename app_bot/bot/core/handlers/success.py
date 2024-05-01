@@ -1,5 +1,4 @@
 import asyncio
-import os
 import traceback
 
 from pyrogram.enums import ParseMode
@@ -10,7 +9,7 @@ from yt_shared.rabbit.publisher import RmqPublisher
 from yt_shared.schemas.error import ErrorDownloadGeneralPayload
 from yt_shared.schemas.media import BaseMedia
 from yt_shared.schemas.success import SuccessDownloadPayload
-from yt_shared.utils.file import list_files, remove_dir
+from yt_shared.utils.file import list_files_human, remove_dir
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.handlers.abstract import AbstractDownloadHandler
@@ -101,10 +100,10 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             else:
                 self._log.warning(
                     'File "%s" will not be uploaded due to upload configuration',
-                    media_object.filepath,
+                    media_object.current_filepath,
                 )
         except Exception as err:
-            self._log.exception('Upload of "%s" failed', media_object.filepath)
+            self._log.exception('Upload of "%s" failed', media_object.current_filepath)
             await self._publish_error_message(err)
 
     def _cleanup(self) -> None:
@@ -113,7 +112,7 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             'Cleaning up task "%s": removing download content directory "%s" with files %s',
             self._body.task_id,
             root_path,
-            list_files(root_path),
+            list_files_human(root_path),
         )
         remove_dir(root_path)
 
@@ -138,7 +137,7 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
 
     @staticmethod
     def _create_success_text(media_object: BaseMedia) -> str:
-        text = f'{SUCCESS_EMOJI} {bold("Downloaded")} {media_object.filename}'
+        text = f'{SUCCESS_EMOJI} {bold("Downloaded")} {media_object.current_filename}'
         if media_object.saved_to_storage:
             text = f'{text}\n💾 {bold("Saved to media storage")}'
         return f'{text}\n📏 {bold("Size")} {media_object.file_size_human()}'
@@ -171,8 +170,10 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             user = self._bot.allowed_users[self._get_sender_id()]
             max_file_size = user.upload.upload_video_max_file_size
 
-        if not os.path.exists(media_obj.filepath):
-            raise ValueError(f'{media_obj.file_type} {media_obj.filepath} not found')
+        if not media_obj.current_filepath.exists():
+            raise ValueError(
+                f'{media_obj.file_type} {media_obj.current_filepath} not found'
+            )
 
         _file_size = media_obj.current_file_size()
         if _file_size > max_file_size:

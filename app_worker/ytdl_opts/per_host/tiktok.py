@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from yt_shared.constants import TIKTOK_HOSTS
 from yt_shared.enums import DownMediaType
 
@@ -16,7 +18,7 @@ class TikTokHost(AbstractHostConfig, metaclass=HostConfRegistry):
     ENCODE_VIDEO = False
 
     def build_config(
-        self, media_type: DownMediaType, curr_tmp_dir: str
+        self, media_type: DownMediaType, curr_tmp_dir: Path
     ) -> TikTokHostModel:
         return TikTokHostModel(
             hostnames=self.HOSTNAMES,

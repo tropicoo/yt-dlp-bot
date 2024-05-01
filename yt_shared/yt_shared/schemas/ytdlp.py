@@ -1,35 +1,32 @@
 import datetime
 
-from pydantic import Field, StrictStr, field_validator
+from pydantic import Field, field_validator
 
-from yt_shared.schemas.base import BaseOrmModel, RealBaseModel
-
-
-def _remove_microseconds(dt_obj: datetime.datetime) -> datetime.datetime:
-    return dt_obj.replace(microsecond=0)
+from yt_shared.schemas.base import StrictBaseOrmModel, StrictRealBaseModel
+from yt_shared.utils.common import remove_microseconds
 
 
-class LatestVersion(RealBaseModel):
-    version: StrictStr
+class LatestVersion(StrictRealBaseModel):
+    version: str
     retrieved_at: datetime.datetime
 
-    @field_validator('retrieved_at', mode='before')
+    @field_validator('retrieved_at', mode='after')
     @classmethod
     def remove_microseconds(cls, value: datetime.datetime) -> datetime.datetime:
-        return _remove_microseconds(value)
+        return remove_microseconds(value)
 
 
-class CurrentVersion(BaseOrmModel):
-    version: StrictStr = Field(..., alias='current_version')
+class CurrentVersion(StrictBaseOrmModel):
+    version: str = Field(..., alias='current_version')
     updated_at: datetime.datetime
 
-    @field_validator('updated_at', mode='before')
+    @field_validator('updated_at', mode='after')
     @classmethod
     def remove_microseconds(cls, value: datetime.datetime) -> datetime.datetime:
-        return _remove_microseconds(value)
+        return remove_microseconds(value)
 
 
-class VersionContext(RealBaseModel):
+class VersionContext(StrictRealBaseModel):
     latest: LatestVersion
     current: CurrentVersion
 

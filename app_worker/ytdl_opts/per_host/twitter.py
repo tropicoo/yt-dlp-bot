@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from yt_shared.constants import TWITTER_HOSTS
 from yt_shared.enums import DownMediaType
 
@@ -16,7 +18,7 @@ class TwitterHost(AbstractHostConfig, metaclass=HostConfRegistry):
     ENCODE_VIDEO = False
 
     def build_config(
-        self, media_type: DownMediaType, curr_tmp_dir: str
+        self, media_type: DownMediaType, curr_tmp_dir: Path
     ) -> TwitterHostModel:
         return TwitterHostModel(
             hostnames=self.HOSTNAMES,

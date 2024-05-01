@@ -35,6 +35,8 @@ class UrlService:
             source=TaskSource.BOT,
             save_to_storage=url.save_to_storage,
             download_media_type=url.download_media_type,
+            custom_filename=None,
+            automatic_extension=False,
         )
         is_sent = await self._rmq_publisher.send_for_download(payload)
         if not is_sent:

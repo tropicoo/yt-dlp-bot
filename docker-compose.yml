@@ -59,7 +59,7 @@ services:
       - rabbitmq
     volumes:
       - "./downloads:/filestorage"
-      - "shared-tmpfs:/tmp/download_tmpfs"
+      # - "shared-tmpfs:/tmp/download_tmpfs"
   postgres:
     container_name: yt_postgres
     image: "postgres:14"
@@ -84,9 +84,9 @@ services:
 
 volumes:
   pgdata:
-  shared-tmpfs:
-    driver: local
-    driver_opts:
-      type: "tmpfs"
-      device: "tmpfs"
-      o: "size=4096m,uid=1000"
+  # shared-tmpfs:
+  #   driver: local
+  #   driver_opts:
+  #     type: "tmpfs"
+  #     device: "tmpfs"
+  #     o: "size=4096m,uid=1000"

@@ -81,7 +81,17 @@ services:
     image: "redis:alpine"
     container_name: yt_redis
     restart: unless-stopped
-
+  cron:
+    container_name: yt_cron
+    build:
+      context: app_cron/
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - "./downloads:/filestorage"
+    env_file:
+      - app_cron/.env
+      - envs/.env_worker
 volumes:
   pgdata:
   # shared-tmpfs:

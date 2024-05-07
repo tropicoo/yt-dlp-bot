@@ -1,5 +1,7 @@
 # Byte-compiled / optimized / DLL files
 
+app_cron/.env
+
 *tmp*
 *.session
 *.session-journal

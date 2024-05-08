@@ -60,6 +60,13 @@ class MediaDownloader:
                 media_type=media_type, curr_tmp_dir=curr_tmp_dir
             )
 
+            if media_payload.custom_options:
+                for key, value in media_payload.custom_options.items():
+                    try:
+                        ytdl_opts_model.ytdl_opts[key].update(value)
+                    except KeyError:
+                        ytdl_opts_model.ytdl_opts[key] = value
+
             with yt_dlp.YoutubeDL(ytdl_opts_model.ytdl_opts) as ytdl:
                 self._log.info('Downloading %s', url)
                 self._log.info('Downloading to %s', curr_tmp_dir)

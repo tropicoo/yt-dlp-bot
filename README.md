@@ -175,7 +175,13 @@ documentations lives at `http://127.0.0.1:1984/docs`.
        "download_media_type": "AUDIO_VIDEO",
        "save_to_storage": false,
        "custom_filename": "cool.mp4",
-       "automatic_extension": false
+       "automatic_extension": false,
+       "custom_options": {
+           "http_headers": {
+               "User-Agent": "MyApp/1.0.0",
+               "Authorization": "Bearer <token>"
+           }
+       }
    }
    ```
    Response

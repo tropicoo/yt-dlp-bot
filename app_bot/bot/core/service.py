@@ -37,6 +37,7 @@ class UrlService:
             download_media_type=url.download_media_type,
             custom_filename=None,
             automatic_extension=False,
+            custom_options=None,
         )
         is_sent = await self._rmq_publisher.send_for_download(payload)
         if not is_sent:

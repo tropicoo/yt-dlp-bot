@@ -210,7 +210,7 @@ class AudioUploadTask(AbstractUploadTask):
         )
 
     def _cache_data(self, message: Message) -> None:
-        self._log.info('Saving telegram file cache')
+        self._log.info('Saving Telegram file cache')
         audio = message.audio
         if not audio:
             err_msg = 'Telegram message response does not contain audio'
@@ -291,7 +291,7 @@ class VideoUploadTask(AbstractUploadTask):
         return self._bot.send_video(**kwargs)
 
     def _cache_data(self, message: Message) -> None:
-        self._log.info('Saving telegram file cache')
+        self._log.info('Saving Telegram file cache')
         video = message.video or message.animation
         if not video:
             err_msg = 'Telegram message response does not contain video or animation'

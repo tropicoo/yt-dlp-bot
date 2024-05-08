@@ -1,5 +1,7 @@
 # Byte-compiled / optimized / DLL files
 
+rsync.sh
+rsync_exclude.txt
 *tmp*
 *.session
 *.session-journal

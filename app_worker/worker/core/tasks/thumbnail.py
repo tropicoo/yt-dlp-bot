@@ -7,7 +7,7 @@ from worker.core.tasks.abstract import AbstractFfBinaryTask
 
 
 class MakeThumbnailTask(AbstractFfBinaryTask):
-    _CMD = 'ffmpeg -y -loglevel error -i "{filepath}" -ss {time_point} -vframes 1 -q:v 7 "{thumbpath}"'
+    _CMD = 'ffmpeg -y -loglevel error -ss {time_point} -i "{filepath}" -vframes 1 -q:v 7 "{thumbpath}"'
 
     def __init__(
         self, thumbnail_path: Path, *args, duration: float, video_ctx: Video, **kwargs
@@ -35,7 +35,7 @@ class MakeThumbnailTask(AbstractFfBinaryTask):
             return False
 
         stdout, stderr = await self._get_stdout_stderr(proc)
-        self._log.debug(
+        self._log.info(
             'Process %s returncode: %d, stdout: %s, stderr: %s',
             cmd,
             proc.returncode,

@@ -9,7 +9,7 @@ from yt_shared.utils.tasks.abstract import AbstractTask
 
 class AbstractFfBinaryTask(AbstractTask):
     _CMD: str | None = None
-    _CMD_TIMEOUT = 10
+    _CMD_TIMEOUT = 60
 
     def __init__(self, file_path: Path) -> None:
         super().__init__()

@@ -2,7 +2,7 @@ from abc import ABC
 
 from pydantic import Field, PositiveInt, StringConstraints, field_validator
 from typing_extensions import Annotated
-from yt_shared.enums import DownMediaType
+from yt_shared.enums import DownMediaType, YtdlpReleaseChannelType
 from yt_shared.schemas.base import StrictBaseConfigModel
 
 _LANG_CODE_LEN = 2
@@ -72,6 +72,7 @@ class YtdlpSchema(StrictBaseConfigModel):
     version_check_enabled: bool
     version_check_interval: PositiveInt
     notify_users_on_new_version: bool
+    release_channel: Annotated[YtdlpReleaseChannelType, Field(strict=False)]
 
 
 class ConfigSchema(StrictBaseConfigModel):

@@ -55,7 +55,7 @@ class WorkerLauncher:
             'Saving current yt-dlp version (%s) to the database', curr_version
         )
         async for db in get_db():
-            await YtdlpRepository().create_or_update_version(curr_version, db)
+            await YtdlpRepository(db).create_or_update_version(curr_version)
 
     async def _create_intermediate_directories(self) -> None:
         """Create temporary intermediate directories on start if they do not exist."""

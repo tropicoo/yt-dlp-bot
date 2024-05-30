@@ -19,7 +19,7 @@ from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.config.config import get_main_config, settings
-from bot.core.schema import AnonymousUserSchema, UserSchema, VideoCaptionSchema
+from bot.core.schemas import AnonymousUserSchema, UserSchema, VideoCaptionSchema
 from bot.core.utils import bold, is_user_upload_silent
 
 if TYPE_CHECKING:

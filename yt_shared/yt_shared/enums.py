@@ -50,3 +50,9 @@ class DownMediaType(StrChoiceEnum):
 class MediaFileType(StrChoiceEnum):
     AUDIO = 'AUDIO'
     VIDEO = 'VIDEO'
+
+
+class YtdlpReleaseChannelType(StrChoiceEnum):
+    STABLE = 'STABLE'
+    NIGHTLY = 'NIGHTLY'
+    MASTER = 'MASTER'

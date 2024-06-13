@@ -8,6 +8,7 @@ config*.yaml
 !app_bot/config-example.yml
 .ruff_cache
 app_worker/debian.Dockerfile
+app_worker/ytdl_opts/default.py
 
 __pycache__/
 *.py[cod]

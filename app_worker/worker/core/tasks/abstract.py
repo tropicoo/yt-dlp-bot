@@ -1,13 +1,14 @@
 import asyncio
 import os
 import signal
+from abc import ABC
 from pathlib import Path
 
 from yt_shared.utils.common import wrap
 from yt_shared.utils.tasks.abstract import AbstractTask
 
 
-class AbstractFfBinaryTask(AbstractTask):
+class AbstractFfBinaryTask(AbstractTask, ABC):
     _CMD: str | None = None
     _CMD_TIMEOUT = 60
 

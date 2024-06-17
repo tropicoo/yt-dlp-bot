@@ -1,4 +1,4 @@
 PyYAML==6.0.1
 pyrofork==2.3.24
-tenacity==8.3.0
+tenacity==8.4.1
 TgCrypto-pyrofork @ git+https://github.com/Mayuri-Chan/tgcrypto-pyrofork

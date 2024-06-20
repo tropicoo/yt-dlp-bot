@@ -38,6 +38,7 @@ class InbMediaPayload(StrictRealBaseModel):
     download_media_type: DownMediaType
     custom_filename: str | None
     automatic_extension: bool
+    custom_options: dict[str, dict] | None
     added_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 

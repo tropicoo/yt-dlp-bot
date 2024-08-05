@@ -23,8 +23,7 @@ def file_size(filepath: Path) -> int:
     return filepath.stat().st_size
 
 
-def list_files_human(path: Path) -> dict[Path, str]:
+def list_files_human(path: Path) -> dict[str, str]:
     return {
-        filename: format_bytes(file_size(path / filename))
-        for filename in path.iterdir()
+        filepath.name: format_bytes(file_size(filepath)) for filepath in path.iterdir()
     }

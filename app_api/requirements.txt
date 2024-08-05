@@ -1,3 +1,2 @@
 fastapi-cache2[redis]==0.2.2
-fastapi==0.112.0
-uvicorn==0.30.5
+fastapi[standart]==0.112.0

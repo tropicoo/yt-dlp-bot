@@ -40,25 +40,24 @@ class MediaService:
         self._repository = task_repository
         self._media_payload = media_payload
 
-    async def process(
-        self,
-    ) -> tuple[DownMedia | None, Task | None]:
-        task = await self._repository.get_or_create_task(self._media_payload)
-        if task.status != TaskStatus.PENDING.value:
+        self._task: Task | None = None
+
+    async def process(self) -> tuple[DownMedia | None, Task | None]:
+        self._task = await self._repository.get_or_create_task(self._media_payload)
+        if self._task.status != TaskStatus.PENDING.value:
             return None, None
         return (
-            await self._process(task=task),
-            task,
+            await self._process(),
+            self._task,
         )
 
-    async def _process(self, task: Task) -> DownMedia:
-        host_conf = self._get_host_conf(url=task.url)
-        await self._repository.save_as_processing(task)
-        media = await self._start_download(task=task, host_conf=host_conf)
+    async def _process(self) -> DownMedia:
+        host_conf = self._get_host_conf()
+        await self._repository.save_as_processing(self._task)
+        media = await self._start_download(host_conf=host_conf)
         try:
             await self._post_process_media(
                 media=media,
-                task=task,
                 host_conf=host_conf,
             )
         except Exception:
@@ -67,17 +66,13 @@ class MediaService:
             raise
         return media
 
-    @staticmethod
-    def _get_host_conf(url: str) -> AbstractHostConfig:
+    def _get_host_conf(self) -> AbstractHostConfig:
+        url = self._task.url
         host_to_cls_map = HostConfRegistry.get_host_to_cls_map()
         host_cls = host_to_cls_map.get(urlsplit(url).netloc, host_to_cls_map[None])
-        return host_cls(url=url)
+        return host_cls(url)
 
-    async def _start_download(
-        self,
-        task: Task,
-        host_conf: AbstractHostConfig,
-    ) -> DownMedia:
+    async def _start_download(self, host_conf: AbstractHostConfig) -> DownMedia:
         try:
             return await asyncio.get_running_loop().run_in_executor(
                 None,
@@ -90,26 +85,21 @@ class MediaService:
             self._log.exception(
                 'Failed to download media. Context: %s', self._media_payload
             )
-            await self._handle_download_exception(err, task)
-            raise DownloadVideoServiceError(message=str(err), task=task)
+            await self._handle_download_exception(err)
+            raise DownloadVideoServiceError(message=str(err), task=self._task)
 
     async def _post_process_media(
-        self,
-        media: DownMedia,
-        task: Task,
-        host_conf: AbstractHostConfig,
+        self, media: DownMedia, host_conf: AbstractHostConfig
     ) -> None:
         def post_process_audio():
             return self._post_process_audio(
                 media=media,
-                task=task,
                 host_conf=host_conf,
             )
 
         def post_process_video():
             return self._post_process_video(
                 media=media,
-                task=task,
                 host_conf=host_conf,
             )
 
@@ -121,13 +111,10 @@ class MediaService:
             case DownMediaType.AUDIO_VIDEO:
                 await asyncio.gather(*(post_process_audio(), post_process_video()))
 
-        await self._repository.save_as_done(task)
+        await self._repository.save_as_done(self._task)
 
     async def _post_process_video(
-        self,
-        media: DownMedia,
-        task: Task,
-        host_conf: AbstractHostConfig,
+        self, media: DownMedia, host_conf: AbstractHostConfig
     ) -> None:
         """Post-process downloaded media files, e.g. make thumbnail and copy to storage."""
         video = media.video
@@ -138,7 +125,7 @@ class MediaService:
             try:
                 await self._set_probe_ctx(video)
             except RuntimeError as err:
-                raise DownloadVideoServiceError(message=str(err), task=task)
+                raise DownloadVideoServiceError(message=str(err), task=self._task)
 
         coro_tasks = []
 
@@ -173,16 +160,13 @@ class MediaService:
 
         await asyncio.gather(*coro_tasks)
 
-        file = await self._repository.save_file(task, media.video, media.meta)
+        file = await self._repository.save_file(self._task, media.video, media.meta)
         video.orm_file_id = file.id
 
     async def _post_process_audio(
-        self,
-        media: DownMedia,
-        task: Task,
-        host_conf: AbstractHostConfig,
+        self, media: DownMedia, host_conf: AbstractHostConfig
     ) -> None:
-        coro_tasks = [self._repository.save_file(task, media.audio, media.meta)]
+        coro_tasks = [self._repository.save_file(self._task, media.audio, media.meta)]
         if self._media_payload.save_to_storage:
             coro_tasks.append(self._create_copy_file_task(media.audio))
         results = await asyncio.gather(*coro_tasks)
@@ -218,11 +202,7 @@ class MediaService:
         )
 
     def _create_thumb_task(
-        self,
-        file_path: Path,
-        thumb_path: Path,
-        duration: float,
-        video_ctx: Video,
+        self, file_path: Path, thumb_path: Path, duration: float, video_ctx: Video
     ) -> asyncio.Task:
         return create_task(
             MakeThumbnailTask(
@@ -253,5 +233,5 @@ class MediaService:
         self._log.info('Performing error cleanup: removing %s', video.root_path)
         remove_dir(video.root_path)
 
-    async def _handle_download_exception(self, err: Exception, task: Task) -> None:
-        await self._repository.save_as_failed(task=task, error_message=str(err))
+    async def _handle_download_exception(self, err: Exception) -> None:
+        await self._repository.save_as_failed(task=self._task, error_message=str(err))

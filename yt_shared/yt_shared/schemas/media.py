@@ -2,7 +2,7 @@ import uuid
 from abc import ABC
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal, Self
 
 from PIL import Image
 from pydantic import (
@@ -12,7 +12,6 @@ from pydantic import (
     FilePath,
     model_validator,
 )
-from typing_extensions import Annotated, Self
 
 from yt_shared.enums import DownMediaType, MediaFileType, TaskSource, TelegramChatType
 from yt_shared.schemas.base import StrictRealBaseModel

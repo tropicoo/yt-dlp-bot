@@ -61,9 +61,10 @@ class MediaDownloader:
             )
 
             with yt_dlp.YoutubeDL(ytdl_opts_model.ytdl_opts) as ytdl:
-                self._log.info('Downloading %s', url)
-                self._log.info('Downloading to %s', curr_tmp_dir)
-                self._log.info('Downloading with options %s', ytdl_opts_model.ytdl_opts)
+                self._log.info('Downloading "%s" to "%s"', url, curr_tmp_dir)
+                self._log.info(
+                    'Downloading with options: %s', ytdl_opts_model.ytdl_opts
+                )
 
                 meta: dict | None = ytdl.extract_info(url, download=True)
                 if not meta:

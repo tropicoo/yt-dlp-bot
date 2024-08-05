@@ -13,7 +13,7 @@ from bot.core.utils import bold
 class VideoBotClient(Client):
     """Extended Pyrogram's `Client` class."""
 
-    _RUN_FOREVER_SLEEP_SECONDS = 86400
+    _RUN_FOREVER_SLEEP_SECONDS: int = 86400
 
     def __init__(self, *args, conf: ConfigSchema, **kwargs) -> None:
         super().__init__(*args, **kwargs)

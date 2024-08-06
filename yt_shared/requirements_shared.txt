@@ -1,5 +1,5 @@
 SQLAlchemy-Utils==0.41.2
-SQLAlchemy==2.0.31
+SQLAlchemy==2.0.32
 aio-pika==9.4.2
 aiohttp==3.10.1
 asyncpg==0.29.0

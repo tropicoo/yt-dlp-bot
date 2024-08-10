@@ -8,6 +8,7 @@ class WorkerSettings(Settings):
     STORAGE_PATH: DirectoryPath
     THUMBNAIL_FRAME_SECOND: float
     INSTAGRAM_ENCODE_TO_H264: bool
+    FACEBOOK_ENCODE_TO_H264: bool
 
 
 settings = WorkerSettings()

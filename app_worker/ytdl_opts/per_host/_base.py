@@ -32,7 +32,7 @@ except ImportError:
 
 class BaseHostConfModel(BaseModel):
     # TODO: Add validators.
-    model_config = ConfigDict(strict=True, frozen=True)
+    model_config = ConfigDict(strict=True, frozen=True, validate_assignment=True)
 
     hostnames: tuple[str, ...]
 
@@ -56,18 +56,18 @@ class AbstractHostConfig:
     ENCODE_AUDIO: bool | None = None
     ENCODE_VIDEO: bool | None = None
 
-    KEEP_VIDEO_OPTION = '--keep-video'
+    KEEP_VIDEO_OPTION: str = '--keep-video'
 
-    DEFAULT_YTDL_OPTS = DEFAULT_YTDL_OPTS
+    DEFAULT_YTDL_OPTS: list[str] = DEFAULT_YTDL_OPTS
 
-    AUDIO_YTDL_OPTS = AUDIO_YTDL_OPTS
-    AUDIO_FORMAT_YTDL_OPTS = AUDIO_FORMAT_YTDL_OPTS
+    AUDIO_YTDL_OPTS: list[str] = AUDIO_YTDL_OPTS
+    AUDIO_FORMAT_YTDL_OPTS: list[str] = AUDIO_FORMAT_YTDL_OPTS
 
-    FINAL_AUDIO_FORMAT = FINAL_AUDIO_FORMAT
-    FINAL_THUMBNAIL_FORMAT = FINAL_THUMBNAIL_FORMAT
+    FINAL_AUDIO_FORMAT: str = FINAL_AUDIO_FORMAT
+    FINAL_THUMBNAIL_FORMAT: str = FINAL_THUMBNAIL_FORMAT
 
-    DEFAULT_VIDEO_YTDL_OPTS = VIDEO_YTDL_OPTS
-    DEFAULT_VIDEO_FORMAT_SORT_OPT = DEFAULT_VIDEO_FORMAT_SORT_OPT
+    DEFAULT_VIDEO_YTDL_OPTS: list[str] = VIDEO_YTDL_OPTS
+    DEFAULT_VIDEO_FORMAT_SORT_OPT: list[str] = DEFAULT_VIDEO_FORMAT_SORT_OPT
 
     FFMPEG_AUDIO_OPTS: str | None = None
     FFMPEG_VIDEO_OPTS: str | None = None

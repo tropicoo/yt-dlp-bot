@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
+from typing import Annotated
 
 from pydantic import Field, StrictFloat, StrictInt, StrictStr
-from typing_extensions import Annotated
 from yt_shared.enums import DownMediaType, TaskSource, TaskStatus
 from yt_shared.schemas.base import BaseOrmModel, StrictRealBaseModel
 

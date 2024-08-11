@@ -2,7 +2,7 @@
 
 import asyncio
 from datetime import datetime
-from typing import Generator, Iterable
+from typing import Generator
 from urllib.parse import urlparse
 
 from pyrogram.enums import ChatType
@@ -78,8 +78,8 @@ def split_telegram_message(
         yield text
 
 
-def can_remove_url_params(url: str, matching_hosts: Iterable[str]) -> bool:
-    return urlparse(url).netloc in set(matching_hosts)
+def can_remove_url_params(url: str, matching_hosts: set[str]) -> bool:
+    return urlparse(url).netloc in matching_hosts
 
 
 def is_user_upload_silent(

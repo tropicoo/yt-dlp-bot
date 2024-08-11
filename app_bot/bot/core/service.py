@@ -52,7 +52,7 @@ class UrlParser:
     def _preprocess_urls(urls: list[str]) -> dict[str, str]:
         preprocessed_urls = {}
         for url in urls:
-            if can_remove_url_params(url, REMOVE_QUERY_PARAMS_HOSTS):
+            if can_remove_url_params(url=url, matching_hosts=REMOVE_QUERY_PARAMS_HOSTS):
                 preprocessed_urls[url] = urljoin(url, urlparse(url).path)
             else:
                 preprocessed_urls[url] = url

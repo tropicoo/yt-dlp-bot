@@ -21,5 +21,10 @@ TWITTER_HOSTS = (
     't.co',
     'www.t.co',
 )
+FACEBOOK_HOSTS = (
+    'facebook.com',
+    'www.facebook.com',
+)
+
 
 REMOVE_QUERY_PARAMS_HOSTS = TWITTER_HOSTS + INSTAGRAM_HOSTS

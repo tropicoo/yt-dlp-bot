@@ -66,7 +66,7 @@ class TaskRepository:
             file.thumb_name = media.thumb_name
 
         self._session.add(file)
-        async with ASYNC_LOCK:
+        async with SHARED_ASYNC_LOCK:
             await self._session.flush([file])
         return file
 

@@ -8,7 +8,9 @@ from yt_shared.enums import RabbitPayloadType
 class RealBaseModel(BaseModel, ABC):
     """Base Pydantic model. All non-strict models should inherit from it."""
 
-    model_config = ConfigDict(extra='forbid', validate_default=True)
+    model_config = ConfigDict(
+        extra='forbid', validate_default=True, validate_assignment=True
+    )
 
 
 class StrictRealBaseModel(RealBaseModel, ABC):

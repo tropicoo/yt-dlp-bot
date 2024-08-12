@@ -30,7 +30,7 @@ class BaseUploadContext(RealBaseModel):
     model_config = ConfigDict(**RealBaseModel.model_config, strict=True)
     caption: str
     filename: str
-    filepath: FilePath
+    filepath: FilePath | str
     duration: float
     type: MessageMediaType
     is_cached: bool = False
@@ -39,7 +39,7 @@ class BaseUploadContext(RealBaseModel):
 class VideoUploadContext(BaseUploadContext):
     height: int | float
     width: int | float
-    thumb: FilePath | None = None
+    thumb: FilePath | str | None = None
 
 
 class AudioUploadContext(BaseUploadContext):

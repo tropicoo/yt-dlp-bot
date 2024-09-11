@@ -5,5 +5,5 @@ aiohttp==3.10.5
 asyncpg==0.29.0
 pillow==10.4.0
 pydantic==2.9.1
-pydantic_settings==2.4.0
+pydantic_settings==2.5.2
 uvloop==0.20.0

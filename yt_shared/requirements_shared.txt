@@ -6,4 +6,4 @@ asyncpg==0.29.0
 pillow==10.4.0
 pydantic==2.9.2
 pydantic_settings==2.5.2
-uvloop==0.20.0
+uvloop==0.21.0

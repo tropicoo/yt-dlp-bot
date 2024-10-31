@@ -40,3 +40,4 @@ ytdlp:
   version_check_enabled: !!bool True
   version_check_interval: 86400
   notify_users_on_new_version: !!bool True
+  release_channel: "NIGHTLY"

@@ -6,7 +6,7 @@ from pyrogram import Client
 from pyrogram.enums import ParseMode
 from pyrogram.errors import RPCError
 
-from bot.core.schema import ConfigSchema, UserSchema
+from bot.core.schemas import ConfigSchema, UserSchema
 from bot.core.utils import bold
 
 

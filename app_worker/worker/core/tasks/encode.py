@@ -7,7 +7,7 @@ from worker.enums import VideoCodecName, VideoCodecType
 
 class EncodeToH264Task(AbstractFfBinaryTask):
     _EXT = 'mp4'
-    _CMD_TIMEOUT = 120
+    _CMD_TIMEOUT = 300
 
     def __init__(
         self, media: DownMedia, cmd_tpl: str, check_if_in_final_format: bool = True

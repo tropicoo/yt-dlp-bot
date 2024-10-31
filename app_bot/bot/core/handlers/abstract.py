@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from yt_shared.enums import TaskSource, TelegramChatType
 from yt_shared.schemas.base_rabbit import BaseRabbitDownloadPayload
 
-from bot.core.schema import AnonymousUserSchema, UserSchema
+from bot.core.schemas import AnonymousUserSchema, UserSchema
 
 if TYPE_CHECKING:
     from bot.bot import VideoBotClient

@@ -1,3 +1,22 @@
+## Release 1.7
+
+Release date: May 30, 2024
+
+## New Features
+
+- Choose `yt-dlp` release channel between `NIGHTLY`, `STABLE` or `MASTER`. Default is `NIGHTLY`.
+
+## Important
+
+- Update your `app_bot/config.yaml` with new `release_channel: "NIGHTLY"` line in `ytdlp` section
+- `app_worker/requirements.txt` includes `NIGHTLY` `yt-dlp` package to install.
+
+## Misc
+
+N/A
+
+---
+
 ## Release 1.6
 
 Release date: April 25, 2024

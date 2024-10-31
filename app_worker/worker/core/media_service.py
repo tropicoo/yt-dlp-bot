@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 import shutil
 import time
 from pathlib import Path
@@ -246,6 +247,8 @@ class MediaService:
 
         self._log.info('Copying "%s" to storage "%s"', file.current_filepath, dst)
         await asyncio.to_thread(shutil.copy2, file.current_filepath, dst)
+        self._log.info('Deleting... "%s"', file.current_filepath)
+        await asyncio.to_thread(os.remove, file.current_filepath)
         file.mark_as_saved_to_storage(storage_path=dst)
 
     def _err_file_cleanup(self, video: DownMedia) -> None:

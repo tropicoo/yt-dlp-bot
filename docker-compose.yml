@@ -25,24 +25,24 @@ services:
       - rabbitmq
       - worker
       - redis
-  bot:
-    container_name: yt_bot
-    build:
-      context: .
-      dockerfile: app_bot/Dockerfile
-    env_file:
-      - envs/.env_common
-      - envs/.env_bot
-    restart: unless-stopped
-    command: >
-      bash -c "python start.py && python main.py"
-    depends_on:
-      - postgres
-      - rabbitmq
-      - worker
-      - api
-    volumes:
-      - "shared-tmpfs:/tmp/download_tmpfs"
+  # bot:
+  #   container_name: yt_bot
+  #   build:
+  #     context: .
+  #     dockerfile: app_bot/Dockerfile
+  #   env_file:
+  #     - envs/.env_common
+  #     - envs/.env_bot
+  #   restart: unless-stopped
+  #   command: >
+  #     bash -c "python start.py && python main.py"
+  #   depends_on:
+  #     - postgres
+  #     - rabbitmq
+  #     - worker
+  #     - api
+  #   volumes:
+  #     - "shared-tmpfs:/tmp/download_tmpfs"
   worker:
     container_name: yt_worker
     build:
@@ -58,8 +58,8 @@ services:
       - postgres
       - rabbitmq
     volumes:
-      - "/data/downloads:/filestorage"
-      - "shared-tmpfs:/tmp/download_tmpfs"
+      - "./downloads:/filestorage"
+      # - "shared-tmpfs:/tmp/download_tmpfs"
   postgres:
     container_name: yt_postgres
     image: "postgres:14"
@@ -81,12 +81,22 @@ services:
     image: "redis:alpine"
     container_name: yt_redis
     restart: unless-stopped
-
+  cron:
+    container_name: yt_cron
+    build:
+      context: app_cron/
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - "./downloads:/filestorage"
+    env_file:
+      - app_cron/.env
+      - envs/.env_worker
 volumes:
   pgdata:
-  shared-tmpfs:
-    driver: local
-    driver_opts:
-      type: "tmpfs"
-      device: "tmpfs"
-      o: "size=7168m,uid=1000"
+  # shared-tmpfs:
+  #   driver: local
+  #   driver_opts:
+  #     type: "tmpfs"
+  #     device: "tmpfs"
+  #     o: "size=4096m,uid=1000"

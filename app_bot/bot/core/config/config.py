@@ -9,7 +9,7 @@ from pydantic import ValidationError
 from yt_shared.config import Settings
 
 from bot.core.exceptions import ConfigError
-from bot.core.schema import ConfigSchema
+from bot.core.schemas import ConfigSchema
 
 
 class ConfigLoader:

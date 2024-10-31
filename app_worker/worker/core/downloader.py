@@ -254,6 +254,10 @@ class MediaDownloader:
     def _get_requested_video(self, requested_downloads: list[dict]) -> dict | None:
         for download_obj in requested_downloads:
             if download_obj['ext'] != FINAL_AUDIO_FORMAT:
+                # Attempt to handle yt-dlp glitch.
+                download_obj['filepath'] = download_obj.get(
+                    'filepath', download_obj.get('filename', download_obj['_filename'])
+                )
                 return download_obj
 
         # When video was converted to audio but video kept.
@@ -265,7 +269,9 @@ class MediaDownloader:
                     download_obj['filepath'],
                     download_obj['_filename'],
                 )
-                download_obj['filepath'] = download_obj['_filename']
+                download_obj['filepath'] = download_obj.get(
+                    'filename', download_obj['_filename']
+                )
                 return download_obj
         return None
 

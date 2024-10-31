@@ -1,5 +1,9 @@
 # Byte-compiled / optimized / DLL files
 
+app_cron/.env
+
+rsync.sh
+rsync_exclude.txt
 *tmp*
 *.session
 *.session-journal

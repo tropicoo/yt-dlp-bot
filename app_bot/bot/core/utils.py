@@ -9,7 +9,7 @@ from pyrogram.enums import ChatType
 from pyrogram.types import Message
 
 from bot.core.config import settings
-from bot.core.schema import AnonymousUserSchema, ConfigSchema, UserSchema
+from bot.core.schemas import AnonymousUserSchema, ConfigSchema, UserSchema
 
 
 async def shallow_sleep_async(sleep_time: float = 0.1) -> None:

@@ -1,7 +1,7 @@
 SQLAlchemy-Utils==0.41.2
 SQLAlchemy==2.0.36
 aio-pika==9.5.1
-aiohttp==3.11.8
+aiohttp==3.11.9
 asyncpg==0.30.0
 pillow==11.0.0
 pydantic==2.10.2

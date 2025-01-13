@@ -1,4 +1,4 @@
 PyYAML==6.0.2
 TgCrypto-pyrofork==1.2.7
-pyrofork==2.3.55
+pyrofork==2.3.56
 tenacity==9.0.0

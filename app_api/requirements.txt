@@ -1,2 +1,2 @@
 fastapi-cache2[redis]==0.2.2
-fastapi[standart]==0.115.8
+fastapi[standard]==0.115.8

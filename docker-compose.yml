@@ -60,7 +60,7 @@ services:
       - "shared-tmpfs:/tmp/download_tmpfs"
   yt_postgres:
     container_name: yt_postgres
-    image: "postgres:16"
+    image: "postgres:15"
     env_file:
       - envs/common.env
     ports:

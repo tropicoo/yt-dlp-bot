@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Iterable
+from collections.abc import Iterable
 
 from pyrogram import Client
 from pyrogram.enums import ParseMode
@@ -37,7 +37,7 @@ class VideoBotClient(Client):
             await asyncio.sleep(self._RUN_FOREVER_SLEEP_SECONDS)
 
     def get_startup_users(self) -> list[int]:
-        user_ids = []
+        user_ids: list[int] = []
         for user in self.allowed_users.values():
             if user.send_startup_message:
                 user_ids.append(user.id)
@@ -62,7 +62,7 @@ class VideoBotClient(Client):
         for user_id in user_ids:
             coros.append(self.send_message(user_id, text, parse_mode=parse_mode))
         results = await asyncio.gather(*coros, return_exceptions=True)
-        for user_id, result in zip(user_ids, results):
+        for user_id, result in zip(user_ids, results, strict=False):
             if isinstance(result, RPCError):
                 self._log.error('User %s did not receive message: %s', user_id, result)
 
@@ -71,9 +71,7 @@ class VideoBotClient(Client):
     ) -> None:
         """Send message to all defined user IDs in config.json."""
         await self.send_message_to_users(
-            text=text,
-            user_ids=self.allowed_users.keys(),
-            parse_mode=parse_mode,
+            text=text, user_ids=self.allowed_users.keys(), parse_mode=parse_mode
         )
 
     async def send_message_admins(
@@ -81,7 +79,5 @@ class VideoBotClient(Client):
     ) -> None:
         """Send message to all defined user IDs in config.json."""
         await self.send_message_to_users(
-            text=text,
-            user_ids=self.admin_users.keys(),
-            parse_mode=parse_mode,
+            text=text, user_ids=self.admin_users.keys(), parse_mode=parse_mode
         )

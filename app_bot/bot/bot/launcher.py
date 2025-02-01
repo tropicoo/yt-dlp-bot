@@ -8,6 +8,7 @@ from yt_shared.utils.tasks.tasks import create_task
 from bot.bot.client import VideoBotClient
 from bot.core.callbacks import TelegramCallback
 from bot.core.config.config import get_main_config
+from bot.core.tasks.db_cleanup import DbCleanupTask
 from bot.core.tasks.ytdlp import YtdlpNewVersionNotifyTask
 from bot.core.workers.manager import RabbitWorkerManager
 
@@ -15,10 +16,9 @@ from bot.core.workers.manager import RabbitWorkerManager
 class BotLauncher:
     """Bot launcher which parses configuration file, creates and starts the bot."""
 
-    REGEX_NOT_START_WITH_SLASH = r'^[^/]'
+    REGEX_NOT_START_WITH_SLASH: str = r'^[^/]'
 
     def __init__(self) -> None:
-        """Constructor."""
         self._log = logging.getLogger(self.__class__.__name__)
         self._conf = get_main_config()
         self._bot = VideoBotClient(
@@ -46,7 +46,7 @@ class BotLauncher:
                 cb.on_start,
                 filters=filters.user(allowed_users)
                 & filters.command(['start', 'help']),
-            ),
+            )
         )
         self._bot.add_handler(
             MessageHandler(
@@ -55,7 +55,7 @@ class BotLauncher:
                     filters.regex(self.REGEX_NOT_START_WITH_SLASH)
                     & (filters.user(allowed_users) | filters.chat(allowed_users))
                 ),
-            ),
+            )
         )
 
     async def _setup_rabbit(self) -> None:
@@ -74,6 +74,18 @@ class BotLauncher:
         task_name = YtdlpNewVersionNotifyTask.__class__.__name__
         create_task(
             YtdlpNewVersionNotifyTask(bot=self._bot).run(),
+            task_name=task_name,
+            logger=self._log,
+            exception_message='Task "%s" raised an exception',
+            exception_message_args=(task_name,),
+        )
+
+        task_name = DbCleanupTask.__class__.__name__
+        user_ids = tuple(
+            u.id for u in self._bot.allowed_users.values() if not u.save_to_database
+        )
+        create_task(
+            DbCleanupTask(user_ids=user_ids).run(),
             task_name=task_name,
             logger=self._log,
             exception_message='Task "%s" raised an exception',

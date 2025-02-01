@@ -1,1 +1,0 @@
-GZIP_MIN_SIZE = 1000

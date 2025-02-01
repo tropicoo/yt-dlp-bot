@@ -1,5 +1,6 @@
 import asyncio
 import traceback
+from typing import ClassVar
 
 from pyrogram.enums import ParseMode
 from pyrogram.errors import MessageIdInvalid, MessageNotModified
@@ -13,7 +14,7 @@ from yt_shared.utils.file import list_files_human, remove_dir
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.handlers.abstract import AbstractDownloadHandler
-from bot.core.tasks.upload import AudioUploadTask, VideoUploadTask
+from bot.core.tasks.upload import AbstractUploadTask, AudioUploadTask, VideoUploadTask
 from bot.core.utils import bold, is_user_upload_silent
 
 
@@ -21,7 +22,7 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
     """Handle successfully downloaded media context."""
 
     _body: SuccessDownloadPayload
-    _UPLOAD_TASK_MAP = {
+    _UPLOAD_TASK_MAP: ClassVar[dict[MediaFileType, AbstractUploadTask]] = {
         MediaFileType.AUDIO: AudioUploadTask,
         MediaFileType.VIDEO: VideoUploadTask,
     }
@@ -182,4 +183,4 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
                 f'allowed {max_file_size} bytes. Will not upload'
             )
             self._log.warning(err_msg)
-            raise ValueError(err_msg)
+            raise ValueError(err_msg) from None

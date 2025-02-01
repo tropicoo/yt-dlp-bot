@@ -23,15 +23,15 @@ class AbstractFfBinaryTask(AbstractTask, ABC):
         )
         try:
             await asyncio.wait_for(proc.wait(), timeout=self._CMD_TIMEOUT)
-            return proc
-        except asyncio.TimeoutError:
+        except TimeoutError:
             self._log.error(
-                'Failed to execute %s: process ran longer than '
-                'expected and was killed',
+                'Failed to execute %s: process ran longer than expected and was killed',
                 cmd,
             )
             await self._killpg(os.getpgid(proc.pid), signal.SIGINT)
             return None
+
+        return proc
 
     @staticmethod
     async def _get_stdout_stderr(proc: asyncio.subprocess.Process) -> tuple[str, str]:

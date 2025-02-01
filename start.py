@@ -26,34 +26,35 @@ import asyncio
 import logging
 import os
 import sys
+from collections.abc import Generator
 from dataclasses import dataclass, field
-from typing import Generator, Type
+from typing import ClassVar
 
-SOCK_CONNECTED = 0
-DEFAULT_PORT = 0
-DEFAULT_SLEEP_TIME = 1
+SOCK_CONNECTED: int = 0
+DEFAULT_PORT: int = 0
+DEFAULT_SLEEP_TIME: int = 1
 
 
 class ServiceRegistry(type):
-    REGISTRY: dict[str, type['BaseService']] = {}
+    registry: ClassVar[dict[str, type['BaseService']]] = {}
 
     def __new__(
-        mcs: Type['ServiceRegistry'],
+        cls: type['ServiceRegistry'],
         name: str,
         bases: tuple[type['BaseService']],
         attrs: dict,
     ) -> type['BaseService']:
-        service_cls: type['BaseService'] = type.__new__(mcs, name, bases, attrs)
-        mcs.REGISTRY[service_cls.__name__] = service_cls
+        service_cls: type[BaseService] = type.__new__(cls, name, bases, attrs)
+        cls.registry[service_cls.__name__] = service_cls
         return service_cls
 
     @classmethod
-    def get_registry(mcs) -> dict[str, type['BaseService']]:
-        return mcs.REGISTRY.copy()
+    def get_registry(cls) -> dict[str, type['BaseService']]:
+        return cls.registry.copy()
 
     @classmethod
-    def get_instances(mcs) -> Generator['BaseService', None, None]:
-        return (service_cls() for service_cls in mcs.REGISTRY.values())
+    def get_instances(cls) -> Generator['BaseService', None, None]:
+        return (service_cls() for service_cls in cls.registry.values())
 
 
 @dataclass
@@ -86,18 +87,18 @@ async def is_port_open(host: str, port: int) -> bool:
         reader, writer = await asyncio.open_connection(host, port)
         writer.close()
         await writer.wait_closed()
-        return True
     except Exception:
         return False
+    return True
 
 
 async def check_reachability(service: BaseService) -> None:
     while True:
-        print(f'[{service.name}] Waiting to be reachable on port {service.port}')
+        print(f'[{service.name}] Waiting to be reachable on port {service.port}')  # noqa: T201
         if await is_port_open(host=service.host, port=service.port):
             break
         await asyncio.sleep(DEFAULT_SLEEP_TIME)
-    print(f'[{service.name}] Connection on port {service.port} verified')
+    print(f'[{service.name}] Connection on port {service.port} verified')  # noqa: T201
 
 
 async def main() -> None:

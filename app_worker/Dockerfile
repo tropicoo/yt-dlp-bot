@@ -1,15 +1,17 @@
 FROM yt-base-image
 
-RUN apk add --no-cache ffmpeg
+RUN apk update && apk add --no-cache ffmpeg
 
-COPY ./app_worker/requirements.txt ./
+COPY --from=yt-base-image /opt/venv /opt/venv
 
-RUN apk add --no-cache --virtual .build-deps \
-        build-base \
-    && MAKEFLAGS="-j$(nproc)" pip install --no-cache-dir -r requirements.txt \
-    && apk --purge del .build-deps
+RUN --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
+    --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=./app_worker/uv.lock,target=uv.lock \
+    --mount=type=bind,source=./app_worker/pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --inexact
 
 COPY ./app_worker ./start.py ./
+COPY ./yt_shared ./yt_shared
 
-COPY yt_shared /app/yt_shared
-RUN pip install -e /app/yt_shared
+RUN --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
+    uv pip install -e ./yt_shared

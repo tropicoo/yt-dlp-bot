@@ -1,3 +1,4 @@
+import contextlib
 import logging
 
 from worker.core.config import settings
@@ -8,7 +9,5 @@ def setup_logging() -> None:
     logging.basicConfig(
         format=log_format, level=logging.getLevelName(settings.LOG_LEVEL)
     )
-    try:
+    with contextlib.suppress(IndexError):
         logging.getLogger('sqlalchemy.engine.Engine').handlers.pop()
-    except IndexError:
-        pass

@@ -1,7 +1,7 @@
 import uvicorn
 
-from api.core.app import app  # noqa: F401
-from api.core.config import settings
+from api.app import app  # noqa: F401
+from api.config import settings
 
 if __name__ == '__main__':
     uvicorn.run(

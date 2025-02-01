@@ -1,3 +1,0 @@
-alembic==1.14.1
-python-dotenv==1.0.1
-yt-dlp>=2024.5.23.232707.dev0

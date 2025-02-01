@@ -2,7 +2,7 @@
 
 Simple and reliable self-hosted Video Download Telegram Bot.
 
-Version: 1.7. [Release details](RELEASES.md).
+Version: 1.7.1. [Release details](RELEASES.md).
 
 ![frames](.assets/download_success.png)
 
@@ -41,7 +41,7 @@ Version: 1.7. [Release details](RELEASES.md).
 8. If you want your downloaded audio/video to be uploaded back to the Telegram, set `upload_video_file` config variable 
    for your user/group in the `app_bot/config.yml` to `True`
 9. Media `STORAGE_PATH` environment variable is located in
-   the `envs/.env_worker` file. By default, it's `/filestorage` path inside the
+   the `envs/worker.env` file. By default, it's `/filestorage` path inside the
    container. What you want is to map the real path to this inside
    the `docker-compose.yml` file for `worker` service, e.g. if you're on Windows, next
    strings mean container path `/filestorage` is mapped to real `D:/Videos` so your
@@ -51,7 +51,7 @@ Version: 1.7. [Release details](RELEASES.md).
        volumes:
          - "D:/Videos:/filestorage"
    ```
-10. Change application's `LOG_LEVEL` in `envs/.env_common` to `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` if needed
+10. Change application's `LOG_LEVEL` in `envs/common.env` to `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` if needed
 
 ## 🏃 Run
 
@@ -78,7 +78,7 @@ or something went wrong.
    checking [available options](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180)
    .
 2. Default max simultaneous video downloads by worker service is 2. Change
-   the `MAX_SIMULTANEOUS_DOWNLOADS` variable in `envs/.env_worker` to desired value but
+   the `MAX_SIMULTANEOUS_DOWNLOADS` variable in `envs/worker.env` to desired value but
    keep in mind that default mounted volume size is 7168m (7GB) in `docker-compose.yml`
    so it may be not enough if you download a lot of large videos at once.
 3. `yt-dlp` will try to download video thumbnail if it exists. In other case Worker
@@ -87,7 +87,7 @@ or something went wrong.
    default, it will try to make it on the 10th second of the video, but if the video is
    shorter, it will make it on `video length / 2` time point because the FFmpeg process
    will error out. Change the `THUMBNAIL_FRAME_SECOND` variable if needed in
-   the `envs/.env_worker` file.
+   the `envs/worker.env` file.
 4. Max upload file size for non-premium Telegram user is 2GB (2147483648 bytes) which is
    reflected in the example config `app_bot/config-example.yml`. If the configured user
    is the premium user, you're allowed to upload files up to 4GB (4294967296 bytes) and
@@ -103,7 +103,7 @@ or something went wrong.
       ```
    2. Adding `COPY apk_mirrors /etc/apk/repositories` to the third line in `base.Dockerfile`:
       ```dockerfile
-      FROM python:3.11-alpine
+      FROM python:3.12-alpine
 
       COPY apk_mirrors /etc/apk/repositories
       ...
@@ -121,8 +121,8 @@ details
 
 - **API**: default port is `1984` and no auth. Port can be changed
   in `docker-compose.yml`
-- **RabbitMQ**: default credentials are located in `envs/.env_common`
-- **PostgreSQL**: default credentials are located in `envs/.env_common`.
+- **RabbitMQ**: default credentials are located in `envs/common.env`
+- **PostgreSQL**: default credentials are located in `envs/common.env`.
 
 ## API
 

@@ -1,0 +1,10 @@
+[project]
+name = "app_api"
+version = "0.1.0"
+requires-python = ">=3.12"
+description = "Add your description here"
+readme = "README.md"
+dependencies = [
+    "fastapi-cache2[redis]==0.2.2",
+    "fastapi[standard]==0.115.6",
+]

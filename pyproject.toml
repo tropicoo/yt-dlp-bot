@@ -2,14 +2,87 @@
 line-length = 88
 indent-width = 4
 target-version = "py312"
-src = ["app_api", "app_bot", "app_worker"]
-required-version = ">=0.4.2"
+src = [
+    "app_api",
+    "app_bot",
+    "app_worker"
+]
+required-version = ">=0.9"
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
 
 [tool.ruff.lint]
-select = ["F", "E", "W", "I001", "RET", "SLF001"]
-ignore = ["E501"]  # Skip line length violations
+select = ["ALL"]
+ignore = [
+    "ANN002",
+    "ANN003",
+    "ANN401",
+    "ASYNC110",
+    "BLE001",
+    "COM812",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D107",
+    "D203",
+    "D213",
+    "E501",
+    "EM101",
+    "EM102",
+    "FAST002",
+    "FBT001",
+    "FBT002",
+    "FIX002",
+    "INP001",
+    "ISC001",
+    "PERF401",
+    "TD002",
+    "TD003",
+    "TRY003",
+]
 
 [tool.ruff.format]
 indent-style = "space"
 quote-style = "single"
 line-ending = "lf"
+docstring-code-format = true
+
+[tool.pylint]
+init-hook = "import sys; sys.path.append('./yt_shared')"
+
+[tool.mypy]
+mypy_path = [
+    "app_bot",
+    "app_api",
+    "app_worker"
+]
+explicit_package_bases = true
+namespace_packages = true
+
+[tool.uv.sources]
+yt-shared = { path = "yt_shared" }
+app-api = { path = "app_api" }
+app-bot = { path = "app_bot" }
+app-worker = { path = "app_worker" }
+
+[project]
+name = "yt-dlp-bot"
+version = "0.1.0"
+requires-python = ">=3.12"
+description = "Add your description here"
+readme = "README.md"
+dependencies = [
+    "app-api",
+    "app-bot",
+    "app-worker",
+    "yt-shared",
+]
+
+[dependency-groups]
+lint = [
+    "ruff>=0.9.4",
+]

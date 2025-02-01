@@ -12,11 +12,7 @@ if TYPE_CHECKING:
 
 
 class AbstractDownloadHandler(ABC):
-    def __init__(
-        self,
-        body: BaseRabbitDownloadPayload,
-        bot: 'VideoBotClient',
-    ) -> None:
+    def __init__(self, body: BaseRabbitDownloadPayload, bot: 'VideoBotClient') -> None:
         self._log = logging.getLogger(self.__class__.__name__)
         self._body = body
         self._bot = bot

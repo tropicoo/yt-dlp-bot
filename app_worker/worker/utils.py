@@ -1,8 +1,10 @@
 from pathlib import Path
+from typing import Final
 
 import yt_dlp
 
-_COOKIES_FILEPATH = Path('/app/cookies/cookies.txt')
+_PRIVATE_COOKIES_FILEPATH: Final[Path] = Path('/app/cookies/_cookies.txt')
+_COOKIES_FILEPATH: Final[Path] = Path('/app/cookies/cookies.txt')
 
 
 def cli_to_api(opts: list) -> dict:
@@ -25,6 +27,11 @@ def is_file_empty(filepath: Path) -> bool:
 
 def get_cookies_opts_if_not_empty() -> list[str]:
     """Return yt-dlp cookies option with cookies filepath."""
+    if _PRIVATE_COOKIES_FILEPATH.exists() and not is_file_empty(
+        _PRIVATE_COOKIES_FILEPATH
+    ):
+        return ['--cookies', str(_PRIVATE_COOKIES_FILEPATH)]
+
     if is_file_empty(_COOKIES_FILEPATH):
         return []
     return ['--cookies', str(_COOKIES_FILEPATH)]

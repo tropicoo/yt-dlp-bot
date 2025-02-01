@@ -74,7 +74,7 @@ class WorkerLauncher:
     def _register_shutdown(self) -> None:
         register_shutdown(self.stop)
 
-    def stop(self, *args) -> None:
+    def stop(self, *args) -> None:  # noqa: ARG002
         self._log.info('Shutting down %s', self.__class__.__name__)
         loop = asyncio.get_running_loop()
-        loop.create_task(self._rabbit_mq.close())
+        loop.create_task(self._rabbit_mq.close())  # noqa: RUF006

@@ -7,6 +7,7 @@ If you want to change any of these values or add new ones, copy all content to t
 directory as this file, and edit the values.
 """
 
+from worker.core.config import settings
 from worker.utils import get_cookies_opts_if_not_empty
 
 FINAL_AUDIO_FORMAT = 'mp3'
@@ -19,16 +20,13 @@ DEFAULT_YTDL_OPTS = [
     '--playlist-items',
     '1:1',
     '--concurrent-fragments',
-    '5',
+    settings.MAX_DOWNLOAD_THREADS,
     '--ignore-errors',
     '--verbose',
     *get_cookies_opts_if_not_empty(),
 ]
 
-DEFAULT_VIDEO_FORMAT_SORT_OPT = [
-    '--format-sort',
-    'res,vcodec:h265,h264',
-]
+DEFAULT_VIDEO_FORMAT_SORT_OPT = ['--format-sort', 'res,vcodec:h265,h264']
 
 AUDIO_YTDL_OPTS = [
     '--extract-audio',
@@ -38,10 +36,7 @@ AUDIO_YTDL_OPTS = [
     FINAL_AUDIO_FORMAT,
 ]
 
-AUDIO_FORMAT_YTDL_OPTS = [
-    '--format',
-    'bestaudio/best',
-]
+AUDIO_FORMAT_YTDL_OPTS = ['--format', 'bestaudio/best']
 
 VIDEO_YTDL_OPTS = [
     '--format',

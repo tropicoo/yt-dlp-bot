@@ -53,7 +53,7 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
 
     def _get_next_check_datetime(self) -> datetime.datetime:
         return (
-            datetime.datetime.now(datetime.timezone.utc)
+            datetime.datetime.now(datetime.UTC)
             + datetime.timedelta(seconds=self._ytdlp_conf.version_check_interval)
         ).replace(microsecond=0)
 

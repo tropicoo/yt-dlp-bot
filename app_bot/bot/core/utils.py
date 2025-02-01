@@ -1,8 +1,8 @@
 """Utils module."""
 
 import asyncio
-from datetime import datetime
-from typing import Generator
+from collections.abc import Generator
+from datetime import UTC, datetime
 from urllib.parse import urlparse
 
 from pyrogram.enums import ChatType
@@ -17,7 +17,7 @@ async def shallow_sleep_async(sleep_time: float = 0.1) -> None:
 
 
 def format_ts(ts: float, time_format: str = '%a %b %d %H:%M:%S %Y') -> str:
-    return datetime.fromtimestamp(ts).strftime(time_format)
+    return datetime.fromtimestamp(ts, tz=UTC).strftime(time_format)
 
 
 def bold(text: str) -> str:
@@ -40,9 +40,7 @@ def get_user_info(message: Message) -> str:
 
 
 def get_user_id(message: Message) -> int:
-    """Make explicit selection to not forget how this works since we just can return
-    `message.chat.id` for all cases.
-    """
+    """Make explicit selection to not forget how this works since we just can return `message.chat.id` for all cases."""
     match message.chat.type:
         case ChatType.PRIVATE:
             return message.from_user.id
@@ -50,13 +48,6 @@ def get_user_id(message: Message) -> int:
             return message.chat.id
         case _:
             return message.chat.id
-
-
-def build_command_presentation(commands: dict[str, list]) -> str:
-    groups = []
-    for desc, cmds in commands.items():
-        groups.append('{0}\n{1}'.format(desc, '\n'.join(['/' + c for c in cmds])))
-    return '\n\n'.join(groups)
 
 
 def split_telegram_message(

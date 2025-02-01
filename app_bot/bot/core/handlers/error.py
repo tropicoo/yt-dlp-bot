@@ -1,5 +1,6 @@
 import asyncio
 import html
+from typing import ClassVar
 
 from pyrogram.enums import ParseMode
 from yt_shared.enums import RabbitPayloadType
@@ -15,7 +16,7 @@ class ErrorDownloadHandler(AbstractDownloadHandler):
     _body: ErrorDownloadPayload | ErrorDownloadGeneralPayload
     _ERR_MSG_TPL = (
         '🛑 <b>{header}</b>\n\n'
-        'ℹ <b>Task ID:</b> <code>{task_id}</code>\n'
+        'ℹ <b>Task ID:</b> <code>{task_id}</code>\n'  # noqa: RUF001
         '💬 <b>Message:</b> {message}\n'
         '📹 <b>Video URL:</b> <code>{url}</code>\n'
         '🌊 <b>Source:</b> <code>{source}</code>\n'
@@ -25,7 +26,7 @@ class ErrorDownloadHandler(AbstractDownloadHandler):
         '🏷️ <b>Tag:</b> #error'
     )
 
-    _ERR_MSG_HEADER_MAP = {
+    _ERR_MSG_HEADER_MAP: ClassVar[dict[RabbitPayloadType, str]] = {
         RabbitPayloadType.DOWNLOAD_ERROR: 'Download error',
         RabbitPayloadType.GENERAL_ERROR: 'General error',
     }
@@ -42,7 +43,7 @@ class ErrorDownloadHandler(AbstractDownloadHandler):
             }
             if self._body.message_id:
                 kwargs['reply_to_message_id'] = self._body.message_id
-            asyncio.create_task(self._bot.send_message(**kwargs))
+            asyncio.create_task(self._bot.send_message(**kwargs))  # noqa:RUF006
 
     def _format_error_message(self) -> str:
         exception_msg = html.escape(self._body.exception_msg)

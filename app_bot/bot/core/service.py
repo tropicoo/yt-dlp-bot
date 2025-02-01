@@ -50,7 +50,7 @@ class UrlParser:
 
     @staticmethod
     def _preprocess_urls(urls: list[str]) -> dict[str, str]:
-        preprocessed_urls = {}
+        preprocessed_urls: dict[str, str] = {}
         for url in urls:
             if can_remove_url_params(url=url, matching_hosts=REMOVE_QUERY_PARAMS_HOSTS):
                 preprocessed_urls[url] = urljoin(url, urlparse(url).path)
@@ -83,7 +83,7 @@ class UrlParser:
     def filter_urls(self, urls: list[str], regexes: list[str]) -> list[str]:
         """Return valid urls."""
         self._log.debug('Matching urls: %s against regexes %s', urls, regexes)
-        valid_urls = []
+        valid_urls: list[str] = []
         for url, regex in product(urls, regexes):
             if re.match(regex, url):
                 valid_urls.append(url)

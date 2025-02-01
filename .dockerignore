@@ -16,3 +16,5 @@ README.md
 pyproject.toml
 rsync_exclude.txt
 rsync.sh
+**/.venv*
+**/.python-version

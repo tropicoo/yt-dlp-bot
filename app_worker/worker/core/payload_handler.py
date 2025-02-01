@@ -17,21 +17,34 @@ from worker.core.media_service import MediaService
 
 class InboundPayloadHandler:
     def __init__(self) -> None:
+        """Initialize the InboundPayloadHandler with a logger and RMQ publisher."""
         self._log = logging.getLogger(self.__class__.__name__)
         self._rmq_publisher = RmqPublisher()
 
     async def handle(self, media_payload: InbMediaPayload) -> None:
+        """Handle the inbound media payload.
+
+        Args:
+            media_payload (InbMediaPayload): The inbound media payload to handle.
+
+        """
         try:
             await self._handle(media_payload)
         except Exception as err:
             await self._send_general_error(err, media_payload)
 
     async def _handle(self, media_payload: InbMediaPayload) -> None:
+        """Process the media payload and handle any errors.
+
+        Args:
+            media_payload (InbMediaPayload): The inbound media payload to process.
+
+        """
         async for session in get_db():
             media_service = MediaService(
                 media_payload=media_payload,
                 downloader=MediaDownloader(),
-                task_repository=TaskRepository(session),
+                task_repository=TaskRepository(db=session),
             )
             try:
                 media, task = await media_service.process()
@@ -51,6 +64,14 @@ class InboundPayloadHandler:
     async def _send_finished_task(
         self, task: Task, media: DownMedia, media_payload: InbMediaPayload
     ) -> None:
+        """Send a finished task message.
+
+        Args:
+            task (Task): The task that was completed.
+            media (DownMedia): The downloaded media.
+            media_payload (InbMediaPayload): The inbound media payload.
+
+        """
         success_payload = SuccessDownloadPayload(
             task_id=task.id,
             media=media,
@@ -64,10 +85,15 @@ class InboundPayloadHandler:
         await self._rmq_publisher.send_download_finished(success_payload)
 
     async def _send_failed_video_download_task(
-        self,
-        err: DownloadVideoServiceError,
-        media_payload: InbMediaPayload,
+        self, err: DownloadVideoServiceError, media_payload: InbMediaPayload
     ) -> None:
+        """Send a failed video download task message.
+
+        Args:
+            err (DownloadVideoServiceError): The error that occurred during download.
+            media_payload (InbMediaPayload): The inbound media payload.
+
+        """
         task = err.task
         err_payload = ErrorDownloadPayload(
             task_id=task.id,
@@ -85,10 +111,15 @@ class InboundPayloadHandler:
         await self._rmq_publisher.send_download_error(err_payload)
 
     async def _send_general_error(
-        self,
-        err: GeneralVideoServiceError | Exception,
-        media_payload: InbMediaPayload,
+        self, err: GeneralVideoServiceError | Exception, media_payload: InbMediaPayload
     ) -> None:
+        """Send a general error message.
+
+        Args:
+            err (GeneralVideoServiceError | Exception): The error that occurred.
+            media_payload (InbMediaPayload): The inbound media payload.
+
+        """
         task: Task | None = getattr(err, 'task', None)
         err_payload = ErrorDownloadGeneralPayload(
             task_id=task.id if task else 'N/A',

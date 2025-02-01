@@ -1,2 +1,0 @@
-fastapi-cache2[redis]==0.2.2
-fastapi[standard]==0.115.8

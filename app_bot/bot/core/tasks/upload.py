@@ -1,7 +1,8 @@
 import asyncio
 from abc import ABC, abstractmethod
+from collections.abc import Coroutine
 from itertools import chain
-from typing import TYPE_CHECKING, Coroutine
+from typing import TYPE_CHECKING
 
 from pydantic import ConfigDict, FilePath
 from pyrogram.enums import ChatAction, MessageMediaType, ParseMode
@@ -114,9 +115,12 @@ class AbstractUploadTask(AbstractTask, ABC):
     def _get_forward_chat_ids(self) -> list[int]:
         forward_chat_ids = []
         for user in self._users:
-            if isinstance(user, UserSchema):
-                if user.upload.forward_to_group and user.upload.forward_group_id:
-                    forward_chat_ids.append(user.upload.forward_group_id)
+            if (
+                isinstance(user, UserSchema)
+                and user.upload.forward_to_group
+                and user.upload.forward_group_id
+            ):
+                forward_chat_ids.append(user.upload.forward_group_id)
         return forward_chat_ids
 
     @retry(wait=wait_fixed(3), stop=stop_after_attempt(3), reraise=True)
@@ -146,9 +150,7 @@ class AbstractUploadTask(AbstractTask, ABC):
                 message = await self.__upload(chat_id=chat_id)
             except Exception:
                 self._log.error(
-                    'Failed to upload "%s" to "%d"',
-                    self._media_ctx.filepath,
-                    chat_id,
+                    'Failed to upload "%s" to "%d"', self._media_ctx.filepath, chat_id
                 )
                 raise
 
@@ -180,9 +182,8 @@ class AbstractUploadTask(AbstractTask, ABC):
         )
 
         async for db in get_db():
-            await TaskRepository(session=db).save_file_cache(
-                cache=cache,
-                file_id=self._media_object.orm_file_id,
+            await TaskRepository(db=db).save_file_cache(
+                cache=cache, file_id=self._media_object.orm_file_id
             )
 
 

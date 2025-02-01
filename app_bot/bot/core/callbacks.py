@@ -10,8 +10,10 @@ from bot.core.utils import bold, get_user_id
 
 
 class TelegramCallback:
-    _MSG_SEND_OK = f'{SUCCESS_EMOJI} {bold("{count}URL{plural} sent for download")}'
-    _MSG_SEND_FAIL = f'🛑 {bold("Failed to send URL for download")}'
+    _MSG_SEND_OK: str = (
+        f'{SUCCESS_EMOJI} {bold("{count}URL{plural} sent for download")}'
+    )
+    _MSG_SEND_FAIL: str = f'🛑 {bold("Failed to send URL for download")}'
 
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
@@ -19,7 +21,7 @@ class TelegramCallback:
         self._url_service = UrlService()
 
     @staticmethod
-    async def on_start(client: VideoBotClient, message: Message) -> None:
+    async def on_start(client: VideoBotClient, message: Message) -> None:  # noqa: ARG004
         await message.reply(
             bold('Send video URL to start processing'),
             parse_mode=ParseMode.HTML,
@@ -47,18 +49,12 @@ class TelegramCallback:
         ack_message = await self._send_acknowledge_message(
             message=message, url_count=len(urls)
         )
-        context = {
-            'message': message,
-            'user': user,
-            'ack_message': ack_message,
-        }
+        context = {'message': message, 'user': user, 'ack_message': ack_message}
         url_objects = self._url_parser.parse_urls(urls=urls, context=context)
         await self._url_service.process_urls(url_objects)
 
     async def _send_acknowledge_message(
-        self,
-        message: Message,
-        url_count: int,
+        self, message: Message, url_count: int
     ) -> Message:
         return await message.reply(
             text=self._format_acknowledge_text(url_count),

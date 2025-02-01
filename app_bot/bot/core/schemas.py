@@ -1,12 +1,12 @@
 from abc import ABC
+from typing import Annotated, Final
 
 from pydantic import Field, PositiveInt, StringConstraints, field_validator
-from typing_extensions import Annotated
 from yt_shared.enums import DownMediaType, YtdlpReleaseChannelType
 from yt_shared.schemas.base import StrictBaseConfigModel
 
-_LANG_CODE_LEN = 2
-_LANG_CODE_REGEX = rf'^[a-z]{{{_LANG_CODE_LEN}}}$'
+_LANG_CODE_LEN: Final[int] = 2
+_LANG_CODE_REGEX: Final[str] = rf'^[a-z]{{{_LANG_CODE_LEN}}}$'
 
 
 class _BaseUserSchema(StrictBaseConfigModel, ABC):
@@ -40,6 +40,7 @@ class UserSchema(_BaseUserSchema):
     save_to_storage: bool
     use_url_regex_match: bool
     upload: UploadSchema
+    save_to_database: bool
 
 
 class ApiSchema(StrictBaseConfigModel):

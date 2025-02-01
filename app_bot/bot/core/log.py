@@ -1,3 +1,4 @@
+import contextlib
 import logging
 
 from bot.core.config import settings
@@ -15,7 +16,5 @@ def setup_logging(suppress_asyncio: bool = True, suppress_urllib3: bool = True) 
         logging.getLogger('urllib3').setLevel(logging.WARNING)
 
     logging.getLogger('pyrogram').setLevel(logging.WARNING)
-    try:
+    with contextlib.suppress(IndexError):
         logging.getLogger('sqlalchemy.engine.Engine').handlers.pop()
-    except IndexError:
-        pass

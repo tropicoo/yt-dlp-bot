@@ -2,18 +2,15 @@ import asyncio
 import logging
 import shutil
 import time
+from collections.abc import Coroutine
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlsplit
 
 from yt_shared.enums import DownMediaType, TaskStatus
 from yt_shared.models import Task
 from yt_shared.repositories.task import TaskRepository
-from yt_shared.schemas.media import (
-    BaseMedia,
-    DownMedia,
-    InbMediaPayload,
-    Video,
-)
+from yt_shared.schemas.media import BaseMedia, DownMedia, InbMediaPayload, Video
 from yt_shared.utils.common import gen_random_str
 from yt_shared.utils.file import remove_dir
 from yt_shared.utils.tasks.tasks import create_task
@@ -46,20 +43,14 @@ class MediaService:
         self._task = await self._repository.get_or_create_task(self._media_payload)
         if self._task.status != TaskStatus.PENDING.value:
             return None, None
-        return (
-            await self._process(),
-            self._task,
-        )
+        return (await self._process(), self._task)
 
     async def _process(self) -> DownMedia:
         host_conf = self._get_host_conf()
         await self._repository.save_as_processing(self._task)
         media = await self._start_download(host_conf=host_conf)
         try:
-            await self._post_process_media(
-                media=media,
-                host_conf=host_conf,
-            )
+            await self._post_process_media(media=media, host_conf=host_conf)
         except Exception:
             self._log.exception('Failed to post-process media %s', media)
             self._err_file_cleanup(media)
@@ -77,8 +68,7 @@ class MediaService:
             return await asyncio.get_running_loop().run_in_executor(
                 None,
                 lambda: self._downloader.download(
-                    host_conf=host_conf,
-                    media_payload=self._media_payload,
+                    host_conf=host_conf, media_payload=self._media_payload
                 ),
             )
         except Exception as err:
@@ -86,22 +76,16 @@ class MediaService:
                 'Failed to download media. Context: %s', self._media_payload
             )
             await self._handle_download_exception(err)
-            raise DownloadVideoServiceError(message=str(err), task=self._task)
+            raise DownloadVideoServiceError(message=str(err), task=self._task) from None
 
     async def _post_process_media(
         self, media: DownMedia, host_conf: AbstractHostConfig
     ) -> None:
-        def post_process_audio():
-            return self._post_process_audio(
-                media=media,
-                host_conf=host_conf,
-            )
+        def post_process_audio() -> Coroutine[Any, Any, None]:
+            return self._post_process_audio(media=media, host_conf=host_conf)
 
-        def post_process_video():
-            return self._post_process_video(
-                media=media,
-                host_conf=host_conf,
-            )
+        def post_process_video() -> Coroutine[Any, Any, None]:
+            return self._post_process_video(media=media, host_conf=host_conf)
 
         match media.media_type:
             case DownMediaType.AUDIO:
@@ -125,7 +109,9 @@ class MediaService:
             try:
                 await self._set_probe_ctx(video)
             except RuntimeError as err:
-                raise DownloadVideoServiceError(message=str(err), task=self._task)
+                raise DownloadVideoServiceError(
+                    message=str(err), task=self._task
+                ) from None
 
         coro_tasks = []
 
@@ -164,7 +150,9 @@ class MediaService:
         video.orm_file_id = file.id
 
     async def _post_process_audio(
-        self, media: DownMedia, host_conf: AbstractHostConfig
+        self,
+        media: DownMedia,
+        host_conf: AbstractHostConfig,  # noqa: ARG002
     ) -> None:
         coro_tasks = [self._repository.save_file(self._task, media.audio, media.meta)]
         if self._media_payload.save_to_storage:

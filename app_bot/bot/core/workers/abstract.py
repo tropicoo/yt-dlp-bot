@@ -1,7 +1,7 @@
 """RabbitMQ Queue abstract worker module."""
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
 from aio_pika import IncomingMessage
 from pydantic import BaseModel
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class AbstractDownloadResultWorker(AbstractTask):
     TYPE: RabbitWorkerType | None = None
     QUEUE_TYPE: str | None = None
-    SCHEMA_CLS: tuple[Type[BaseModel]] = ()
+    SCHEMA_CLS: tuple[type[BaseModel]] = ()
 
     def __init__(self, bot: 'VideoBotClient') -> None:
         super().__init__()
@@ -53,16 +53,17 @@ class AbstractDownloadResultWorker(AbstractTask):
         await message.ack()
 
     async def _deserialize_message(self, message: IncomingMessage) -> BaseModel:
+        # TODO: Use discriminator.
         for schema_cls in self.SCHEMA_CLS:
             try:
                 return schema_cls.model_validate_json(message.body)
-            except Exception:
+            except Exception:  # noqa: S110
+                # TODO: Use pydantic discriminator.
                 # Skip unmatched schema class that failed to parse the body.
                 pass
-        else:
-            self._log.error('Failed to decode message body')
-            await self._reject_invalid_body(message)
-            raise InvalidBodyError
+        self._log.error('Failed to decode message body')
+        await self._reject_invalid_body(message)
+        raise InvalidBodyError
 
     async def _reject_invalid_body(self, message: IncomingMessage) -> None:
         body = message.body

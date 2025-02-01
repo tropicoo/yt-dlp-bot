@@ -1,15 +1,16 @@
 import logging
-from asyncio import Task
 from typing import TYPE_CHECKING
 
 from yt_shared.utils.tasks.tasks import create_task
 
-from bot.core.workers.abstract import RabbitWorkerType
 from bot.core.workers.error import ErrorDownloadResultWorker
 from bot.core.workers.success import SuccessDownloadResultWorker
 
 if TYPE_CHECKING:
+    from asyncio import Task
+
     from bot.bot.client import VideoBotClient
+    from bot.core.workers.abstract import RabbitWorkerType
 
 
 class RabbitWorkerManager:

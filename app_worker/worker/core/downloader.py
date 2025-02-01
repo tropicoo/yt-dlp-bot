@@ -1,9 +1,10 @@
 import glob
 import logging
 import shutil
+from collections.abc import Callable
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Callable
+from typing import ClassVar
 
 import yt_dlp
 from yt_shared.enums import DownMediaType
@@ -26,7 +27,7 @@ class MediaDownloader:
     _DESTINATION_TMP_DIR_NAME_LEN = 4
     _KEEP_VIDEO_OPTION = '--keep-video'
 
-    _EXT_TO_NAME: dict[str, str] = {
+    _EXT_TO_NAME: ClassVar[dict[str, str]] = {
         FINAL_AUDIO_FORMAT: 'audio',
         FINAL_THUMBNAIL_FORMAT: 'thumbnail',
     }
@@ -165,8 +166,7 @@ class MediaDownloader:
 
         thumb_path: Path | None = None
         thumb_name = self._find_downloaded_file(
-            root_path=curr_tmp_dir,
-            extension=FINAL_THUMBNAIL_FORMAT,
+            root_path=curr_tmp_dir, extension=FINAL_THUMBNAIL_FORMAT
         )
         if thumb_name:
             _thumb_path = curr_tmp_dir / thumb_name
@@ -192,11 +192,10 @@ class MediaDownloader:
         meta: dict,
         curr_tmp_dir: Path,
         destination_dir: Path,
-        custom_video_filename: str | None = None,  # TODO: Make for audio.
+        custom_video_filename: str | None = None,  # noqa: ARG002 # TODO: Make for audio.
     ) -> Audio:
         audio_filename = self._find_downloaded_file(
-            root_path=curr_tmp_dir,
-            extension=FINAL_AUDIO_FORMAT,
+            root_path=curr_tmp_dir, extension=FINAL_AUDIO_FORMAT
         )
         audio_filepath = curr_tmp_dir / audio_filename
         self._log.info('Moving "%s" to "%s"', audio_filepath, destination_dir)
@@ -212,7 +211,7 @@ class MediaDownloader:
     def _find_downloaded_file(self, root_path: Path, extension: str) -> str | None:
         """Try to find downloaded audio or thumbnail file."""
         verbose_name = self._EXT_TO_NAME[extension]
-        for file_name in glob.glob(f'*.{extension}', root_dir=root_path):
+        for file_name in glob.glob(f'*.{extension}', root_dir=root_path):  # noqa: PTH207
             self._log.info(
                 'Found downloaded %s: "%s" [%s]',
                 verbose_name,
@@ -257,20 +256,20 @@ class MediaDownloader:
         # When video was converted to audio but video kept.
         for download_obj in requested_downloads:
             if download_obj['ext'] != download_obj['_filename'].rsplit('.', 1)[-1]:
-                download_obj = download_obj.copy()
+                download_obj_copy = download_obj.copy()
                 self._log.info(
                     'Replacing video path in meta "%s" with "%s"',
-                    download_obj['filepath'],
-                    download_obj['_filename'],
+                    download_obj_copy['filepath'],
+                    download_obj_copy['_filename'],
                 )
-                download_obj['filepath'] = download_obj.get(
-                    'filename', download_obj['_filename']
+                download_obj_copy['filepath'] = download_obj_copy.get(
+                    'filename', download_obj_copy['_filename']
                 )
-                return download_obj
+                return download_obj_copy
         return None
 
     @staticmethod
-    def _to_float(duration: int | float | None) -> float | None:
+    def _to_float(duration: float | None) -> float | None:
         try:
             return float(duration)
         except TypeError:
@@ -292,4 +291,4 @@ class MediaDownloader:
         except (AttributeError, KeyError):
             err_msg = 'Video filepath not found'
             self._log.exception('%s, meta: %s', err_msg, meta)
-            raise ValueError(err_msg)
+            raise ValueError(err_msg) from None

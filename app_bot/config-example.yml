@@ -24,6 +24,7 @@ telegram:
           include_filename: !!bool False
           include_link: !!bool True
           include_size: !!bool True
+      save_to_database: !!bool True
   api:
     upload_video_file: !!bool False
     upload_video_max_file_size: 2147483648

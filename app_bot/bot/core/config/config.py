@@ -6,7 +6,7 @@ from pathlib import Path
 
 import yaml
 from pydantic import ValidationError
-from yt_shared.config import Settings
+from yt_shared.config import CommonSettings
 
 from bot.core.exceptions import ConfigError
 from bot.core.schemas import ConfigSchema
@@ -25,12 +25,12 @@ class ConfigLoader:
         return data
 
     def _load_config(self) -> tuple[ConfigSchema | None, ValidationError | None]:
-        """Loads bot configuration from config file."""
+        """Load bot configuration from config file."""
         dir_path = Path(__file__).parent.parent.parent.parent
         conf_file_path = dir_path / self._CONF_FILENAME
         self._check_path_existence(conf_file_path)
 
-        with open(conf_file_path, 'r') as fd_in:
+        with conf_file_path.open() as fd_in:
             try:
                 return ConfigSchema(**yaml.safe_load(fd_in)), None
             except ValidationError as err:
@@ -60,7 +60,7 @@ def get_main_config() -> ConfigSchema:
     return _CONF_MAIN
 
 
-class BotSettings(Settings):
+class BotSettings(CommonSettings):
     TG_MAX_MSG_SIZE: int
     TG_MAX_CAPTION_SIZE: int
 

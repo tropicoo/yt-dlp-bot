@@ -40,7 +40,7 @@ class UserSchema(_BaseUserSchema):
     save_to_storage: bool
     use_url_regex_match: bool
     upload: UploadSchema
-    save_to_database: bool
+    save_to_database: bool = True
 
 
 class ApiSchema(StrictBaseConfigModel):

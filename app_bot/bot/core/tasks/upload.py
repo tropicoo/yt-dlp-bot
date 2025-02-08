@@ -279,6 +279,7 @@ class VideoUploadTask(AbstractUploadTask):
             'duration': int(self._media_ctx.duration),
             'height': int(self._media_ctx.height),
             'width': int(self._media_ctx.width),
+            'parse_mode': ParseMode.DISABLED,
         }
 
         if self._media_ctx.thumb:

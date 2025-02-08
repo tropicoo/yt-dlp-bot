@@ -5,8 +5,8 @@ requires-python = ">=3.12"
 description = "Add your description here"
 readme = "README.md"
 dependencies = [
-    "pyrofork==2.3.56",
-    "pyyaml==6.0.2",
-    "tenacity==9.0.0",
-    "tgcrypto-pyrofork==1.2.7",
+    "pyrofork>=2.3.56",
+    "pyyaml>=6.0.2",
+    "tenacity>=9.0.0",
+    "tgcrypto-pyrofork>=1.2.7",
 ]

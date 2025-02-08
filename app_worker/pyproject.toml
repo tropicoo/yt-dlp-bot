@@ -5,7 +5,7 @@ requires-python = ">=3.12"
 description = "Add your description here"
 readme = "README.md"
 dependencies = [
-    "alembic==1.14.0",
-    "python-dotenv==1.0.1",
+    "alembic>=1.14.0",
+    "python-dotenv>=1.0.1",
     "yt-dlp>=2024.5.23.232707.dev0",
 ]

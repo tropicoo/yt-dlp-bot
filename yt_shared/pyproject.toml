@@ -8,14 +8,14 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "aio-pika==9.5.4",
-    "aiohttp==3.11.11",
-    "asyncpg==0.30.0",
-    "pillow==11.1.0",
-    "pydantic==2.10.6",
-    "pydantic-settings==2.7.1",
-    "sqlalchemy==2.0.37",
-    "sqlalchemy-utils==0.41.2",
+    "aio-pika>=9.5.4",
+    "aiohttp>=3.11.11",
+    "asyncpg>=0.30.0",
+    "pillow>=11.1.0",
+    "pydantic>=2.10.6",
+    "pydantic-settings>=2.7.1",
+    "sqlalchemy>=2.0.37",
+    "sqlalchemy-utils>=0.41.2",
     "uvloop>=0.21.0 ; sys_platform == 'linux'",
 ]
 

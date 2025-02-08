@@ -14,10 +14,10 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pyrofork", specifier = "==2.3.56" },
-    { name = "pyyaml", specifier = "==6.0.2" },
-    { name = "tenacity", specifier = "==9.0.0" },
-    { name = "tgcrypto-pyrofork", specifier = "==1.2.7" },
+    { name = "pyrofork", specifier = ">=2.3.56" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
+    { name = "tenacity", specifier = ">=9.0.0" },
+    { name = "tgcrypto-pyrofork", specifier = ">=1.2.7" },
 ]
 
 [[package]]
@@ -37,16 +37,16 @@ wheels = [
 
 [[package]]
 name = "pyrofork"
-version = "2.3.56"
+version = "2.3.58"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyaes" },
     { name = "pymediainfo-pyrofork" },
     { name = "pysocks" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/55/85/02d1a3b1a4989dab4666797332230ab7693bfda1bebd6da196822c7743cf/pyrofork-2.3.56.tar.gz", hash = "sha256:25cdeec8decbb14826371f6374631d0c14e5877ce75393c68c2210b560a53082", size = 468274 }
+sdist = { url = "https://files.pythonhosted.org/packages/d3/ae/1391f9342d8f5b4b9e129ad6d68f2821e5b19c83f4d8074c38d0cf0a3b1f/pyrofork-2.3.58.tar.gz", hash = "sha256:bb449e13988691154a1bf3d2c4f7cfd25b437e994af44659110bbfc2eef5d713", size = 471263 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/ab/738cbde090a9083d3fdc6f943d4896a80d6d77d5dbdc6512ae19100524b2/pyrofork-2.3.56-py3-none-any.whl", hash = "sha256:19f949a87f1e586ad3e4687724c850119796c200cb71b517b5ceb3c94acd0a2f", size = 4844693 },
+    { url = "https://files.pythonhosted.org/packages/97/45/d0c04a85876e505635c9ed1c8e20e68feaf17aa3eda3d76df2cb38a0b09c/pyrofork-2.3.58-py3-none-any.whl", hash = "sha256:8b0d9247fb7f826ef7d3f7f2c7bff64902b467eeb47a2a512f97ea2c51a77aff", size = 4875193 },
 ]
 
 [[package]]

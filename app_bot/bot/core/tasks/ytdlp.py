@@ -80,7 +80,7 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
             f'New {bold(self._ytdlp_conf.release_channel)} {code("yt-dlp")} version available: '
             f'{bold(ctx.latest.version)}\n'
             f'Current version: {bold(ctx.current.version)}\n'
-            f'Rebuild worker with {code("docker compose build --no-cache worker && docker compose up -d -t 0 worker")}'
+            f'Rebuild worker with {code("docker compose build --no-cache yt_worker && docker compose up -d -t 0 yt_worker")}'
         )
         await self._bot.send_message_admins(text)
 

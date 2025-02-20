@@ -61,7 +61,7 @@ class MediaService:
         url = self._task.url
         host_to_cls_map = HostConfRegistry.get_host_to_cls_map()
         host_cls = host_to_cls_map.get(urlsplit(url).netloc, host_to_cls_map[None])
-        return host_cls(url)
+        return host_cls(url=url)
 
     async def _start_download(self, host_conf: AbstractHostConfig) -> DownMedia:
         try:

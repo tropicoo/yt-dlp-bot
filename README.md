@@ -66,7 +66,7 @@ docker compose up --build -d -t 0 && docker compose logs --tail 100 -f
 docker compose stop -t 0
 ```
 
-Your telegram bot should send you a startup message:
+Your Telegram Bot should send you a startup message:
 `✨ <YOUR_BOT_NAME> started, paste a video URL(s) to start download` and that's it. After
 pasting video URL(s) bot will send you appropriate message whether they were downloaded
 or something went wrong.
@@ -75,8 +75,7 @@ or something went wrong.
 
 1. If you want to change `yt-dlp` download options, go to the `app_worker/ytdl_opts`
    directory, copy content from `default.py` to `user.py` and modify as you wish by
-   checking [available options](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180)
-   .
+   checking [available options](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180).
 2. Default max simultaneous video downloads by worker service is 2. Change
    the `MAX_SIMULTANEOUS_DOWNLOADS` variable in `envs/worker.env` to desired value but
    keep in mind that default mounted volume size is 7168m (7GB) in `docker-compose.yml`
@@ -95,20 +94,6 @@ or something went wrong.
    variable.
 5. If the website you want to download from requires authentication you can use your cookies by putting them into
    the `app_worker/cookies/cookies.txt` file in the Netscape format.
-6. If your country has an [Alpine Linux Mirror](https://mirrors.alpinelinux.org/), you can speed up the image builds by:
-   1. Creating `apk_mirrors` text file and putting there your mirror urls, for example for Ukraine they are:
-      ```
-      https://alpine.astra.in.ua/v3.17/main
-      https://alpine.astra.in.ua/v3.17/community
-      ```
-   2. Adding `COPY apk_mirrors /etc/apk/repositories` to the third line in `base.Dockerfile`:
-      ```dockerfile
-      FROM python:3.12-alpine
-
-      COPY apk_mirrors /etc/apk/repositories
-      ...
-      ```
-   3. Rebuild the images.
 
 ## 🛑 Failed download
 

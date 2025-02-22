@@ -28,5 +28,5 @@ class DefaultHost(AbstractHostConfig, metaclass=HostConfRegistry):
             ytdl_opts=self._build_ytdl_opts(media_type, curr_tmp_dir),
         )
 
-    def _build_custom_ytdl_video_opts(self) -> list[str]:
+    def _build_custom_ytdl_video_opts(self) -> tuple[str, ...]:
         return self.DEFAULT_VIDEO_FORMAT_SORT_OPT

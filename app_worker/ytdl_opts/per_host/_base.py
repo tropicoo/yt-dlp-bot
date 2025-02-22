@@ -60,16 +60,16 @@ class AbstractHostConfig:
 
     KEEP_VIDEO_OPTION: str = '--keep-video'
 
-    DEFAULT_YTDL_OPTS: list[str] = DEFAULT_YTDL_OPTS
+    DEFAULT_YTDL_OPTS: tuple[str, ...] = DEFAULT_YTDL_OPTS
 
-    AUDIO_YTDL_OPTS: list[str] = AUDIO_YTDL_OPTS
-    AUDIO_FORMAT_YTDL_OPTS: list[str] = AUDIO_FORMAT_YTDL_OPTS
+    AUDIO_YTDL_OPTS: tuple[str, ...] = AUDIO_YTDL_OPTS
+    AUDIO_FORMAT_YTDL_OPTS: tuple[str, ...] = AUDIO_FORMAT_YTDL_OPTS
 
     FINAL_AUDIO_FORMAT: str = FINAL_AUDIO_FORMAT
     FINAL_THUMBNAIL_FORMAT: str = FINAL_THUMBNAIL_FORMAT
 
-    DEFAULT_VIDEO_YTDL_OPTS: list[str] = VIDEO_YTDL_OPTS
-    DEFAULT_VIDEO_FORMAT_SORT_OPT: list[str] = DEFAULT_VIDEO_FORMAT_SORT_OPT
+    DEFAULT_VIDEO_YTDL_OPTS: tuple[str, ...] = VIDEO_YTDL_OPTS
+    DEFAULT_VIDEO_FORMAT_SORT_OPT: tuple[str, ...] = DEFAULT_VIDEO_FORMAT_SORT_OPT
 
     FFMPEG_AUDIO_OPTS: str | None = None
     FFMPEG_VIDEO_OPTS: str | None = None
@@ -95,7 +95,7 @@ class AbstractHostConfig:
             ytdl_opts_.extend(self.DEFAULT_VIDEO_YTDL_OPTS)
             ytdl_opts_.extend(self._build_custom_ytdl_video_opts())
 
-        ytdl_opts = deepcopy(self.DEFAULT_YTDL_OPTS)
+        ytdl_opts = list(deepcopy(self.DEFAULT_YTDL_OPTS))
 
         match media_type:
             case DownMediaType.AUDIO:
@@ -115,5 +115,5 @@ class AbstractHostConfig:
         return ytdl_opts
 
     @abstractmethod
-    def _build_custom_ytdl_video_opts(self) -> list[str]:
+    def _build_custom_ytdl_video_opts(self) -> tuple[str, ...]:
         pass

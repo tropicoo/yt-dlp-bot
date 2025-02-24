@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 async def healthcheck(db: DBDep) -> HealthcheckSchema:
     try:
         await db.execute(text('SELECT 1'))
-    except Exception:
+    except Exception as err:
         logger.exception('No database connection')
-        raise HTTPException(HTTPStatus.SERVICE_UNAVAILABLE) from None
+        raise HTTPException(HTTPStatus.SERVICE_UNAVAILABLE) from err
     return HealthcheckSchema()

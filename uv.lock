@@ -18,11 +18,11 @@ wheels = [
 
 [[package]]
 name = "aiohappyeyeballs"
-version = "2.4.6"
+version = "2.4.8"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/08/07/508f9ebba367fc3370162e53a3cfd12f5652ad79f0e0bfdf9f9847c6f159/aiohappyeyeballs-2.4.6.tar.gz", hash = "sha256:9b05052f9042985d32ecbe4b59a77ae19c006a78f1344d7fdad69d28ded3d0b0", size = 21726 }
+sdist = { url = "https://files.pythonhosted.org/packages/de/7c/79a15272e88d2563c9d63599fa59f05778975f35b255bf8f90c8b12b4ada/aiohappyeyeballs-2.4.8.tar.gz", hash = "sha256:19728772cb12263077982d2f55453babd8bec6a052a926cd5c0c42796da8bf62", size = 22337 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/4c/03fb05f56551828ec67ceb3665e5dc51638042d204983a03b0a1541475b6/aiohappyeyeballs-2.4.6-py3-none-any.whl", hash = "sha256:147ec992cf873d74f5062644332c539fcd42956dc69453fe5204195e560517e1", size = 14543 },
+    { url = "https://files.pythonhosted.org/packages/52/0e/b187e2bb3eeb2644515109657c4474d65a84e7123de249bf1e8467d04a65/aiohappyeyeballs-2.4.8-py3-none-any.whl", hash = "sha256:6cac4f5dd6e34a9644e69cf9021ef679e4394f54e58a183056d12009e42ea9e3", size = 15005 },
 ]
 
 [[package]]
@@ -283,16 +283,16 @@ wheels = [
 
 [[package]]
 name = "fastapi"
-version = "0.115.10"
+version = "0.115.11"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
     { name = "starlette" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/00/48/96e3cf457a5a64c23abe8453358b68ebc6755ac1b2bc4c8874c3cc94cd56/fastapi-0.115.10.tar.gz", hash = "sha256:920cdc95c1c6ca073656deae80ad254512d131031c2d7759c87ae469572911ee", size = 293749 }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/28/c5d26e5860df807241909a961a37d45e10533acef95fc368066c7dd186cd/fastapi-0.115.11.tar.gz", hash = "sha256:cc81f03f688678b92600a65a5e618b93592c65005db37157147204d8924bf94f", size = 294441 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/8c/b49611a3daf01c3980d1da920a63ff4dc12d607d0edcb8a86ba331a7c686/fastapi-0.115.10-py3-none-any.whl", hash = "sha256:47346c5437e933e68909a835cf63890a9bd52fb6091b2499b996c08a01ca43a5", size = 94928 },
+    { url = "https://files.pythonhosted.org/packages/b3/5d/4d8bbb94f0dbc22732350c06965e40740f4a92ca560e90bb566f4f73af41/fastapi-0.115.11-py3-none-any.whl", hash = "sha256:32e1541b7b74602e4ef4a0260ecaf3aadf9d4f19590bba3e1bf2ac4666aa2c64", size = 94926 },
 ]
 
 [package.optional-dependencies]
@@ -1307,11 +1307,11 @@ wheels = [
 
 [[package]]
 name = "yt-dlp"
-version = "2025.2.26.232946.dev0"
+version = "2025.3.3.232847.dev0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ed/6d/a1da70b32b100e74b0ef5a7b02c22da6b07f3c8c99c2719b66370740e061/yt_dlp-2025.2.26.232946.dev0.tar.gz", hash = "sha256:aa2de7089f5f16786e385feb0a7a24a57cc54f322f0167ffca575022cb5be93d", size = 2947381 }
+sdist = { url = "https://files.pythonhosted.org/packages/9e/3c/67a2c86392655b6d92f555cb7811ec656cccfe5e73060ed5cc30ae0c777e/yt_dlp-2025.3.3.232847.dev0.tar.gz", hash = "sha256:a8bb605c9cb86ee9bb26f8e03c77c10a11448ee20e580f1e6946504c6ddffc73", size = 2950141 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2a/42/e41f9dcf39d1412322133ae865653c09ec5328b0422bdd14c7d356b63f58/yt_dlp-2025.2.26.232946.dev0-py3-none-any.whl", hash = "sha256:6e337a67b3f6ee0b5fe5e12dc21ec3f421bac63a6214b880e4d0112b602b9edf", size = 3202256 },
+    { url = "https://files.pythonhosted.org/packages/78/d4/c6c6f47579642d28e77db48da0020a41ebf86a2fa00b54ac0313ab64b3ed/yt_dlp-2025.3.3.232847.dev0-py3-none-any.whl", hash = "sha256:c44336cf0d423f2a02aab481fe953de3b6854de01ef47c7a3aac9c3af1a3cc68", size = 3205649 },
 ]
 
 [[package]]

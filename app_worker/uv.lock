@@ -4,16 +4,16 @@ requires-python = ">=3.12"
 
 [[package]]
 name = "alembic"
-version = "1.16.1"
+version = "1.16.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "mako" },
     { name = "sqlalchemy" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/20/89/bfb4fe86e3fc3972d35431af7bedbc60fa606e8b17196704a1747f7aa4c3/alembic-1.16.1.tar.gz", hash = "sha256:43d37ba24b3d17bc1eb1024fe0f51cd1dc95aeb5464594a02c6bb9ca9864bfa4", size = 1955006, upload-time = "2025-05-21T23:11:05.991Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/9c/35/116797ff14635e496bbda0c168987f5326a6555b09312e9b817e360d1f56/alembic-1.16.2.tar.gz", hash = "sha256:e53c38ff88dadb92eb22f8b150708367db731d58ad7e9d417c9168ab516cbed8", size = 1963563, upload-time = "2025-06-16T18:05:08.566Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/31/59/565286efff3692c5716c212202af61466480f6357c4ae3089d4453bff1f3/alembic-1.16.1-py3-none-any.whl", hash = "sha256:0cdd48acada30d93aa1035767d67dff25702f8de74d7c3919f2e8492c8db2e67", size = 242488, upload-time = "2025-05-21T23:11:07.783Z" },
+    { url = "https://files.pythonhosted.org/packages/dd/e2/88e425adac5ad887a087c38d04fe2030010572a3e0e627f8a6e8c33eeda8/alembic-1.16.2-py3-none-any.whl", hash = "sha256:5f42e9bd0afdbd1d5e3ad856c01754530367debdebf21ed6894e34af52b3bb03", size = 242717, upload-time = "2025-06-16T18:05:10.27Z" },
 ]
 
 [[package]]
@@ -118,11 +118,11 @@ wheels = [
 
 [[package]]
 name = "python-dotenv"
-version = "1.1.0"
+version = "1.1.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/88/2c/7bb1416c5620485aa793f2de31d3df393d3686aa8a8506d11e10e13c5baf/python_dotenv-1.1.0.tar.gz", hash = "sha256:41f90bc6f5f177fb41f53e87666db362025010eb28f60a01c9143bfa33a2b2d5", size = 39920, upload-time = "2025-03-25T10:14:56.835Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f6/b0/4bc07ccd3572a2f9df7e6782f52b0c6c90dcbb803ac4a167702d7d0dfe1e/python_dotenv-1.1.1.tar.gz", hash = "sha256:a8a6399716257f45be6a007360200409fce5cda2661e3dec71d23dc15f6189ab", size = 41978, upload-time = "2025-06-24T04:21:07.341Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1e/18/98a99ad95133c6a6e2005fe89faedf294a748bd5dc803008059409ac9b1e/python_dotenv-1.1.0-py3-none-any.whl", hash = "sha256:d7c01d9e2293916c18baf562d95698754b0dbbb5e74d457c45d4f6561fb9d55d", size = 20256, upload-time = "2025-03-25T10:14:55.034Z" },
+    { url = "https://files.pythonhosted.org/packages/5f/ed/539768cf28c661b5b068d66d96a2f155c4971a5d55684a514c1a0e0dec2f/python_dotenv-1.1.1-py3-none-any.whl", hash = "sha256:31f23644fe2602f88ff55e1f5c79ba497e01224ee7737937930c448e4d0e24dc", size = 20556, upload-time = "2025-06-24T04:21:06.073Z" },
 ]
 
 [[package]]
@@ -165,9 +165,9 @@ wheels = [
 
 [[package]]
 name = "yt-dlp"
-version = "2025.6.12.233004.dev0"
+version = "2025.6.25.235247.dev0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/42/7c/05c351ef2f0b9eff412a47a87fa25ed7fa32f0d8ab47ca360f475126530b/yt_dlp-2025.6.12.233004.dev0.tar.gz", hash = "sha256:7f557e19eb6593408ca5ec5541c524237966f5920422b9347fe10d3238020f73", size = 3033538, upload-time = "2025-06-12T23:40:50.616Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b7/5c/4b9c83b0aaccc2d4a1fa3741986c89d0fc95ae6b65fd8243c269abc280c3/yt_dlp-2025.6.25.235247.dev0.tar.gz", hash = "sha256:5d7d467528349b5a4c137aba8b195eba484ad1bddd3ff78145d7e3867f3c5773", size = 3036772, upload-time = "2025-06-26T00:03:04.881Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/84/bd/49625975d206db9d5bee6d5c58d3190f99bfb6e2a5ca8103d0d2b166dd40/yt_dlp-2025.6.12.233004.dev0-py3-none-any.whl", hash = "sha256:3bdafbe5e743b7ba217338b2adac3f825e382d058c447554651c7b0480ea5e6c", size = 3279549, upload-time = "2025-06-12T23:40:47.689Z" },
+    { url = "https://files.pythonhosted.org/packages/d7/d9/e2d95b8ee31e949d8a624b0c998c170d03bd14b7761dbc49a8ffc84a3687/yt_dlp-2025.6.25.235247.dev0-py3-none-any.whl", hash = "sha256:576ccb1e365ab8a796964ad92450ed18751a32487f2b912b34585cfb2c2c94a8", size = 3283071, upload-time = "2025-06-26T00:03:02.542Z" },
 ]

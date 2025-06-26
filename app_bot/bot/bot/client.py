@@ -30,7 +30,7 @@ class VideoBotClient(Client):
                 self.admin_users[user.id] = user
 
     async def run_forever(self) -> None:
-        """Firstly 'await bot.start()' should be called."""
+        """Firstly, 'await bot.start()' should be called."""
         if not self.is_initialized:
             raise RuntimeError('Bot was not started (initialized).')
         while True:
@@ -69,7 +69,7 @@ class VideoBotClient(Client):
     async def send_message_all(
         self, text: str, parse_mode: ParseMode = ParseMode.HTML
     ) -> None:
-        """Send message to all defined user IDs in config.json."""
+        """Send a message to all defined user IDs in config.json."""
         await self.send_message_to_users(
             text=text, user_ids=self.allowed_users.keys(), parse_mode=parse_mode
         )
@@ -77,7 +77,7 @@ class VideoBotClient(Client):
     async def send_message_admins(
         self, text: str, parse_mode: ParseMode = ParseMode.HTML
     ) -> None:
-        """Send message to all defined user IDs in config.json."""
+        """Send a message to all defined user IDs in config.json."""
         await self.send_message_to_users(
             text=text, user_ids=self.admin_users.keys(), parse_mode=parse_mode
         )

@@ -38,16 +38,16 @@ wheels = [
 
 [[package]]
 name = "pyrofork"
-version = "2.3.66"
+version = "2.3.67"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyaes" },
     { name = "pymediainfo-pyrofork" },
     { name = "pysocks" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5d/b0/72d274f43c02af78fa8533b39e6c9be5eca22eae60c8c0df2f5b01b03962/pyrofork-2.3.66.tar.gz", hash = "sha256:d268c34cfbd27bc9a3da8d2fc9eac7646258a74b21f9e56f1089e30967399e7f", size = 494505, upload-time = "2025-06-10T15:49:48.133Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e5/12/890f5317a7ddceccbbd1a66038df7797a9e0fd0c41645833a4bb7969f167/pyrofork-2.3.67.tar.gz", hash = "sha256:b9e3cd8b6189c1abddaa4b9409afebbcb4f72ce999c6d863f295eb36edbe9020", size = 496155, upload-time = "2025-06-25T12:17:41.48Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/79/ee/df367c7a48042ff596575e9a2fac81d983cdf5eb8a71b3e65e6afa99dc7e/pyrofork-2.3.66-py3-none-any.whl", hash = "sha256:2a0cd9dfb01c125b0914bc307f01c6147a45da54d5810917b2aaaadb5faaf859", size = 5014668, upload-time = "2025-06-10T15:49:46.05Z" },
+    { url = "https://files.pythonhosted.org/packages/12/75/d8b3befb93b1e360a1d150e253bec3bf9d40ce6756ca18b3875a59a68d8d/pyrofork-2.3.67-py3-none-any.whl", hash = "sha256:ec6a5accf104f26b713a61d95c9aed6538a201bfac6bd20bd10a986c5d5a5244", size = 5018837, upload-time = "2025-06-25T12:17:39.18Z" },
 ]
 
 [[package]]

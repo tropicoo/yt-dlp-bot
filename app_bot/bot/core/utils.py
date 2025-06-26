@@ -25,6 +25,10 @@ def bold(text: str) -> str:
     return f'<b>{text}</b>'
 
 
+def expandable_quote(text: str) -> str:
+    return f'<blockquote expandable>{text}</blockquote>'
+
+
 def code(text: str) -> str:
     """Wrap input string in HTML code tag."""
     return f'<code>{text}</code>'

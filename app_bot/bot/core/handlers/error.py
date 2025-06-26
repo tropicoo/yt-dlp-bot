@@ -1,6 +1,6 @@
 import asyncio
 import html
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from pyrogram.enums import ParseMode
 from yt_shared.enums import RabbitPayloadType
@@ -36,7 +36,7 @@ class ErrorDownloadHandler(AbstractDownloadHandler):
 
     def _send_error_text(self) -> None:
         for user in self._get_receiving_users():
-            kwargs = {
+            kwargs: dict[str, Any] = {
                 'chat_id': user.id,
                 'text': self._format_error_message(),
                 'parse_mode': ParseMode.HTML,

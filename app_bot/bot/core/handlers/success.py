@@ -1,6 +1,6 @@
 import asyncio
 import traceback
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from pyrogram.enums import ParseMode
 from pyrogram.errors import MessageIdInvalid, MessageNotModified
@@ -147,7 +147,7 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
         text = self._create_success_text(media_object)
         for user in self._receiving_users:
             if not is_user_upload_silent(user=user, conf=self._bot.conf):
-                kwargs = {
+                kwargs: dict[str, Any] = {
                     'chat_id': user.id,
                     'text': text,
                     'parse_mode': ParseMode.HTML,

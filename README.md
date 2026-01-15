@@ -17,6 +17,8 @@ Version: 1.7.1. [Release details](RELEASES.md).
 
 * Download audio and free videos with Creative Commons (CC) License from [yt-dlp](https://github.com/yt-dlp/yt-dlp) sites to your storage.
 * Upload downloaded media to Telegram.
+* **Interactive format selection**: Choose between Video, Audio, or Both directly in Telegram chat.
+* **Video quality selection**: Pick desired quality (Best, 4K, 1440p, 1080p, 720p, 480p, 360p) before downloading.
 * Interact with the bot in private or group chats.
 * Trigger video downloads via link to the API.
 * Track download tasks using the API.
@@ -158,11 +160,14 @@ documentations lives at `http://127.0.0.1:1984/docs`.
    {
        "url": "https://www.youtube.com/watch?v=PavYAOpVpJI",
        "download_media_type": "AUDIO_VIDEO",
+       "video_quality": "1080P",
        "save_to_storage": false,
        "custom_filename": "cool.mp4",
        "automatic_extension": false
    }
    ```
+
+   Available `video_quality` values: `BEST` (default), `4K`, `1440P`, `1080P`, `720P`, `480P`, `360P`.
    Response
    ```json
    {

@@ -1,6 +1,7 @@
 """Configuration manager for hot-reload and dynamic config updates."""
 
 import logging
+import os
 import shutil
 from collections.abc import Mapping, Sequence
 from datetime import datetime
@@ -29,17 +30,26 @@ class ConfigManager:
 
     def __init__(self) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
-        self._yaml = YAML()
-        self._yaml.preserve_quotes = True
-        self._yaml.indent(mapping=2, sequence=4, offset=2)
-
         self._config_dir = Path(__file__).parent.parent.parent.parent
         self._config_path = self._config_dir / self._CONF_FILENAME
         self._backup_dir = self._config_dir / self._BACKUP_DIR
+        self._log.info(
+            'ConfigManager initialized: config_path=%s, exists=%s',
+            self._config_path,
+            self._config_path.exists()
+        )
+
+    def _create_yaml(self) -> YAML:
+        """Create a fresh YAML instance for each operation to avoid caching."""
+        yaml = YAML()
+        yaml.preserve_quotes = True
+        yaml.indent(mapping=2, sequence=4, offset=2)
+        return yaml
 
     def _create_backup(self) -> Path | None:
         """Create backup of current config before modifications."""
         if not self._config_path.exists():
+            self._log.warning('Config file does not exist for backup: %s', self._config_path)
             return None
 
         self._backup_dir.mkdir(exist_ok=True)
@@ -60,8 +70,13 @@ class ConfigManager:
 
     def _load_raw_config(self) -> dict:
         """Load raw YAML config preserving structure."""
+        self._log.debug('Loading config from: %s', self._config_path)
+        yaml = self._create_yaml()
         with self._config_path.open() as f:
-            return self._yaml.load(f)
+            data = yaml.load(f)
+        user_count = len(data.get('telegram', {}).get('allowed_users', []))
+        self._log.debug('Loaded config with %d users', user_count)
+        return data
 
     def _save_raw_config(self, data: dict) -> None:
         """Save config directly to file.
@@ -69,16 +84,46 @@ class ConfigManager:
         Note: Writing directly instead of atomic temp+move because
         Docker bind mounts don't support cross-filesystem operations reliably.
         """
-        self._log.info('Saving config to: %s (exists: %s)', self._config_path, self._config_path.exists())
+        user_count = len(data.get('telegram', {}).get('allowed_users', []))
+        self._log.info(
+            'SAVE_CONFIG: path=%s, exists=%s, users_to_save=%d',
+            self._config_path, self._config_path.exists(), user_count
+        )
+
+        # Get file stats before
         try:
-            with self._config_path.open('w') as f:
-                self._yaml.dump(data, f)
-                f.flush()
-                import os
-                os.fsync(f.fileno())
-            self._log.info('Config saved successfully to %s', self._config_path)
+            stat_before = self._config_path.stat()
+            self._log.info('SAVE_CONFIG: file_size_before=%d, mtime_before=%s',
+                          stat_before.st_size, stat_before.st_mtime)
         except Exception as e:
-            self._log.error('Failed to save config: %s', e)
+            self._log.warning('SAVE_CONFIG: could not stat file before: %s', e)
+
+        try:
+            yaml = self._create_yaml()
+            with self._config_path.open('w') as f:
+                yaml.dump(data, f)
+                f.flush()
+                os.fsync(f.fileno())
+
+            # Verify the write by reading back
+            stat_after = self._config_path.stat()
+            self._log.info('SAVE_CONFIG: file_size_after=%d, mtime_after=%s',
+                          stat_after.st_size, stat_after.st_mtime)
+
+            # Read back and verify user count
+            yaml_verify = self._create_yaml()
+            with self._config_path.open() as f:
+                verify_data = yaml_verify.load(f)
+            verify_count = len(verify_data.get('telegram', {}).get('allowed_users', []))
+            self._log.info('SAVE_CONFIG: verified_user_count=%d', verify_count)
+
+            if verify_count != user_count:
+                self._log.error(
+                    'SAVE_CONFIG: MISMATCH! Expected %d users but file has %d',
+                    user_count, verify_count
+                )
+        except Exception as e:
+            self._log.exception('SAVE_CONFIG: FAILED with error: %s', e)
             raise
 
     def _to_plain_python(self, obj: Any) -> Any:
@@ -137,14 +182,20 @@ class ConfigManager:
 
     def add_user(self, bot: 'VideoBotClient', user_id: int) -> UserSchema:
         """Add a new user with default settings."""
-        self._log.info('Adding user: %d', user_id)
+        self._log.info('ADD_USER: Starting for user_id=%d', user_id)
+        self._log.info('ADD_USER: Current allowed_users count=%d', len(bot.allowed_users))
 
         # Check if user already exists
         if user_id in bot.allowed_users:
             raise ValueError(f'User {user_id} already exists')
 
+        self._log.info('ADD_USER: Creating backup')
         self._create_backup()
+
+        self._log.info('ADD_USER: Loading raw config')
         raw_config = self._load_raw_config()
+        users_before = len(raw_config['telegram']['allowed_users'])
+        self._log.info('ADD_USER: Users in loaded config=%d', users_before)
 
         # Create default user config
         new_user_data = {
@@ -171,14 +222,21 @@ class ConfigManager:
         }
 
         raw_config['telegram']['allowed_users'].append(new_user_data)
+        users_after = len(raw_config['telegram']['allowed_users'])
+        self._log.info('ADD_USER: Users after append=%d', users_after)
 
         # Validate before saving
+        self._log.info('ADD_USER: Validating config')
         self._validate_config(raw_config)
+
+        self._log.info('ADD_USER: Saving config to file')
         self._save_raw_config(raw_config)
 
         # Reload to apply changes
+        self._log.info('ADD_USER: Reloading config')
         self.reload_config(bot)
 
+        self._log.info('ADD_USER: Final allowed_users count=%d', len(bot.allowed_users))
         return bot.allowed_users[user_id]
 
     def delete_user(self, bot: 'VideoBotClient', user_id: int) -> None:

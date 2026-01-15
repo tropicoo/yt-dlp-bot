@@ -1,6 +1,7 @@
 """Admin command handlers for bot configuration management."""
 
 import logging
+import sys
 
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message
@@ -224,3 +225,15 @@ class AdminCommandHandler:
         except Exception as e:
             self._log.exception('Failed to reload config')
             await self._reply(message, f'❌ Failed to reload config: {e}')
+
+    async def on_restartbot(self, client: VideoBotClient, message: Message) -> None:
+        """Handle /restartbot command - gracefully restart the bot container."""
+        user_id = message.from_user.id if message.from_user else message.chat.id
+
+        if not self._is_admin(client, user_id):
+            await self._reply(message, '🚫 This command is only for admins.')
+            return
+
+        self._log.info('Bot restart requested by user %d', user_id)
+        await self._reply(message, '🔄 Restarting bot...')
+        sys.exit(0)

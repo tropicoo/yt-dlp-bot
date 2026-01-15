@@ -85,6 +85,12 @@ class BotLauncher:
                     filters=filters.user(admin_users) & filters.command('reloadconfig'),
                 )
             )
+            self._bot.add_handler(
+                MessageHandler(
+                    admin_cb.on_restartbot,
+                    filters=filters.user(admin_users) & filters.command('restartbot'),
+                )
+            )
 
         self._bot.add_handler(
             MessageHandler(

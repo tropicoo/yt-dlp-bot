@@ -14,7 +14,7 @@ from yt_shared.db.session import get_db
 from yt_shared.repositories.task import TaskRepository
 from yt_shared.schemas.base import RealBaseModel
 from yt_shared.schemas.cache import CacheSchema
-from yt_shared.schemas.media import BaseMedia, Video
+from yt_shared.schemas.media import Audio, BaseMedia, Video
 from yt_shared.schemas.success import SuccessDownloadPayload
 from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.utils.tasks.tasks import create_task
@@ -44,7 +44,7 @@ class VideoUploadContext(BaseUploadContext):
 
 
 class AudioUploadContext(BaseUploadContext):
-    pass
+    thumb: FilePath | str | None = None
 
 
 class AbstractUploadTask(AbstractTask, ABC):
@@ -190,6 +190,7 @@ class AbstractUploadTask(AbstractTask, ABC):
 class AudioUploadTask(AbstractUploadTask):
     _UPLOAD_ACTION = ChatAction.UPLOAD_AUDIO
     _media_ctx: AudioUploadContext
+    _media_object: Audio
 
     def _generate_send_media_coroutine(self, chat_id: int) -> Coroutine:
         kwargs = {
@@ -199,6 +200,8 @@ class AudioUploadTask(AbstractUploadTask):
             'file_name': self._media_ctx.filename,
             'duration': int(self._media_ctx.duration),
         }
+        if self._media_ctx.thumb:
+            kwargs['thumb'] = self._media_ctx.thumb
         return self._bot.send_audio(**kwargs)
 
     def _create_media_context(self) -> AudioUploadContext:
@@ -207,6 +210,7 @@ class AudioUploadTask(AbstractUploadTask):
             filename=self._filename,
             filepath=self._filepath,
             duration=self._media_object.duration or 0.0,
+            thumb=self._media_object.thumb_path,
             type=MessageMediaType.AUDIO,
         )
 
@@ -221,6 +225,12 @@ class AudioUploadTask(AbstractUploadTask):
         self._media_ctx.type = message.media
         self._media_ctx.filepath = audio.file_id
         self._media_ctx.duration = audio.duration
+        # Cache thumbnail if available
+        try:
+            if audio.thumbs:
+                self._media_ctx.thumb = audio.thumbs[0].file_id
+        except (TypeError, IndexError):
+            self._log.debug('No thumbnail found for audio caching')
         self._media_ctx.is_cached = True
         self._cached_message = message
 

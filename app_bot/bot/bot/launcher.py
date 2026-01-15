@@ -8,6 +8,7 @@ from yt_shared.utils.tasks.tasks import create_task
 from bot.bot.client import VideoBotClient
 from bot.core.callbacks import TelegramCallback
 from bot.core.config.config import get_main_config
+from bot.core.handlers.admin import AdminCommandHandler
 from bot.core.tasks.db_cleanup import DbCleanupTask
 from bot.core.tasks.ytdlp import YtdlpNewVersionNotifyTask
 from bot.core.workers.manager import RabbitWorkerManager
@@ -39,7 +40,9 @@ class BotLauncher:
 
     def _setup_handlers(self) -> None:
         cb = TelegramCallback()
+        admin_cb = AdminCommandHandler()
         allowed_users = list(self._bot.allowed_users.keys())
+        admin_users = list(self._bot.admin_users.keys())
 
         self._bot.add_handler(
             MessageHandler(
@@ -48,6 +51,41 @@ class BotLauncher:
                 & filters.command(['start', 'help']),
             )
         )
+
+        # Admin commands - only registered admins can use these
+        # Note: additional admin check is done inside handlers for security
+        if admin_users:
+            self._bot.add_handler(
+                MessageHandler(
+                    admin_cb.on_adduser,
+                    filters=filters.user(admin_users) & filters.command('adduser'),
+                )
+            )
+            self._bot.add_handler(
+                MessageHandler(
+                    admin_cb.on_deleteuser,
+                    filters=filters.user(admin_users) & filters.command('deleteuser'),
+                )
+            )
+            self._bot.add_handler(
+                MessageHandler(
+                    admin_cb.on_config,
+                    filters=filters.user(admin_users) & filters.command('config'),
+                )
+            )
+            self._bot.add_handler(
+                MessageHandler(
+                    admin_cb.on_listusers,
+                    filters=filters.user(admin_users) & filters.command('listusers'),
+                )
+            )
+            self._bot.add_handler(
+                MessageHandler(
+                    admin_cb.on_reloadconfig,
+                    filters=filters.user(admin_users) & filters.command('reloadconfig'),
+                )
+            )
+
         self._bot.add_handler(
             MessageHandler(
                 cb.on_message,

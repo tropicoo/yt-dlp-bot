@@ -91,9 +91,11 @@ class BaseMedia(StrictRealBaseModel, ABC):
 
 
 class Audio(BaseMedia):
-    """Model representing downloaded audio file."""
+    """Model representing downloaded audio file with optional thumbnail."""
 
     file_type: Literal[MediaFileType.AUDIO] = MediaFileType.AUDIO
+    thumb_name: str | None = None
+    thumb_path: Annotated[FilePath, Field(strict=False)] | None = None
 
 
 class Video(BaseMedia):

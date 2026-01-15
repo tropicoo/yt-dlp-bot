@@ -51,6 +51,9 @@ AUDIO_YTDL_OPTS: Final[_OptsType] = (
     '0',
     '--audio-format',
     FINAL_AUDIO_FORMAT,
+    '--write-thumbnail',
+    '--convert-thumbnails',
+    FINAL_THUMBNAIL_FORMAT,
 )
 
 AUDIO_FORMAT_YTDL_OPTS: Final[_OptsType] = ('--format', 'bestaudio/best')

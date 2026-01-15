@@ -70,6 +70,7 @@ class TaskService:
             added_at=added_at,
             source=source,
             download_media_type=task.download_media_type,
+            video_quality=task.video_quality,
             save_to_storage=task.save_to_storage,
             from_chat_id=None,
             from_chat_type=None,

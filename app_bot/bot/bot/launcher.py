@@ -1,7 +1,7 @@
 import logging
 
 from pyrogram import filters
-from pyrogram.handlers import MessageHandler
+from pyrogram.handlers import CallbackQueryHandler, MessageHandler
 from yt_shared.rabbit import get_rabbitmq
 from yt_shared.utils.tasks.tasks import create_task
 
@@ -55,6 +55,12 @@ class BotLauncher:
                     filters.regex(self.REGEX_NOT_START_WITH_SLASH)
                     & (filters.user(allowed_users) | filters.chat(allowed_users))
                 ),
+            )
+        )
+        self._bot.add_handler(
+            CallbackQueryHandler(
+                cb.on_callback_query,
+                filters=filters.user(allowed_users) | filters.chat(allowed_users),
             )
         )
 

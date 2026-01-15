@@ -51,14 +51,19 @@ class MediaDownloader:
         self, host_conf: AbstractHostConfig, media_payload: InbMediaPayload
     ) -> DownMedia:
         media_type = media_payload.download_media_type
+        video_quality = media_payload.video_quality
         url = host_conf.url
-        self._log.info('Downloading %s, media_type %s', url, media_type)
+        self._log.info(
+            'Downloading %s, media_type %s, quality %s', url, media_type, video_quality
+        )
         tmp_down_path = settings.TMP_DOWNLOAD_ROOT_PATH / settings.TMP_DOWNLOAD_DIR
         with TemporaryDirectory(prefix='tmp_media_dir-', dir=tmp_down_path) as tmp_dir:
             curr_tmp_dir = tmp_down_path / tmp_dir
 
             ytdl_opts_model = host_conf.build_config(
-                media_type=media_type, curr_tmp_dir=curr_tmp_dir
+                media_type=media_type,
+                curr_tmp_dir=curr_tmp_dir,
+                video_quality=video_quality,
             )
 
             with yt_dlp.YoutubeDL(ytdl_opts_model.ytdl_opts) as ytdl:

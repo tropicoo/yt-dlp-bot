@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from yt_shared.constants import TWITTER_HOSTS
-from yt_shared.enums import DownMediaType
+from yt_shared.enums import DownMediaType, VideoQuality
 
 from ytdl_opts.per_host._base import AbstractHostConfig, BaseHostConfModel
 from ytdl_opts.per_host._registry import HostConfRegistry
@@ -18,7 +18,10 @@ class TwitterHost(AbstractHostConfig, metaclass=HostConfRegistry):
     ENCODE_VIDEO = False
 
     def build_config(
-        self, media_type: DownMediaType, curr_tmp_dir: Path
+        self,
+        media_type: DownMediaType,
+        curr_tmp_dir: Path,
+        video_quality: VideoQuality = VideoQuality.BEST,
     ) -> TwitterHostModel:
         return TwitterHostModel(
             hostnames=self.HOSTNAMES,
@@ -26,7 +29,7 @@ class TwitterHost(AbstractHostConfig, metaclass=HostConfRegistry):
             encode_video=self.ENCODE_VIDEO,
             ffmpeg_audio_opts=self.FFMPEG_AUDIO_OPTS,
             ffmpeg_video_opts=self.FFMPEG_VIDEO_OPTS,
-            ytdl_opts=self._build_ytdl_opts(media_type, curr_tmp_dir),
+            ytdl_opts=self._build_ytdl_opts(media_type, curr_tmp_dir, video_quality),
         )
 
     def _build_custom_ytdl_video_opts(self) -> tuple[str, ...]:

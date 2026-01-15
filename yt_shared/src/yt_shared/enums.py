@@ -52,6 +52,18 @@ class MediaFileType(StrChoiceEnum):
     VIDEO = 'VIDEO'
 
 
+class VideoQuality(StrChoiceEnum):
+    """Video quality presets for download."""
+
+    BEST = 'BEST'
+    UHD_4K = '4K'
+    QHD_1440P = '1440P'
+    FHD_1080P = '1080P'
+    HD_720P = '720P'
+    SD_480P = '480P'
+    LD_360P = '360P'
+
+
 class YtdlpReleaseChannelType(StrChoiceEnum):
     STABLE = 'STABLE'
     NIGHTLY = 'NIGHTLY'

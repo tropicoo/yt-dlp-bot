@@ -21,7 +21,7 @@ from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.config.config import get_main_config, settings
 from bot.core.schemas import AnonymousUserSchema, UserSchema, VideoCaptionSchema
-from bot.core.utils import bold, is_user_upload_silent
+from bot.core.utils import bold
 
 if TYPE_CHECKING:
     from bot.bot.client import VideoBotClient
@@ -82,7 +82,7 @@ class AbstractUploadTask(AbstractTask, ABC):
 
     async def _run(self) -> None:
         try:
-            await asyncio.gather(*(self._send_upload_text(), self._upload_file()))
+            await self._upload_file()
         except Exception:
             self._log.exception('Exception in upload task for "%s"', self._filename)
             raise
@@ -93,24 +93,6 @@ class AbstractUploadTask(AbstractTask, ABC):
 
     def _generate_file_caption(self) -> str:
         return '\n'.join(self._generate_caption_items())[: settings.TG_MAX_CAPTION_SIZE]
-
-    async def _send_upload_text(self) -> None:
-        text = (
-            f'⬆️ {bold("Uploading")} {self._filename}\n'
-            f'📏 {bold("Size")} {self._media_object.file_size_human()}'
-        )
-        coros = []
-        for user in self._users:
-            if not is_user_upload_silent(user=user, conf=self._bot.conf):
-                kwargs = {
-                    'chat_id': user.id,
-                    'text': text,
-                    'parse_mode': ParseMode.HTML,
-                }
-                if self._ctx.message_id:
-                    kwargs['reply_to_message_id'] = self._ctx.message_id
-                coros.append(self._bot.send_message(**kwargs))
-        await asyncio.gather(*coros)
 
     def _get_forward_chat_ids(self) -> list[int]:
         forward_chat_ids = []

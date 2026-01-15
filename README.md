@@ -19,9 +19,27 @@ Version: 1.7.1. [Release details](RELEASES.md).
 * Upload downloaded media to Telegram.
 * **Interactive format selection**: Choose between Video, Audio, or Both directly in Telegram chat.
 * **Video quality selection**: Pick desired quality (Best, 4K, 1440p, 1080p, 720p, 480p, 360p) before downloading.
+* **Admin commands**: Manage users and configuration via Telegram commands.
+* **Clean chat experience**: Only the final media file appears in chat (no intermediate status messages).
+* **Audio thumbnails**: YouTube covers are embedded in audio files.
 * Interact with the bot in private or group chats.
 * Trigger video downloads via link to the API.
 * Track download tasks using the API.
+
+## 🔧 Admin Commands
+
+Admin users can manage the bot configuration directly from Telegram:
+
+| Command | Description |
+|---------|-------------|
+| `/adduser <telegram_id>` | Add a new user with default settings |
+| `/deleteuser <telegram_id>` | Remove a user (admins cannot be deleted) |
+| `/listusers` | Show all configured users |
+| `/config get <path>` | Get a config value (e.g., `/config get telegram.max_upload_tasks`) |
+| `/config set <path> <value>` | Set a config value (e.g., `/config set telegram.max_upload_tasks 5`) |
+| `/reloadconfig` | Reload configuration from disk |
+
+**Note**: Changes made via admin commands are persisted to `config.yml` and survive bot restarts.
 
 ## Disclaimer
 

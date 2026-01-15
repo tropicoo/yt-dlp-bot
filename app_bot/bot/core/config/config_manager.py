@@ -2,12 +2,18 @@
 
 import logging
 import shutil
+from collections.abc import Mapping, Sequence
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from pydantic import ValidationError
 from ruamel.yaml import YAML
+from ruamel.yaml.comments import CommentedMap, CommentedSeq
+from ruamel.yaml.scalarstring import ScalarString
+from ruamel.yaml.scalarbool import ScalarBoolean
+from ruamel.yaml.scalarint import ScalarInt
+from ruamel.yaml.scalarfloat import ScalarFloat
 
 from bot.core.schemas import ConfigSchema, UploadSchema, UserSchema, VideoCaptionSchema
 
@@ -65,9 +71,33 @@ class ConfigManager:
         temp_path.rename(self._config_path)
         self._log.info('Config saved successfully')
 
+    def _to_plain_python(self, obj: Any) -> Any:
+        """Convert ruamel.yaml objects to plain Python types for Pydantic."""
+        if isinstance(obj, CommentedMap):
+            return {k: self._to_plain_python(v) for k, v in obj.items()}
+        elif isinstance(obj, CommentedSeq):
+            return [self._to_plain_python(item) for item in obj]
+        elif isinstance(obj, ScalarBoolean):
+            return bool(obj)
+        elif isinstance(obj, ScalarInt):
+            return int(obj)
+        elif isinstance(obj, ScalarFloat):
+            return float(obj)
+        elif isinstance(obj, ScalarString):
+            return str(obj)
+        elif hasattr(obj, 'value'):
+            # Handle TaggedScalar and other tagged values
+            return obj.value
+        elif isinstance(obj, Mapping):
+            return {k: self._to_plain_python(v) for k, v in obj.items()}
+        elif isinstance(obj, Sequence) and not isinstance(obj, str):
+            return [self._to_plain_python(item) for item in obj]
+        return obj
+
     def _validate_config(self, data: dict) -> ConfigSchema:
         """Validate config data against schema."""
-        return ConfigSchema(**data)
+        plain_data = self._to_plain_python(data)
+        return ConfigSchema(**plain_data)
 
     def reload_config(self, bot: 'VideoBotClient') -> ConfigSchema:
         """Reload config from file and update bot's in-memory state."""
@@ -204,9 +234,9 @@ class ConfigManager:
         if last_key not in target:
             raise KeyError(f'Config path not found: {path}')
 
-        # Convert value to appropriate type
+        # Convert value to appropriate type based on old value
         old_value = target[last_key]
-        new_value = self._convert_value(value, type(old_value))
+        new_value = self._convert_value(value, old_value)
 
         target[last_key] = new_value
 
@@ -219,8 +249,12 @@ class ConfigManager:
 
         return new_value
 
-    def _convert_value(self, value: str, target_type: type) -> Any:
-        """Convert string value to target type."""
+    def _convert_value(self, value: str, old_value: Any) -> Any:
+        """Convert string value to appropriate type based on old value."""
+        # Get plain Python value to determine type
+        plain_old = self._to_plain_python(old_value)
+        target_type = type(plain_old)
+
         if target_type == bool:
             return value.lower() in ('true', '1', 'yes', 'on')
         elif target_type == int:

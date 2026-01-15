@@ -41,7 +41,7 @@ services:
       - yt_api
     volumes:
       - "shared-tmpfs:/tmp/download_tmpfs"
-      - "./app_bot/config.yml:/app/app_bot/config.yml"  # Mount config for hot-reload
+      - "./app_bot/config.yml:/app/config.yml"  # Mount config for hot-reload
   yt_worker:
     container_name: yt_worker
     build:

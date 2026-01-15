@@ -64,22 +64,21 @@ class ConfigManager:
             return self._yaml.load(f)
 
     def _save_raw_config(self, data: dict) -> None:
-        """Save config safely (write to temp file, then move).
+        """Save config directly to file.
 
-        Using shutil.move instead of rename for cross-filesystem compatibility
-        (required for bind mounts in Docker).
+        Note: Writing directly instead of atomic temp+move because
+        Docker bind mounts don't support cross-filesystem operations reliably.
         """
-        temp_path = self._config_path.with_suffix('.yml.tmp')
-        self._log.info('Saving config to: %s', self._config_path)
+        self._log.info('Saving config to: %s (exists: %s)', self._config_path, self._config_path.exists())
         try:
-            with temp_path.open('w') as f:
+            with self._config_path.open('w') as f:
                 self._yaml.dump(data, f)
-            shutil.move(str(temp_path), str(self._config_path))
+                f.flush()
+                import os
+                os.fsync(f.fileno())
             self._log.info('Config saved successfully to %s', self._config_path)
         except Exception as e:
             self._log.error('Failed to save config: %s', e)
-            if temp_path.exists():
-                temp_path.unlink()
             raise
 
     def _to_plain_python(self, obj: Any) -> Any:

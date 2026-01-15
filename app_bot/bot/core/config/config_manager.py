@@ -64,12 +64,23 @@ class ConfigManager:
             return self._yaml.load(f)
 
     def _save_raw_config(self, data: dict) -> None:
-        """Save config atomically (write to temp file, then rename)."""
+        """Save config safely (write to temp file, then move).
+
+        Using shutil.move instead of rename for cross-filesystem compatibility
+        (required for bind mounts in Docker).
+        """
         temp_path = self._config_path.with_suffix('.yml.tmp')
-        with temp_path.open('w') as f:
-            self._yaml.dump(data, f)
-        temp_path.rename(self._config_path)
-        self._log.info('Config saved successfully')
+        self._log.info('Saving config to: %s', self._config_path)
+        try:
+            with temp_path.open('w') as f:
+                self._yaml.dump(data, f)
+            shutil.move(str(temp_path), str(self._config_path))
+            self._log.info('Config saved successfully to %s', self._config_path)
+        except Exception as e:
+            self._log.error('Failed to save config: %s', e)
+            if temp_path.exists():
+                temp_path.unlink()
+            raise
 
     def _to_plain_python(self, obj: Any) -> Any:
         """Convert ruamel.yaml objects to plain Python types for Pydantic."""

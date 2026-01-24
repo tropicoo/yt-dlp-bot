@@ -38,6 +38,7 @@ Admin users can manage the bot configuration directly from Telegram:
 | `/config get <path>` | Get a config value (e.g., `/config get telegram.max_upload_tasks`) |
 | `/config set <path> <value>` | Set a config value (e.g., `/config set telegram.max_upload_tasks 5`) |
 | `/reloadconfig` | Reload configuration from disk |
+| `/restartbot` | Gracefully restart the bot (Docker auto-restarts) |
 
 **Note**: Changes made via admin commands are persisted to `config.yml` and survive bot restarts.
 

@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from yt_shared.constants import INSTAGRAM_HOSTS
-from yt_shared.enums import DownMediaType
+from yt_shared.enums import DownMediaType, VideoQuality
 
 from worker.core.config import settings
 from ytdl_opts.per_host._base import AbstractHostConfig, BaseHostConfModel
@@ -24,7 +24,10 @@ class InstagramHost(AbstractHostConfig, metaclass=HostConfRegistry):
     FFMPEG_VIDEO_OPTS = 'ffmpeg -y -loglevel error -i "{filepath}" -c:v libx264 -pix_fmt yuv420p -preset slow -threads 2 -crf 22 -movflags +faststart -c:a copy "{output}"'
 
     def build_config(
-        self, media_type: DownMediaType, curr_tmp_dir: Path
+        self,
+        media_type: DownMediaType,
+        curr_tmp_dir: Path,
+        video_quality: VideoQuality = VideoQuality.BEST,
     ) -> InstagramHostModel:
         return InstagramHostModel(
             hostnames=self.HOSTNAMES,
@@ -32,7 +35,7 @@ class InstagramHost(AbstractHostConfig, metaclass=HostConfRegistry):
             encode_video=self.ENCODE_VIDEO,
             ffmpeg_audio_opts=self.FFMPEG_AUDIO_OPTS,
             ffmpeg_video_opts=self.FFMPEG_VIDEO_OPTS,
-            ytdl_opts=self._build_ytdl_opts(media_type, curr_tmp_dir),
+            ytdl_opts=self._build_ytdl_opts(media_type, curr_tmp_dir, video_quality),
         )
 
     def _build_custom_ytdl_video_opts(self) -> tuple[str, ...]:

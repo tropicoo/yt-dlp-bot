@@ -4,9 +4,21 @@ from copy import deepcopy
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
-from yt_shared.enums import DownMediaType
+from yt_shared.enums import DownMediaType, VideoQuality
 
 from worker.utils import cli_to_api
+
+
+# Quality to yt-dlp format mapping
+QUALITY_FORMAT_MAP: dict[VideoQuality, str] = {
+    VideoQuality.BEST: 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+    VideoQuality.UHD_4K: 'bestvideo[height<=2160][ext=mp4]+bestaudio[ext=m4a]/best[height<=2160][ext=mp4]/best[height<=2160]',
+    VideoQuality.QHD_1440P: 'bestvideo[height<=1440][ext=mp4]+bestaudio[ext=m4a]/best[height<=1440][ext=mp4]/best[height<=1440]',
+    VideoQuality.FHD_1080P: 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best[height<=1080]',
+    VideoQuality.HD_720P: 'bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]/best[height<=720]',
+    VideoQuality.SD_480P: 'bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/best[height<=480][ext=mp4]/best[height<=480]',
+    VideoQuality.LD_360P: 'bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]/best[height<=360][ext=mp4]/best[height<=360]',
+}
 
 try:
     from ytdl_opts.user import (
@@ -86,13 +98,32 @@ class AbstractHostConfig:
 
     @abstractmethod
     def build_config(
-        self, media_type: DownMediaType, curr_tmp_dir: str
+        self,
+        media_type: DownMediaType,
+        curr_tmp_dir: str,
+        video_quality: VideoQuality = VideoQuality.BEST,
     ) -> BaseHostConfModel:
         pass
 
-    def _build_ytdl_opts(self, media_type: DownMediaType, curr_tmp_dir: Path) -> dict:
+    def _build_ytdl_opts(
+        self,
+        media_type: DownMediaType,
+        curr_tmp_dir: Path,
+        video_quality: VideoQuality = VideoQuality.BEST,
+    ) -> dict:
         def _add_video_opts(ytdl_opts_: list[str]) -> None:
-            ytdl_opts_.extend(self.DEFAULT_VIDEO_YTDL_OPTS)
+            # Use quality-specific format instead of default
+            quality_format = QUALITY_FORMAT_MAP.get(
+                video_quality, QUALITY_FORMAT_MAP[VideoQuality.BEST]
+            )
+            # Add format option with quality
+            ytdl_opts_.extend(['--format', quality_format])
+            # Add thumbnail options
+            ytdl_opts_.extend([
+                '--write-thumbnail',
+                '--convert-thumbnails',
+                self.FINAL_THUMBNAIL_FORMAT,
+            ])
             ytdl_opts_.extend(self._build_custom_ytdl_video_opts())
 
         ytdl_opts = list(deepcopy(self.DEFAULT_YTDL_OPTS))

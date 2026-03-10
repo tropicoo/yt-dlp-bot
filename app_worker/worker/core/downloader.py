@@ -51,14 +51,19 @@ class MediaDownloader:
         self, host_conf: AbstractHostConfig, media_payload: InbMediaPayload
     ) -> DownMedia:
         media_type = media_payload.download_media_type
+        video_quality = media_payload.video_quality
         url = host_conf.url
-        self._log.info('Downloading %s, media_type %s', url, media_type)
+        self._log.info(
+            'Downloading %s, media_type %s, quality %s', url, media_type, video_quality
+        )
         tmp_down_path = settings.TMP_DOWNLOAD_ROOT_PATH / settings.TMP_DOWNLOAD_DIR
         with TemporaryDirectory(prefix='tmp_media_dir-', dir=tmp_down_path) as tmp_dir:
             curr_tmp_dir = tmp_down_path / tmp_dir
 
             ytdl_opts_model = host_conf.build_config(
-                media_type=media_type, curr_tmp_dir=curr_tmp_dir
+                media_type=media_type,
+                curr_tmp_dir=curr_tmp_dir,
+                video_quality=video_quality,
             )
 
             with yt_dlp.YoutubeDL(ytdl_opts_model.ytdl_opts) as ytdl:
@@ -200,12 +205,25 @@ class MediaDownloader:
         audio_filepath = curr_tmp_dir / audio_filename
         self._log.info('Moving "%s" to "%s"', audio_filepath, destination_dir)
         shutil.move(audio_filepath, destination_dir)
+
+        # Find and move thumbnail for audio (same as for video)
+        thumb_path: Path | None = None
+        thumb_name = self._find_downloaded_file(
+            root_path=curr_tmp_dir, extension=FINAL_THUMBNAIL_FORMAT
+        )
+        if thumb_name:
+            _thumb_path = curr_tmp_dir / thumb_name
+            shutil.move(_thumb_path, destination_dir)
+            thumb_path = destination_dir / thumb_name
+
         return Audio(
             title=meta['title'],
             original_filename=audio_filename,
-            duration=None,
+            duration=self._to_float(meta.get('duration')),
             directory_path=destination_dir,
             file_size=file_size(destination_dir / audio_filename),
+            thumb_path=thumb_path,
+            thumb_name=thumb_name,
         )
 
     def _find_downloaded_file(self, root_path: Path, extension: str) -> str | None:

@@ -7,7 +7,13 @@ from typing import Annotated, Literal, Self
 from PIL import Image
 from pydantic import ConfigDict, DirectoryPath, Field, FilePath, model_validator
 
-from yt_shared.enums import DownMediaType, MediaFileType, TaskSource, TelegramChatType
+from yt_shared.enums import (
+    DownMediaType,
+    MediaFileType,
+    TaskSource,
+    TelegramChatType,
+    VideoQuality,
+)
 from yt_shared.schemas.base import StrictRealBaseModel
 from yt_shared.utils.common import calculate_aspect_ratio, format_bytes
 from yt_shared.utils.file import file_size
@@ -29,6 +35,7 @@ class InbMediaPayload(StrictRealBaseModel):
     source: TaskSource
     save_to_storage: bool
     download_media_type: DownMediaType
+    video_quality: VideoQuality = VideoQuality.BEST
     custom_filename: str | None
     automatic_extension: bool
     added_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -91,9 +98,11 @@ class BaseMedia(StrictRealBaseModel, ABC):
 
 
 class Audio(BaseMedia):
-    """Model representing downloaded audio file."""
+    """Model representing downloaded audio file with optional thumbnail."""
 
     file_type: Literal[MediaFileType.AUDIO] = MediaFileType.AUDIO
+    thumb_name: str | None = None
+    thumb_path: Annotated[FilePath, Field(strict=False)] | None = None
 
 
 class Video(BaseMedia):

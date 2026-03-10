@@ -14,14 +14,14 @@ from yt_shared.db.session import get_db
 from yt_shared.repositories.task import TaskRepository
 from yt_shared.schemas.base import RealBaseModel
 from yt_shared.schemas.cache import CacheSchema
-from yt_shared.schemas.media import BaseMedia, Video
+from yt_shared.schemas.media import Audio, BaseMedia, Video
 from yt_shared.schemas.success import SuccessDownloadPayload
 from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.config.config import get_main_config, settings
 from bot.core.schemas import AnonymousUserSchema, UserSchema, VideoCaptionSchema
-from bot.core.utils import bold, is_user_upload_silent
+from bot.core.utils import bold
 
 if TYPE_CHECKING:
     from bot.bot.client import VideoBotClient
@@ -44,7 +44,7 @@ class VideoUploadContext(BaseUploadContext):
 
 
 class AudioUploadContext(BaseUploadContext):
-    pass
+    thumb: FilePath | str | None = None
 
 
 class AbstractUploadTask(AbstractTask, ABC):
@@ -82,7 +82,7 @@ class AbstractUploadTask(AbstractTask, ABC):
 
     async def _run(self) -> None:
         try:
-            await asyncio.gather(*(self._send_upload_text(), self._upload_file()))
+            await self._upload_file()
         except Exception:
             self._log.exception('Exception in upload task for "%s"', self._filename)
             raise
@@ -93,24 +93,6 @@ class AbstractUploadTask(AbstractTask, ABC):
 
     def _generate_file_caption(self) -> str:
         return '\n'.join(self._generate_caption_items())[: settings.TG_MAX_CAPTION_SIZE]
-
-    async def _send_upload_text(self) -> None:
-        text = (
-            f'⬆️ {bold("Uploading")} {self._filename}\n'
-            f'📏 {bold("Size")} {self._media_object.file_size_human()}'
-        )
-        coros = []
-        for user in self._users:
-            if not is_user_upload_silent(user=user, conf=self._bot.conf):
-                kwargs = {
-                    'chat_id': user.id,
-                    'text': text,
-                    'parse_mode': ParseMode.HTML,
-                }
-                if self._ctx.message_id:
-                    kwargs['reply_to_message_id'] = self._ctx.message_id
-                coros.append(self._bot.send_message(**kwargs))
-        await asyncio.gather(*coros)
 
     def _get_forward_chat_ids(self) -> list[int]:
         forward_chat_ids = []
@@ -190,6 +172,7 @@ class AbstractUploadTask(AbstractTask, ABC):
 class AudioUploadTask(AbstractUploadTask):
     _UPLOAD_ACTION = ChatAction.UPLOAD_AUDIO
     _media_ctx: AudioUploadContext
+    _media_object: Audio
 
     def _generate_send_media_coroutine(self, chat_id: int) -> Coroutine:
         kwargs = {
@@ -199,6 +182,8 @@ class AudioUploadTask(AbstractUploadTask):
             'file_name': self._media_ctx.filename,
             'duration': int(self._media_ctx.duration),
         }
+        if self._media_ctx.thumb:
+            kwargs['thumb'] = self._media_ctx.thumb
         return self._bot.send_audio(**kwargs)
 
     def _create_media_context(self) -> AudioUploadContext:
@@ -207,6 +192,7 @@ class AudioUploadTask(AbstractUploadTask):
             filename=self._filename,
             filepath=self._filepath,
             duration=self._media_object.duration or 0.0,
+            thumb=self._media_object.thumb_path,
             type=MessageMediaType.AUDIO,
         )
 
@@ -221,6 +207,12 @@ class AudioUploadTask(AbstractUploadTask):
         self._media_ctx.type = message.media
         self._media_ctx.filepath = audio.file_id
         self._media_ctx.duration = audio.duration
+        # Cache thumbnail if available
+        try:
+            if audio.thumbs:
+                self._media_ctx.thumb = audio.thumbs[0].file_id
+        except (TypeError, IndexError):
+            self._log.debug('No thumbnail found for audio caching')
         self._media_ctx.is_cached = True
         self._cached_message = message
 

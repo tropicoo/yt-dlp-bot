@@ -84,5 +84,5 @@ dependencies = [
 
 [dependency-groups]
 lint = [
-    "ruff>=0.9.4",
+    "ruff>=0.15.10",
 ]

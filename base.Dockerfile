@@ -1,4 +1,4 @@
-FROM python:3.12-alpine3.20
+FROM python:3.12-alpine3.24
 
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="/opt/venv/bin:$PATH"

@@ -37,6 +37,11 @@ DEFAULT_YTDL_OPTS: Final[_OptsType] = (
     settings.MAX_DOWNLOAD_THREADS,
     '--ignore-errors',
     '--verbose',
+    # Enable node in addition to the default deno, so a JavaScript runtime is
+    # still available if deno is missing or too old. yt-dlp picks the highest
+    # priority runtime that is present, which keeps deno first when it works.
+    '--js-runtimes',
+    'node',
     *get_cookies_opts_if_not_empty(),
 )
 

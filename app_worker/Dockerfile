@@ -1,6 +1,6 @@
 FROM yt-base-image
 
-RUN apk update && apk add --no-cache ffmpeg
+RUN apk update && apk add --no-cache ffmpeg deno nodejs
 
 COPY --from=yt-base-image /opt/venv /opt/venv
 

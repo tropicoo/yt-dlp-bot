@@ -2,7 +2,7 @@
 
 Simple and reliable self-hosted Video Download Telegram Bot.
 
-Version: 1.7.1. [Release details](RELEASES.md).
+Version: 1.7.2. [Release details](RELEASES.md).
 
 ![frames](.assets/download_success.png)
 

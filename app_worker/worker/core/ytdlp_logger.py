@@ -5,6 +5,7 @@ from typing import Final
 
 _DEBUG_PREFIX: Final[str] = '[debug] '
 _ERROR_PREFIX: Final[str] = 'ERROR: '
+_PROGRESS_PREFIX: Final[str] = '[download] '
 # Openers of the traceback yt-dlp logs separately from the reason itself. The
 # header is absent for expected errors, which start right at the first frame.
 _TRACEBACK_MARKERS: Final[tuple[str, ...]] = ('Traceback (most recent call last)', 'File "')
@@ -26,10 +27,20 @@ class YtdlpLogger:
 
     def debug(self, msg: str) -> None:
         # yt-dlp routes both debug and info lines here, only debug ones are prefixed.
-        if msg.startswith(_DEBUG_PREFIX):
+        if msg.startswith(_DEBUG_PREFIX) or self._is_progress_tick(msg):
             self._log.debug(msg)
         else:
             self._log.info(msg)
+
+    @staticmethod
+    def _is_progress_tick(msg: str) -> bool:
+        """Recognise the download ticker, which arrives many times a second.
+
+        Progress is reported to the user in Telegram, so at info level these
+        only bury the lines that matter. Other "[download]" lines, such as the
+        destination, are worth keeping.
+        """
+        return msg.startswith(_PROGRESS_PREFIX) and ('% of' in msg or 'ETA ' in msg)
 
     def info(self, msg: str) -> None:
         self._log.info(msg)

@@ -33,6 +33,7 @@ class ProgressReporter:
         self._publisher = RmqPublisher()
         self._last_sent_at = 0.0
         self._last_stage: ProgressStage | None = None
+        self._last_sample: tuple[float, int] | None = None
 
     @property
     def enabled(self) -> bool:
@@ -78,12 +79,15 @@ class ProgressReporter:
     ) -> ProgressPayload:
         downloaded = status.get('downloaded_bytes')
         total = status.get('total_bytes') or status.get('total_bytes_estimate')
-        speed = status.get('speed')
-        eta = status.get('eta')
 
         percent = None
         if downloaded is not None and total:
             percent = round(min(downloaded / total, 1.0) * 100, 1)
+
+        speed = self._measure_speed(downloaded)
+        eta = None
+        if speed and total and downloaded is not None:
+            eta = int(max(total - downloaded, 0) / speed)
 
         return ProgressPayload(
             from_chat_id=self._payload.from_chat_id,
@@ -92,9 +96,32 @@ class ProgressReporter:
             percent=percent,
             downloaded_bytes=int(downloaded) if downloaded is not None else None,
             total_bytes=int(total) if total else None,
-            speed=float(speed) if speed else None,
-            eta=int(eta) if eta else None,
+            speed=speed,
+            eta=eta,
         )
+
+    def _measure_speed(self, downloaded: int | None) -> float | None:
+        """Average the transfer rate over our own reporting interval.
+
+        yt-dlp restarts its speed counter whenever a fragment completes, so with
+        concurrent fragments its figure is regularly unknown or off by an order
+        of magnitude. Measuring across our own samples sidesteps that entirely.
+        """
+        now = time.monotonic()
+        previous, self._last_sample = self._last_sample, None
+        if downloaded is None:
+            return None
+
+        self._last_sample = (now, downloaded)
+        if previous is None:
+            return None
+
+        previous_time, previous_bytes = previous
+        elapsed = now - previous_time
+        transferred = downloaded - previous_bytes
+        if elapsed <= 0 or transferred <= 0:
+            return None
+        return transferred / elapsed
 
     def _publish(self, payload: ProgressPayload) -> None:
         future = asyncio.run_coroutine_threadsafe(

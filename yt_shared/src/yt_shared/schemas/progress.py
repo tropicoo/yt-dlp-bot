@@ -15,6 +15,10 @@ class ProgressPayload(StrictBaseRabbitPayloadModel):
     from_chat_id: int
     ack_message_id: int
     stage: ProgressStage
+    # Post-processing reports no percentage, so the step being run and how long
+    # it has been running are all the feedback there is to give.
+    detail: str | None = None
+    elapsed: int | None = None
     filename: str | None = None
     percent: float | None = None
     downloaded_bytes: int | None = None

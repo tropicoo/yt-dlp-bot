@@ -42,10 +42,13 @@ def _headline(emoji: str, title: str, percent: float | None) -> list[str]:
 def format_download_progress(payload: ProgressPayload) -> str:
     """Render a download progress update for the acknowledgement message."""
     if payload.stage is ProgressStage.POSTPROCESSING:
-        return (
-            f'⚙️ {bold("Processing")}\n'
-            'Merging and converting the downloaded media…'
-        )
+        # There is no percentage to show here, so the step and how long it has
+        # been running are what tell the user it is progressing at all.
+        lines = [f'⚙️ {bold("Processing")}']
+        lines.append(payload.detail or 'Merging and converting the downloaded media…')
+        if payload.elapsed:
+            lines.append(f'⏱ {_format_eta(payload.elapsed)} elapsed')
+        return '\n'.join(lines)
 
     lines = _headline('⬇️', 'Downloading', payload.percent)
 

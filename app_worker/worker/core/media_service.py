@@ -69,6 +69,7 @@ class MediaService:
         loop = asyncio.get_running_loop()
         reporter = ProgressReporter(media_payload=self._media_payload, loop=loop)
         progress_hook = reporter.hook if reporter.enabled else None
+        postprocessor_hook = reporter.postprocessor_hook if reporter.enabled else None
         try:
             return await loop.run_in_executor(
                 None,
@@ -76,6 +77,7 @@ class MediaService:
                     host_conf=host_conf,
                     media_payload=self._media_payload,
                     progress_hook=progress_hook,
+                    postprocessor_hook=postprocessor_hook,
                 ),
             )
         except Exception as err:
@@ -84,6 +86,9 @@ class MediaService:
             )
             await self._handle_download_exception(err)
             raise DownloadVideoServiceError(message=str(err), task=self._task) from None
+        finally:
+            # Nothing left to report once yt-dlp has handed control back.
+            reporter.stop()
 
     async def _post_process_media(
         self, media: DownMedia, host_conf: AbstractHostConfig

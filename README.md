@@ -88,6 +88,18 @@ docker compose up --build -d -t 0 && docker compose logs --tail 100 -f
 docker compose stop -t 0
 ```
 
+To roll out changes later, `redeploy.sh` rebuilds, restarts and then reclaims the
+disk space each rebuild orphans (untagged images and excess build cache, which
+otherwise accumulate until an unrelated-looking service fails):
+
+```bash
+./redeploy.sh                    # rebuild and restart every application service
+./redeploy.sh yt_bot             # only one service
+./redeploy.sh --pull --base      # update the branch and rebuild the base image too
+./redeploy.sh --clean-only       # just reclaim space
+./redeploy.sh --help             # all options
+```
+
 Your Telegram Bot should send you a startup message:
 `✨ <YOUR_BOT_NAME> started, paste a video URL(s) to start download` and that's it. After
 pasting video URL(s) bot will send you appropriate message whether they were downloaded

@@ -22,6 +22,7 @@ from worker.core.progress import ProgressReporter
 from worker.core.tasks.encode import EncodeToH264Task
 from worker.core.tasks.ffprobe_context import GetFfprobeContextTask
 from worker.core.tasks.thumbnail import MakeThumbnailTask
+from worker.core.thumbnails import fit_for_telegram
 from ytdl_opts.per_host._base import AbstractHostConfig
 from ytdl_opts.per_host._registry import HostConfRegistry
 
@@ -152,6 +153,10 @@ class MediaService:
 
         await asyncio.gather(*coro_tasks)
 
+        # Done last: the thumbnail may have just been replaced by a generated
+        # one, and both kinds are far too large for Telegram as they are.
+        fit_for_telegram(video.thumb_path)
+
         file = await self._repository.save_file(self._task, media.video, media.meta)
         video.orm_file_id = file.id
 
@@ -160,6 +165,8 @@ class MediaService:
         media: DownMedia,
         host_conf: AbstractHostConfig,  # noqa: ARG002
     ) -> None:
+        fit_for_telegram(media.audio.thumb_path)
+
         coro_tasks = [self._repository.save_file(self._task, media.audio, media.meta)]
         if self._media_payload.save_to_storage:
             coro_tasks.append(self._create_copy_file_task(media.audio))

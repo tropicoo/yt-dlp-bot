@@ -83,8 +83,15 @@ fi
 
 if [[ "${DO_PULL}" == true ]]; then
     branch="$(git rev-parse --abbrev-ref HEAD)"
-    info "Updating ${branch}"
-    git pull --ff-only origin "${branch}" \
+    # Follow whatever this branch tracks: the remote is not necessarily called
+    # "origin", and the local and remote branch names need not match.
+    if ! upstream="$(git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null)"; then
+        die "Branch '${branch}' tracks nothing. Point it at a remote branch once with:
+    git branch --set-upstream-to=<remote>/<branch>
+  then rerun, or build without --pull."
+    fi
+    info "Updating ${branch} from ${upstream}"
+    git pull --ff-only \
         || die "Pull failed. Resolve it by hand, then rerun without --pull."
 fi
 

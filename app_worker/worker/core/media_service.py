@@ -78,6 +78,9 @@ class MediaService:
                     media_payload=self._media_payload,
                     progress_hook=progress_hook,
                     postprocessor_hook=postprocessor_hook,
+                    on_cookies_rejected=(
+                        reporter.report_cookies_rejected if reporter.enabled else None
+                    ),
                 ),
             )
         except Exception as err:

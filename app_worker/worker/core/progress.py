@@ -54,6 +54,7 @@ class ProgressReporter:
         self._in_flight: Future | None = None
         self._postprocessing_since: float | None = None
         self._step: str | None = None
+        self._notice: str | None = None
         self._ticker: Future | None = None
         # yt-dlp calls the hook from every fragment thread at once, so deciding
         # whether to publish has to be atomic or each of them publishes a tick.
@@ -108,6 +109,20 @@ class ProgressReporter:
             self._report_postprocessing()
         except Exception:
             self._log.exception('Failed to report a post-processing step')
+
+    def report_cookies_rejected(self) -> None:
+        """Tell the user their cookies were turned down and are being skipped."""
+        with self._lock:
+            self._notice = 'Cookies were rejected and skipped — refresh them'
+            payload = ProgressPayload(
+                from_chat_id=self._payload.from_chat_id,
+                ack_message_id=self._payload.ack_message_id,
+                stage=ProgressStage.DOWNLOADING,
+                detail=self._notice,
+            )
+            # A fresh start: the retry downloads from scratch.
+            self._last_sample = None
+        self._publish(payload)
 
     def _begin_postprocessing(self) -> None:
         """Start reporting elapsed time until the download call returns."""
@@ -181,6 +196,7 @@ class ProgressReporter:
             ack_message_id=self._payload.ack_message_id,
             stage=stage,
             percent=percent,
+            detail=self._notice,
             downloaded_bytes=int(downloaded) if downloaded is not None else None,
             total_bytes=int(total) if total else None,
             speed=speed,

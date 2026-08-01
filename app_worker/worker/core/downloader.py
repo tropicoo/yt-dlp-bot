@@ -4,7 +4,7 @@ import shutil
 from collections.abc import Callable
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Final
 
 import yt_dlp
 from yt_shared.enums import DownMediaType
@@ -16,6 +16,14 @@ from worker.core.config import settings
 from worker.core.exceptions import MediaDownloaderError
 from worker.core.ytdlp_logger import YtdlpLogger
 from ytdl_opts.per_host._base import AbstractHostConfig
+
+# Signs that the site rejected the session rather than the request itself.
+_COOKIE_REJECTION_MARKERS: Final[tuple[str, ...]] = (
+    "confirm you're not a bot",
+    'cookies are no longer valid',
+    'cookies are invalid',
+    'account cookies are no longer valid',
+)
 
 try:
     from ytdl_opts.user import FINAL_AUDIO_FORMAT, FINAL_THUMBNAIL_FORMAT
@@ -45,6 +53,7 @@ class MediaDownloader:
         media_payload: InbMediaPayload,
         progress_hook: Callable[[dict], None] | None = None,
         postprocessor_hook: Callable[[dict], None] | None = None,
+        on_cookies_rejected: Callable[[], None] | None = None,
     ) -> DownMedia:
         try:
             return self._download(
@@ -52,6 +61,7 @@ class MediaDownloader:
                 media_payload=media_payload,
                 progress_hook=progress_hook,
                 postprocessor_hook=postprocessor_hook,
+                on_cookies_rejected=on_cookies_rejected,
             )
         except Exception:
             self._log.error('Failed to download %s', host_conf.url)
@@ -63,6 +73,7 @@ class MediaDownloader:
         media_payload: InbMediaPayload,
         progress_hook: Callable[[dict], None] | None = None,
         postprocessor_hook: Callable[[dict], None] | None = None,
+        on_cookies_rejected: Callable[[], None] | None = None,
     ) -> DownMedia:
         media_type = media_payload.download_media_type
         video_quality = media_payload.video_quality
@@ -80,37 +91,36 @@ class MediaDownloader:
                 video_quality=video_quality,
             )
 
-            ytdlp_logger = YtdlpLogger(self._log)
-            ytdl_opts = {**ytdl_opts_model.ytdl_opts, 'logger': ytdlp_logger}
+            ytdl_opts = dict(ytdl_opts_model.ytdl_opts)
             if progress_hook is not None:
                 ytdl_opts['progress_hooks'] = [progress_hook]
             if postprocessor_hook is not None:
                 ytdl_opts['postprocessor_hooks'] = [postprocessor_hook]
 
-            with yt_dlp.YoutubeDL(ytdl_opts) as ytdl:
-                self._log.info('Downloading "%s" to "%s"', url, curr_tmp_dir)
-                self._log.info(
-                    'Downloading with options: %s', ytdl_opts_model.ytdl_opts
+            self._log.info('Downloading "%s" to "%s"', url, curr_tmp_dir)
+            self._log.info('Downloading with options: %s', ytdl_opts_model.ytdl_opts)
+
+            meta, meta_sanitized, err_msg = self._extract(ytdl_opts, url)
+
+            if meta is None and self._cookies_were_rejected(err_msg, ytdl_opts):
+                self._log.warning(
+                    'Cookies were rejected for "%s", retrying without them. They '
+                    'have most likely expired and are worth refreshing: for some '
+                    'sites stale cookies fail where an anonymous request succeeds.',
+                    url,
                 )
+                if on_cookies_rejected is not None:
+                    on_cookies_rejected()
+                retry_opts = {k: v for k, v in ytdl_opts.items() if k != 'cookiefile'}
+                meta, meta_sanitized, err_msg = self._extract(retry_opts, url)
 
-                meta: dict | None = ytdl.extract_info(url, download=True)
-                if not meta:
-                    # yt-dlp reported the reason and swallowed it due to
-                    # `ignoreerrors`, so take it from the collected messages.
-                    err_msg = (
-                        ytdlp_logger.last_error()
-                        or 'Error during media download. Check logs.'
-                    )
-                    self._log.error('%s. Meta: %s', err_msg, meta)
-                    raise MediaDownloaderError(err_msg)
+            if meta is None:
+                raise MediaDownloaderError(err_msg)
 
-                current_files = list(curr_tmp_dir.iterdir())
-                if not current_files:
-                    err_msg = 'Nothing downloaded. Is URL valid?'
-                    self._log.error(err_msg)
-                    raise MediaDownloaderError(err_msg)
-
-                meta_sanitized = ytdl.sanitize_info(meta)
+            if not list(curr_tmp_dir.iterdir()):
+                err_msg = 'Nothing downloaded. Is URL valid?'
+                self._log.error(err_msg)
+                raise MediaDownloaderError(err_msg)
 
             self._log.info('Finished downloading %s', url)
             self._log.debug('Downloaded "%s" meta: %s', url, meta_sanitized)
@@ -143,6 +153,38 @@ class MediaDownloader:
             meta=meta_sanitized,
             root_path=destination_dir,
         )
+
+    def _extract(
+        self, ytdl_opts: dict, url: str
+    ) -> tuple[dict | None, dict | None, str | None]:
+        """Run yt-dlp once, returning its metadata or the reason it failed."""
+        ytdlp_logger = YtdlpLogger(self._log)
+        with yt_dlp.YoutubeDL({**ytdl_opts, 'logger': ytdlp_logger}) as ytdl:
+            meta: dict | None = ytdl.extract_info(url, download=True)
+            if not meta:
+                # yt-dlp reported the reason and swallowed it due to
+                # `ignoreerrors`, so take it from the collected messages.
+                reason = (
+                    ytdlp_logger.last_error()
+                    or 'Error during media download. Check logs.'
+                )
+                self._log.error('%s. Meta: %s', reason, meta)
+                return None, None, reason
+            return meta, ytdl.sanitize_info(meta), None
+
+    @staticmethod
+    def _cookies_were_rejected(reason: str | None, ytdl_opts: dict) -> bool:
+        """Whether the cookies themselves are what the site objected to.
+
+        Only worth retrying for a rejected session: an anonymous request often
+        succeeds where stale cookies are challenged. Genuine restrictions such
+        as a private or members-only video would fail the same way again.
+        """
+        if not reason or not ytdl_opts.get('cookiefile'):
+            return False
+        # yt-dlp writes some of these with a typographic apostrophe.
+        normalised = reason.replace('’', "'").lower()
+        return any(marker in normalised for marker in _COOKIE_REJECTION_MARKERS)
 
     def _create_media_dtos(
         self,

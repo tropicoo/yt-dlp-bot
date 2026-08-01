@@ -51,6 +51,8 @@ def format_download_progress(payload: ProgressPayload) -> str:
         return '\n'.join(lines)
 
     lines = _headline('⬇️', 'Downloading', payload.percent)
+    if payload.detail:
+        lines.append(f'⚠️ {payload.detail}')
 
     details = []
     if payload.eta is not None:

@@ -114,7 +114,8 @@ _PATTERNS: Final[tuple[tuple[re.Pattern[str], FriendlyError], ...]] = tuple(
         (r'available in your country|geo[- ]?restricted|geo[- ]?block'
          r'|blocked it in your country|available from your location', _GEO_BLOCKED),
         # Checked before the broad "private" rule: these say "sign in" too.
-        (r"confirm you're not a bot|cookies are no longer valid"
+        # yt-dlp writes some of these with a typographic apostrophe.
+        (r"confirm you['’]re not a bot|cookies are no longer valid"
          r'|use --cookies', _LOGIN_REQUIRED),
         # "Private video. Sign in if you've been granted access" must not be
         # mistaken for a plain authentication problem.

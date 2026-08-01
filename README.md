@@ -113,8 +113,56 @@ or something went wrong.
    is the premium user, you're allowed to upload files up to 4GB (4294967296 bytes) and
    can change the default value stored in the `upload_video_max_file_size` config
    variable.
-5. If the website you want to download from requires authentication you can use your cookies by putting them into
-   the `app_worker/cookies/cookies.txt` file in the Netscape format.
+5. If the website you want to download from requires authentication, you can use your
+   cookies — see the [Cookies](#-cookies) section below.
+
+## 🍪 Cookies
+
+If a site requires authentication, export your cookies in the **Netscape format** and put
+them in the `app_worker/cookies/` directory. Two filenames are supported:
+
+| File | Tracked by git? | Priority | Use it for |
+|------|-----------------|----------|------------|
+| `_cookies.txt` | ❌ No — ignored via `**/_cookies.txt` | **Highest** | ✅ **Your real cookies** |
+| `cookies.txt` | ✅ **Yes** — committed placeholder | Fallback | Leave empty |
+
+**Always use `_cookies.txt` for real cookies.** Cookie files contain live session tokens
+for your account. `cookies.txt` is tracked by git, so anything written there shows up in
+`git status` and can be committed and published by accident. The underscore-prefixed file
+exists precisely to avoid that.
+
+How the worker picks the file (`app_worker/worker/utils.py`):
+
+1. If `_cookies.txt` exists and is not empty → it is used.
+2. Otherwise, if `cookies.txt` is not empty → it is used.
+3. If both are empty → no `--cookies` option is passed to `yt-dlp`.
+
+Keep the empty `cookies.txt` file in place even when you are not using cookies — it is the
+placeholder the fallback expects.
+
+### Applying cookies
+
+Cookie files are copied into the worker image at build time (there is no volume mount), and
+`yt-dlp` options are built once when the worker process starts. Adding or updating cookies
+therefore requires a rebuild:
+
+```bash
+# Put your exported cookies here (this file is gitignored)
+cp /path/to/your/cookies.txt app_worker/cookies/_cookies.txt
+
+# Verify git does not see them — this must print nothing
+git status --short app_worker/cookies/
+
+# Rebuild and restart only the worker; the bot does not need cookies
+docker compose build --no-cache yt_worker
+docker compose up -d yt_worker
+```
+
+Verify they landed in the container:
+
+```bash
+docker compose exec yt_worker ls -la /app/cookies/
+```
 
 ## 🛑 Failed download
 

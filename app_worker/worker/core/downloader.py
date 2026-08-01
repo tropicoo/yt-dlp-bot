@@ -14,6 +14,7 @@ from yt_shared.utils.file import file_size, list_files_human, remove_dir
 
 from worker.core.config import settings
 from worker.core.exceptions import MediaDownloaderError
+from worker.core.ytdlp_logger import YtdlpLogger
 from ytdl_opts.per_host._base import AbstractHostConfig
 
 try:
@@ -66,7 +67,10 @@ class MediaDownloader:
                 video_quality=video_quality,
             )
 
-            with yt_dlp.YoutubeDL(ytdl_opts_model.ytdl_opts) as ytdl:
+            ytdlp_logger = YtdlpLogger(self._log)
+            ytdl_opts = {**ytdl_opts_model.ytdl_opts, 'logger': ytdlp_logger}
+
+            with yt_dlp.YoutubeDL(ytdl_opts) as ytdl:
                 self._log.info('Downloading "%s" to "%s"', url, curr_tmp_dir)
                 self._log.info(
                     'Downloading with options: %s', ytdl_opts_model.ytdl_opts
@@ -74,7 +78,12 @@ class MediaDownloader:
 
                 meta: dict | None = ytdl.extract_info(url, download=True)
                 if not meta:
-                    err_msg = 'Error during media download. Check logs.'
+                    # yt-dlp reported the reason and swallowed it due to
+                    # `ignoreerrors`, so take it from the collected messages.
+                    err_msg = (
+                        ytdlp_logger.last_error()
+                        or 'Error during media download. Check logs.'
+                    )
                     self._log.error('%s. Meta: %s', err_msg, meta)
                     raise MediaDownloaderError(err_msg)
 

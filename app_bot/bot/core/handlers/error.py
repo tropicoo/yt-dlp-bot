@@ -7,6 +7,7 @@ from yt_shared.enums import RabbitPayloadType
 from yt_shared.schemas.error import ErrorDownloadGeneralPayload, ErrorDownloadPayload
 
 from bot.core.config import settings
+from bot.core.error_messages import FriendlyError, classify, strip_extractor_prefix
 from bot.core.handlers.abstract import AbstractDownloadHandler
 from bot.core.utils import split_telegram_message
 from bot.version import __version__
@@ -24,6 +25,14 @@ class ErrorDownloadHandler(AbstractDownloadHandler):
         '⬇️ <b>yt-dlp version:</b> <code>{yt_dlp_version}</code>\n'
         '🤖 <b>yt-dlp-bot version:</b> <code>{yt_dlp_bot_version}</code>\n'
         '🏷️ <b>Tag:</b> #error'
+    )
+
+    _FRIENDLY_MSG_TPL = (
+        '{emoji} <b>{title}</b>\n\n'
+        '{hint}\n\n'
+        '🔗 <b>URL:</b> <code>{url}</code>\n'
+        '💬 <b>Site response:</b> <code>{reason}</code>\n'
+        '🏷️ <b>Tag:</b> #unavailable'
     )
 
     _ERR_MSG_HEADER_MAP: ClassVar[dict[RabbitPayloadType, str]] = {
@@ -46,6 +55,28 @@ class ErrorDownloadHandler(AbstractDownloadHandler):
             asyncio.create_task(self._bot.send_message(**kwargs))  # noqa:RUF006
 
     def _format_error_message(self) -> str:
+        """Explain expected failures, report everything else in full detail."""
+        friendly_error = classify(self._body.exception_msg)
+        if friendly_error is not None:
+            self._log.info(
+                'Reporting expected download failure "%s" for %s',
+                friendly_error.title,
+                self._body.url,
+            )
+            return self._format_friendly_message(friendly_error)
+        return self._format_detailed_message()
+
+    def _format_friendly_message(self, friendly_error: FriendlyError) -> str:
+        reason = strip_extractor_prefix(self._body.exception_msg)
+        return self._FRIENDLY_MSG_TPL.format(
+            emoji=friendly_error.emoji,
+            title=friendly_error.title,
+            hint=friendly_error.hint,
+            url=html.escape(self._body.url),
+            reason=html.escape(reason),
+        )
+
+    def _format_detailed_message(self) -> str:
         exception_msg = html.escape(self._body.exception_msg)
         pre_formatted_message = self._ERR_MSG_TPL.format(
             header=self._ERR_MSG_HEADER_MAP[self._body.type],

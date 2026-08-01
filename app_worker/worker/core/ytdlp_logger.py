@@ -41,11 +41,13 @@ class YtdlpLogger:
     def last_error(self) -> str | None:
         """Return the most recent error reason, or ``None`` if nothing was reported.
 
-        Strips yt-dlp's ``ERROR: `` prefix and keeps only the first line, since in
-        verbose mode the traceback is appended to the very same message.
+        In verbose mode yt-dlp reports the reason and the traceback as two separate
+        calls, and only the reason carries the ``ERROR: `` prefix, so prefer those.
+        Just the first line is kept, since a message may still span several lines.
         """
-        for msg in reversed(self.errors):
+        reported = [msg for msg in self.errors if msg.startswith(_ERROR_PREFIX)]
+        for msg in reversed(reported or self.errors):
             reason = msg.removeprefix(_ERROR_PREFIX).splitlines()[0].strip()
-            if reason:
+            if reason and not reason.startswith('Traceback'):
                 return reason
         return None

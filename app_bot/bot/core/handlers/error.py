@@ -7,7 +7,12 @@ from yt_shared.enums import RabbitPayloadType
 from yt_shared.schemas.error import ErrorDownloadGeneralPayload, ErrorDownloadPayload
 
 from bot.core.config import settings
-from bot.core.error_messages import FriendlyError, classify, strip_extractor_prefix
+from bot.core.error_messages import (
+    FriendlyError,
+    classify,
+    extract_reason,
+    strip_extractor_prefix,
+)
 from bot.core.handlers.abstract import AbstractDownloadHandler
 from bot.core.utils import split_telegram_message
 from bot.version import __version__
@@ -17,15 +22,17 @@ class ErrorDownloadHandler(AbstractDownloadHandler):
     _body: ErrorDownloadPayload | ErrorDownloadGeneralPayload
     _ERR_MSG_TPL = (
         '🛑 <b>{header}</b>\n\n'
-        'ℹ <b>Task ID:</b> <code>{task_id}</code>\n'  # noqa: RUF001
-        '💬 <b>Message:</b> {message}\n'
+        '💬 <b>Reason:</b> {reason}\n'
         '📹 <b>Video URL:</b> <code>{url}</code>\n'
+        'ℹ <b>Task ID:</b> <code>{task_id}</code>\n'  # noqa: RUF001
         '🌊 <b>Source:</b> <code>{source}</code>\n'
-        '👀 <b>Details:</b> <code>{{details}}</code>\n'
+        '{details_block}'
         '⬇️ <b>yt-dlp version:</b> <code>{yt_dlp_version}</code>\n'
         '🤖 <b>yt-dlp-bot version:</b> <code>{yt_dlp_bot_version}</code>\n'
         '🏷️ <b>Tag:</b> #error'
     )
+    _DETAILS_TPL = '👀 <b>Details:</b> <code>{details}</code>\n'
+    _DETAILS_PLACEHOLDER = '{details}'
 
     _FRIENDLY_MSG_TPL = (
         '{emoji} <b>{title}</b>\n\n'
@@ -77,18 +84,31 @@ class ErrorDownloadHandler(AbstractDownloadHandler):
         )
 
     def _format_detailed_message(self) -> str:
-        exception_msg = html.escape(self._body.exception_msg)
+        """Report an unrecognised failure, leading with whatever reason we have.
+
+        The raw text is only repeated under "Details" when it says more than the
+        reason line, which spares the reader a duplicated one-liner.
+        """
+        raw_msg = (self._body.exception_msg or '').strip()
+        stripped_msg = strip_extractor_prefix(raw_msg)
+        reason = extract_reason(raw_msg)
+        has_details = bool(stripped_msg) and stripped_msg != reason
+
         pre_formatted_message = self._ERR_MSG_TPL.format(
             header=self._ERR_MSG_HEADER_MAP[self._body.type],
-            message=self._body.message,
+            reason=html.escape(reason or self._body.message),
             url=self._body.url,
             source=self._body.context.source.value,
             task_id=self._body.task_id,
             yt_dlp_version=self._body.yt_dlp_version,
             yt_dlp_bot_version=__version__,
+            details_block=self._DETAILS_TPL if has_details else '',
         )
+        if not has_details:
+            return pre_formatted_message
 
-        msg_len = len(pre_formatted_message) - 9  # len('{details}') == 9
+        exception_msg = html.escape(raw_msg)
+        msg_len = len(pre_formatted_message) - len(self._DETAILS_PLACEHOLDER)
         exc_msg_len = len(exception_msg)
         self._log.debug('Length of exception_msg %s', exc_msg_len)
         self._log.debug('Length of pre_formatted_message %s', msg_len)
@@ -101,6 +121,10 @@ class ErrorDownloadHandler(AbstractDownloadHandler):
                     negate=True,
                 )
             )
-        message = pre_formatted_message.format(details=exception_msg)
+        # Substituted rather than formatted: the reason comes from yt-dlp and
+        # may itself contain braces, which would break another format pass.
+        message = pre_formatted_message.replace(
+            self._DETAILS_PLACEHOLDER, exception_msg
+        )
         self._log.debug('Length of formatted_message %s', len(message))
         return message

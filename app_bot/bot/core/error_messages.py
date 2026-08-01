@@ -65,6 +65,11 @@ _MEMBERS_ONLY = FriendlyError(
     'This is restricted to channel members. Cookies for a subscribed account are '
     'required.',
 )
+_NO_MEDIA = FriendlyError(
+    '📭',
+    'Nothing to download',
+    'The link opens fine, but there is no video or audio in it to download.',
+)
 _FORMAT_UNAVAILABLE = FriendlyError(
     '🎞',
     'Requested quality unavailable',
@@ -117,6 +122,10 @@ _PATTERNS: Final[tuple[tuple[re.Pattern[str], FriendlyError], ...]] = tuple(
         (r'\bremoved\b|\bdeleted\b|taken down|terminated', _REMOVED),
         (r'login required|requires authentication|authentication is required'
          r'|\bsign in\b|\blog in\b', _LOGIN_REQUIRED),
+        # "No video in this post" is a different problem from "the formats I
+        # asked for are missing", so it is matched first.
+        (r'no video could be found|there ?i?s no video|no media could be found'
+         r'|no media found|unable to find media', _NO_MEDIA),
         (r'requested format is not available|no video formats found'
          r'|requested format not available', _FORMAT_UNAVAILABLE),
         (r'too many requests|rate[- ]?limit|http error 429', _RATE_LIMITED),
@@ -145,3 +154,17 @@ def classify(reason: str | None) -> FriendlyError | None:
 def strip_extractor_prefix(reason: str) -> str:
     """Remove yt-dlp's "[extractor] id: " prefix from a failure reason."""
     return _EXTRACTOR_PREFIX.sub('', reason).strip()
+
+
+def extract_reason(raw: str) -> str:
+    """Pick the single line that best explains a failure.
+
+    A yt-dlp message leads with the reason and only then dumps frames, whereas a
+    Python traceback is the other way round and ends with the exception itself.
+    """
+    lines = [line.strip() for line in strip_extractor_prefix(raw).splitlines() if line.strip()]
+    if not lines:
+        return ''
+    if lines[0].startswith('Traceback (most recent call last)'):
+        return lines[-1]
+    return lines[0]

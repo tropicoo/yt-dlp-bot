@@ -128,6 +128,11 @@ or something went wrong.
    variable.
 5. If the website you want to download from requires authentication, you can use your
    cookies — see the [Cookies](#-cookies) section below.
+6. Downloads are not rate limited by default. To stop the worker from saturating your
+   connection, set `DOWNLOAD_RATE_LIMIT` in `envs/worker.env` to a per-download speed
+   such as `500K` or `4.2M` (bytes per second, an empty value means no limit). Note this
+   applies to each download, so a value of `2M` with `MAX_SIMULTANEOUS_DOWNLOADS=2` can
+   still use up to 4 MB/s in total.
 
 ## 🍪 Cookies
 

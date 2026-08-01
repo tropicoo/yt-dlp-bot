@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import threading
 import time
 from concurrent.futures import Future
 from typing import Any, Final
@@ -34,6 +35,10 @@ class ProgressReporter:
         self._last_sent_at = 0.0
         self._last_stage: ProgressStage | None = None
         self._last_sample: tuple[float, int] | None = None
+        self._in_flight: Future | None = None
+        # yt-dlp calls the hook from every fragment thread at once, so deciding
+        # whether to publish has to be atomic or each of them publishes a tick.
+        self._lock = threading.Lock()
 
     @property
     def enabled(self) -> bool:
@@ -61,11 +66,20 @@ class ProgressReporter:
             case _:
                 return
 
-        if not self._should_send(stage):
-            return
-        self._publish(self._build_payload(stage, status))
+        # Both the decision and the rate measurement read and update shared
+        # state, so they are made together under the lock.
+        with self._lock:
+            if not self._should_send(stage):
+                return
+            payload = self._build_payload(stage, status)
+        self._publish(payload)
 
     def _should_send(self, stage: ProgressStage) -> bool:
+        if self._in_flight is not None and not self._in_flight.done():
+            # The broker has not caught up with the previous update; another one
+            # would only queue behind it and arrive already stale.
+            return False
+
         now = time.monotonic()
         # A stage change is always worth showing immediately.
         if stage == self._last_stage and now - self._last_sent_at < _MIN_INTERVAL_SECONDS:
@@ -127,6 +141,7 @@ class ProgressReporter:
         future = asyncio.run_coroutine_threadsafe(
             self._publisher.send_progress(payload), self._loop
         )
+        self._in_flight = future
         future.add_done_callback(self._log_publish_failure)
 
     def _log_publish_failure(self, future: Future) -> None:

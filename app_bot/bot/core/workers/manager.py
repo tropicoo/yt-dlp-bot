@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.workers.error import ErrorDownloadResultWorker
+from bot.core.workers.progress import ProgressWorker
 from bot.core.workers.success import SuccessDownloadResultWorker
 
 if TYPE_CHECKING:
@@ -14,7 +15,11 @@ if TYPE_CHECKING:
 
 
 class RabbitWorkerManager:
-    _TASK_TYPES = (ErrorDownloadResultWorker, SuccessDownloadResultWorker)
+    _TASK_TYPES = (
+        ErrorDownloadResultWorker,
+        SuccessDownloadResultWorker,
+        ProgressWorker,
+    )
 
     def __init__(self, bot: 'VideoBotClient') -> None:
         self._log = logging.getLogger(self.__class__.__name__)

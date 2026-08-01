@@ -20,6 +20,7 @@ from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.config.config import get_main_config, settings
+from bot.core.progress import UploadProgressReporter
 from bot.core.schemas import AnonymousUserSchema, UserSchema, VideoCaptionSchema
 from bot.core.utils import bold
 
@@ -93,6 +94,25 @@ class AbstractUploadTask(AbstractTask, ABC):
 
     def _generate_file_caption(self) -> str:
         return '\n'.join(self._generate_caption_items())[: settings.TG_MAX_CAPTION_SIZE]
+
+    def _progress_kwargs(self, chat_id: int) -> dict:
+        """Report upload progress, but only on the message that tracks the task.
+
+        Nothing is reported for a cached file, since Telegram reuses it by id
+        and there is no upload to follow.
+        """
+        ack_message_id = self._ctx.context.ack_message_id
+        if (
+            self._media_ctx.is_cached
+            or not ack_message_id
+            or chat_id != self._ctx.from_chat_id
+        ):
+            return {}
+        return {
+            'progress': UploadProgressReporter(
+                bot=self._bot, chat_id=chat_id, message_id=ack_message_id
+            )
+        }
 
     def _get_forward_chat_ids(self) -> list[int]:
         forward_chat_ids = []
@@ -184,6 +204,7 @@ class AudioUploadTask(AbstractUploadTask):
         }
         if self._media_ctx.thumb:
             kwargs['thumb'] = self._media_ctx.thumb
+        kwargs |= self._progress_kwargs(chat_id)
         return self._bot.send_audio(**kwargs)
 
     def _create_media_context(self) -> AudioUploadContext:
@@ -276,6 +297,7 @@ class VideoUploadTask(AbstractUploadTask):
 
         if self._media_ctx.thumb:
             kwargs['thumb'] = self._media_ctx.thumb
+        kwargs |= self._progress_kwargs(chat_id)
         if self._media_ctx.type is MessageMediaType.ANIMATION:
             kwargs['animation'] = self._media_ctx.filepath
             return self._bot.send_animation(**kwargs)

@@ -40,16 +40,26 @@ class MediaDownloader:
         )
 
     def download(
-        self, host_conf: AbstractHostConfig, media_payload: InbMediaPayload
+        self,
+        host_conf: AbstractHostConfig,
+        media_payload: InbMediaPayload,
+        progress_hook: Callable[[dict], None] | None = None,
     ) -> DownMedia:
         try:
-            return self._download(host_conf=host_conf, media_payload=media_payload)
+            return self._download(
+                host_conf=host_conf,
+                media_payload=media_payload,
+                progress_hook=progress_hook,
+            )
         except Exception:
             self._log.error('Failed to download %s', host_conf.url)
             raise
 
     def _download(
-        self, host_conf: AbstractHostConfig, media_payload: InbMediaPayload
+        self,
+        host_conf: AbstractHostConfig,
+        media_payload: InbMediaPayload,
+        progress_hook: Callable[[dict], None] | None = None,
     ) -> DownMedia:
         media_type = media_payload.download_media_type
         video_quality = media_payload.video_quality
@@ -69,6 +79,8 @@ class MediaDownloader:
 
             ytdlp_logger = YtdlpLogger(self._log)
             ytdl_opts = {**ytdl_opts_model.ytdl_opts, 'logger': ytdlp_logger}
+            if progress_hook is not None:
+                ytdl_opts['progress_hooks'] = [progress_hook]
 
             with yt_dlp.YoutubeDL(ytdl_opts) as ytdl:
                 self._log.info('Downloading "%s" to "%s"', url, curr_tmp_dir)

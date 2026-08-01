@@ -18,6 +18,7 @@ from yt_shared.utils.tasks.tasks import create_task
 from worker.core.config import settings
 from worker.core.downloader import MediaDownloader
 from worker.core.exceptions import DownloadVideoServiceError
+from worker.core.progress import ProgressReporter
 from worker.core.tasks.encode import EncodeToH264Task
 from worker.core.tasks.ffprobe_context import GetFfprobeContextTask
 from worker.core.tasks.thumbnail import MakeThumbnailTask
@@ -64,11 +65,16 @@ class MediaService:
         return host_cls(url=url)
 
     async def _start_download(self, host_conf: AbstractHostConfig) -> DownMedia:
+        loop = asyncio.get_running_loop()
+        reporter = ProgressReporter(media_payload=self._media_payload, loop=loop)
+        progress_hook = reporter.hook if reporter.enabled else None
         try:
-            return await asyncio.get_running_loop().run_in_executor(
+            return await loop.run_in_executor(
                 None,
                 lambda: self._downloader.download(
-                    host_conf=host_conf, media_payload=self._media_payload
+                    host_conf=host_conf,
+                    media_payload=self._media_payload,
+                    progress_hook=progress_hook,
                 ),
             )
         except Exception as err:

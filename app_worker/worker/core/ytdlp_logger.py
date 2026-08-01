@@ -5,6 +5,9 @@ from typing import Final
 
 _DEBUG_PREFIX: Final[str] = '[debug] '
 _ERROR_PREFIX: Final[str] = 'ERROR: '
+# Openers of the traceback yt-dlp logs separately from the reason itself. The
+# header is absent for expected errors, which start right at the first frame.
+_TRACEBACK_MARKERS: Final[tuple[str, ...]] = ('Traceback (most recent call last)', 'File "')
 
 
 class YtdlpLogger:
@@ -48,6 +51,6 @@ class YtdlpLogger:
         reported = [msg for msg in self.errors if msg.startswith(_ERROR_PREFIX)]
         for msg in reversed(reported or self.errors):
             reason = msg.removeprefix(_ERROR_PREFIX).splitlines()[0].strip()
-            if reason and not reason.startswith('Traceback'):
+            if reason and not reason.startswith(_TRACEBACK_MARKERS):
                 return reason
         return None

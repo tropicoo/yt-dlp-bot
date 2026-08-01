@@ -48,18 +48,50 @@ class ErrorDownloadHandler(AbstractDownloadHandler):
     }
 
     async def handle(self) -> None:
-        self._send_error_text()
+        await self._send_error_text()
 
-    def _send_error_text(self) -> None:
-        for user in self._get_receiving_users():
+    async def _send_error_text(self) -> None:
+        text = self._format_error_message()
+        recipients = self._get_receiving_users()
+
+        # The status message is the natural place for the outcome, so a failure
+        # takes it over the same way a success removes it.
+        if await self._replace_status_message(text):
+            recipients = [u for u in recipients if u.id != self._body.from_chat_id]
+
+        for user in recipients:
             kwargs: dict[str, Any] = {
                 'chat_id': user.id,
-                'text': self._format_error_message(),
+                'text': text,
                 'parse_mode': ParseMode.HTML,
             }
             if self._body.message_id:
                 kwargs['reply_to_message_id'] = self._body.message_id
             asyncio.create_task(self._bot.send_message(**kwargs))  # noqa:RUF006
+
+    async def _replace_status_message(self, text: str) -> bool:
+        """Turn the "Download started" message into the error report."""
+        chat_id = self._body.from_chat_id
+        message_id = self._body.context.ack_message_id
+        if not (chat_id and message_id):
+            return False
+
+        try:
+            await self._bot.edit_message_text(
+                chat_id=chat_id,
+                message_id=message_id,
+                text=text,
+                parse_mode=ParseMode.HTML,
+            )
+        except Exception as err:
+            # Falling back to a separate message is better than losing the report.
+            self._log.warning(
+                'Could not replace the status message %s, sending a new one: %s',
+                message_id,
+                err,
+            )
+            return False
+        return True
 
     def _format_error_message(self) -> str:
         """Explain expected failures, report everything else in full detail."""

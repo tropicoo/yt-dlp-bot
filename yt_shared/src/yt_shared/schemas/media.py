@@ -103,6 +103,10 @@ class Audio(BaseMedia):
     file_type: Literal[MediaFileType.AUDIO] = MediaFileType.AUDIO
     thumb_name: str | None = None
     thumb_path: Annotated[FilePath, Field(strict=False)] | None = None
+    # Shown by Telegram's audio player. `track` is only set when the source
+    # carries proper music metadata; otherwise the title stands in for it.
+    artist: str | None = None
+    track: str | None = None
 
 
 class Video(BaseMedia):

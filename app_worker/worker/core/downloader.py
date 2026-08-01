@@ -4,7 +4,7 @@ import shutil
 from collections.abc import Callable
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import ClassVar
+from typing import Any, ClassVar
 
 import yt_dlp
 from yt_shared.enums import DownMediaType
@@ -245,7 +245,22 @@ class MediaDownloader:
             file_size=file_size(destination_dir / audio_filename),
             thumb_path=thumb_path,
             thumb_name=thumb_name,
+            # Music sources name the artist outright; for everything else the
+            # uploading channel is the closest thing to a performer.
+            artist=self._to_str(
+                meta.get('artist') or meta.get('uploader') or meta.get('channel')
+            ),
+            track=self._to_str(meta.get('track')),
         )
+
+    @staticmethod
+    def _to_str(value: Any) -> str | None:
+        """Normalise a metadata field that may be missing, empty or a list."""
+        if not value:
+            return None
+        if isinstance(value, (list, tuple)):
+            value = ', '.join(str(item) for item in value if item)
+        return str(value).strip() or None
 
     def _find_downloaded_file(self, root_path: Path, extension: str) -> str | None:
         """Try to find downloaded audio or thumbnail file."""

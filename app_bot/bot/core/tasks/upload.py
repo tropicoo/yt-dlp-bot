@@ -22,7 +22,6 @@ from yt_shared.utils.tasks.tasks import create_task
 from bot.core.config.config import get_main_config, settings
 from bot.core.progress import UploadProgressReporter
 from bot.core.schemas import AnonymousUserSchema, UserSchema, VideoCaptionSchema
-from bot.core.utils import bold
 
 if TYPE_CHECKING:
     from bot.bot.client import VideoBotClient
@@ -46,6 +45,8 @@ class VideoUploadContext(BaseUploadContext):
 
 class AudioUploadContext(BaseUploadContext):
     thumb: FilePath | str | None = None
+    performer: str | None = None
+    track: str | None = None
 
 
 class AbstractUploadTask(AbstractTask, ABC):
@@ -204,6 +205,11 @@ class AudioUploadTask(AbstractUploadTask):
         }
         if self._media_ctx.thumb:
             kwargs['thumb'] = self._media_ctx.thumb
+        # Telegram's player shows these instead of the file name.
+        if self._media_ctx.performer:
+            kwargs['performer'] = self._media_ctx.performer
+        if self._media_ctx.track:
+            kwargs['title'] = self._media_ctx.track
         kwargs |= self._progress_kwargs(chat_id)
         return self._bot.send_audio(**kwargs)
 
@@ -214,6 +220,9 @@ class AudioUploadTask(AbstractUploadTask):
             filepath=self._filepath,
             duration=self._media_object.duration or 0.0,
             thumb=self._media_object.thumb_path,
+            performer=self._media_object.artist,
+            # Sources without music metadata still deserve a readable name.
+            track=self._media_object.track or self._media_object.title,
             type=MessageMediaType.AUDIO,
         )
 
@@ -240,12 +249,9 @@ class AudioUploadTask(AbstractUploadTask):
         self._create_cache_task(cache_object=audio)
 
     def _generate_caption_items(self) -> list[str]:
-        return [
-            f'{bold("Title:")} {self._media_object.title}',
-            f'{bold("Filename:")} {self._filename}',
-            f'{bold("URL:")} {self._ctx.context.url}',
-            f'{bold("Size:")} {self._media_object.file_size_human()}',
-        ]
+        # Unlabelled, like the video caption: the player already shows the
+        # artist, track and size, so repeating them adds noise.
+        return [self._media_object.title, self._ctx.context.url]
 
 
 class VideoUploadTask(AbstractUploadTask):

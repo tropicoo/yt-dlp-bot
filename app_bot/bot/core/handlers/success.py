@@ -28,6 +28,7 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._rmq_publisher = RmqPublisher()
+        self._reported_error = False
 
     async def handle(self) -> None:
         try:
@@ -42,7 +43,10 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
         try:
             await asyncio.gather(*coro_tasks)
         finally:
-            await self._delete_acknowledgment_message()
+            # A reported failure takes the message over to show what went wrong,
+            # so removing it here would race that and leave the user with nothing.
+            if not self._reported_error:
+                await self._delete_acknowledgment_message()
 
     async def _delete_acknowledgment_message(self) -> None:
         if self._body.from_chat_id and self._body.context.ack_message_id:
@@ -71,6 +75,7 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             )
 
     async def _publish_error_message(self, err: Exception) -> None:
+        self._reported_error = True
         err_payload = ErrorDownloadGeneralPayload(
             task_id=self._body.task_id,
             message_id=self._body.message_id,

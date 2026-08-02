@@ -6,7 +6,7 @@ import shutil
 from collections.abc import Mapping, Sequence
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, get_args
 
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap, CommentedSeq
@@ -199,10 +199,27 @@ class ConfigManager:
         self.reload_config(bot)
 
     def get_config_value(self, path: str) -> Any:
-        """Get config value by dot-separated path (e.g., 'telegram.max_upload_tasks')."""
+        """Read a config value by dot-separated path, e.g. `telegram.max_upload_tasks`.
+
+        Falls back to the validated config when the file does not mention the
+        setting, so a value running on its schema default still reads back as
+        the value actually in force rather than as a missing path.
+        """
+        keys = path.split('.')
+        try:
+            return self._get_raw_value(keys)
+        except KeyError:
+            value = self._validate_config(self._load_raw_config())
+            for key in keys:
+                if not hasattr(value, key):
+                    raise KeyError(f'Config path not found: {path}') from None
+                value = getattr(value, key)
+            return value
+
+    def _get_raw_value(self, keys: list[str]) -> Any:
         raw_config = self._load_raw_config()
 
-        keys = path.split('.')
+        path = '.'.join(keys)
         value = raw_config
         for key in keys:
             if isinstance(value, dict) and key in value:
@@ -229,11 +246,15 @@ class ConfigManager:
                 raise KeyError(f'Config path not found: {path}')
 
         last_key = keys[-1]
-        if last_key not in target:
+        # A setting the schema defines but the file has never carried is still a
+        # real setting: it is simply running on its default. Refusing it here
+        # would mean hand-editing the file to reach any newly added option.
+        declared_type = self._resolve_declared_type(keys)
+        if last_key not in target and declared_type is None:
             raise KeyError(f'Config path not found: {path}')
 
-        old_value = target[last_key]
-        new_value = self._convert_value(value, old_value)
+        old_value = target.get(last_key)
+        new_value = self._convert_value(value, old_value, declared_type)
         target[last_key] = new_value
 
         self._validate_config(raw_config)
@@ -242,10 +263,36 @@ class ConfigManager:
 
         return new_value
 
-    def _convert_value(self, value: str, old_value: Any) -> Any:
-        """Convert string value to appropriate type based on old value."""
-        plain_old = self._to_plain_python(old_value)
-        target_type = type(plain_old)
+    @staticmethod
+    def _resolve_declared_type(keys: list[str]) -> type | None:
+        """Look up the type the schema declares for a dotted path.
+
+        Lets a setting be changed before the file has ever mentioned it, and
+        gives the right type for a key with no previous value to copy it from.
+        Returns ``None`` for anything the schema does not describe, including
+        paths through lists such as ``allowed_users``.
+        """
+        model: Any = ConfigSchema
+        for key in keys:
+            fields = getattr(model, 'model_fields', None)
+            if not fields or key not in fields:
+                return None
+            model = fields[key].annotation
+
+        # Unwrap `bool | None` and friends down to the one real type.
+        args = [arg for arg in get_args(model) if arg is not type(None)]
+        if args:
+            model = args[0]
+        return model if isinstance(model, type) else None
+
+    def _convert_value(
+        self, value: str, old_value: Any, declared_type: type | None = None
+    ) -> Any:
+        """Convert a string to the type the setting expects."""
+        if declared_type is not None:
+            target_type = declared_type
+        else:
+            target_type = type(self._to_plain_python(old_value))
 
         if target_type == bool:
             return value.lower() in ('true', '1', 'yes', 'on')

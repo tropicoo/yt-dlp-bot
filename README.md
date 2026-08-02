@@ -245,11 +245,16 @@ git status --short app_worker/cookies/    # must print nothing
 ./redeploy.sh yt_worker
 ```
 
-Two things worth knowing. For YouTube, **stale cookies are worse than none** —
-an anonymous request is often served where a rejected session is challenged, so
-the worker retries once without them and says so in the status message. And
-cookies exported from a browser you stay logged into are rotated away quickly;
-export from a private window and close it *without* logging out.
+**YouTube is handled the other way round.** There, an authenticated session
+coming from a server address draws the bot check far more readily than no
+session at all, so downloads start anonymously and the cookie file is only
+brought in if the site actually asks for one — for an age-restricted, private
+or members-only video. Every other host still sends cookies first and falls
+back to anonymous if the session is rejected. Either way the worker makes at
+most one extra attempt and says so in the status message.
+
+Cookies exported from a browser you stay signed into are rotated away within
+hours. Export from a private window and close it *without* logging out.
 
 ## HTTP API
 

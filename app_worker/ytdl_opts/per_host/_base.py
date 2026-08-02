@@ -86,6 +86,11 @@ class AbstractHostConfig:
     FFMPEG_AUDIO_OPTS: str | None = None
     FFMPEG_VIDEO_OPTS: str | None = None
 
+    # Try anonymously first and only fall back to the cookie file. Worth setting
+    # for sites that treat an authenticated session from a server address with
+    # more suspicion than an anonymous request.
+    COOKIES_LAST_RESORT: bool = False
+
     def __init__(self, url: str) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
         self._validate_hostname()

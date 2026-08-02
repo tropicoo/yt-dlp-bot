@@ -17,12 +17,28 @@ from worker.core.exceptions import MediaDownloaderError
 from worker.core.ytdlp_logger import YtdlpLogger
 from ytdl_opts.per_host._base import AbstractHostConfig
 
-# Signs that the site rejected the session rather than the request itself.
+# Signs that the site rejected the session rather than the request itself, so
+# dropping the cookies is worth a try.
 _COOKIE_REJECTION_MARKERS: Final[tuple[str, ...]] = (
     "confirm you're not a bot",
     'cookies are no longer valid',
     'cookies are invalid',
     'account cookies are no longer valid',
+)
+
+# Signs that the site wants an authenticated session, so adding the cookies is
+# worth a try. The bot check appears in both lists on purpose: which way to flip
+# depends on whether the attempt that failed carried cookies.
+_AUTH_REQUIRED_MARKERS: Final[tuple[str, ...]] = (
+    "confirm you're not a bot",
+    'sign in',
+    'log in',
+    'login required',
+    'private video',
+    'members-only',
+    'join this channel',
+    'age-restricted',
+    'requires authentication',
 )
 
 try:
@@ -100,19 +116,20 @@ class MediaDownloader:
             self._log.info('Downloading "%s" to "%s"', url, curr_tmp_dir)
             self._log.info('Downloading with options: %s', ytdl_opts_model.ytdl_opts)
 
+            cookiefile = ytdl_opts.get('cookiefile')
+            cookies_last = bool(cookiefile) and host_conf.COOKIES_LAST_RESORT
+            if cookies_last:
+                # This host is happier anonymously; the cookies stay in reserve.
+                ytdl_opts.pop('cookiefile')
+
             meta, meta_sanitized, err_msg = self._extract(ytdl_opts, url)
 
-            if meta is None and self._cookies_were_rejected(err_msg, ytdl_opts):
-                self._log.warning(
-                    'Cookies were rejected for "%s", retrying without them. They '
-                    'have most likely expired and are worth refreshing: for some '
-                    'sites stale cookies fail where an anonymous request succeeds.',
-                    url,
+            if meta is None and cookiefile:
+                retry_opts = self._retry_with_other_cookie_state(
+                    err_msg, ytdl_opts, cookiefile, url, on_cookies_rejected
                 )
-                if on_cookies_rejected is not None:
-                    on_cookies_rejected()
-                retry_opts = {k: v for k, v in ytdl_opts.items() if k != 'cookiefile'}
-                meta, meta_sanitized, err_msg = self._extract(retry_opts, url)
+                if retry_opts is not None:
+                    meta, meta_sanitized, err_msg = self._extract(retry_opts, url)
 
             if meta is None:
                 raise MediaDownloaderError(err_msg)
@@ -172,19 +189,47 @@ class MediaDownloader:
                 return None, None, reason
             return meta, ytdl.sanitize_info(meta), None
 
-    @staticmethod
-    def _cookies_were_rejected(reason: str | None, ytdl_opts: dict) -> bool:
-        """Whether the cookies themselves are what the site objected to.
+    def _retry_with_other_cookie_state(
+        self,
+        reason: str | None,
+        ytdl_opts: dict,
+        cookiefile: str,
+        url: str,
+        on_cookies_rejected: Callable[[], None] | None,
+    ) -> dict | None:
+        """Options for one more attempt with the cookies flipped, or ``None``.
 
-        Only worth retrying for a rejected session: an anonymous request often
-        succeeds where stale cookies are challenged. Genuine restrictions such
-        as a private or members-only video would fail the same way again.
+        Whichever state just failed, the other one is tried once — but only when
+        the reason suggests it could help. A private video fails identically
+        without cookies, and a rate limit is not fixed by adding them.
         """
-        if not reason or not ytdl_opts.get('cookiefile'):
-            return False
+        if not reason:
+            return None
         # yt-dlp writes some of these with a typographic apostrophe.
         normalised = reason.replace('’', "'").lower()
-        return any(marker in normalised for marker in _COOKIE_REJECTION_MARKERS)
+        used_cookies = 'cookiefile' in ytdl_opts
+
+        if used_cookies:
+            if not any(m in normalised for m in _COOKIE_REJECTION_MARKERS):
+                return None
+            self._log.warning(
+                'Cookies were rejected for "%s", retrying without them. They have '
+                'most likely expired and are worth refreshing: for some sites '
+                'stale cookies fail where an anonymous request succeeds.',
+                url,
+            )
+            if on_cookies_rejected is not None:
+                on_cookies_rejected()
+            return {k: v for k, v in ytdl_opts.items() if k != 'cookiefile'}
+
+        if not any(m in normalised for m in _AUTH_REQUIRED_MARKERS):
+            return None
+        self._log.info(
+            'Anonymous request for "%s" needs an authenticated session, '
+            'retrying with the cookie file.',
+            url,
+        )
+        return {**ytdl_opts, 'cookiefile': cookiefile}
 
     def _create_media_dtos(
         self,

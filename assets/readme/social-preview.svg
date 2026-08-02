@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1280" height="640" viewBox="0 0 1280 640"
+     role="img" aria-labelledby="social-title social-desc">
+  <title id="social-title">yt-dlp-bot</title>
+  <desc id="social-desc">Self-hosted Telegram bot for yt-dlp. A pasted link is answered
+    with format buttons, one status message that tracks the download, and the finished
+    video delivered in the same chat.</desc>
+
+  <!-- Source for the GitHub social preview, which must be uploaded as a raster
+       under Settings → General → Social preview. Regenerate with:
+         rsvg-convert -w 1280 -h 640 social-preview.svg -o social-preview.png
+       Judge it at 360-500px too: a link unfurl is where it is actually seen. -->
+
+
+  <defs>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#56A2E8"/>
+      <stop offset="1" stop-color="#4FBF67"/>
+    </linearGradient>
+    <clipPath id="thumbClip">
+      <rect x="0" y="0" width="96" height="68" rx="10"/>
+    </clipPath>
+  </defs>
+
+  <!-- Full bleed: a social card is composited into someone else's frame, so
+       rounded corners here would show through as notches. -->
+  <rect width="1280" height="640" fill="#0E1621"/>
+
+  <!-- ============ title block ============ -->
+  <g id="title-block">
+    <text x="72" y="152" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="26" letter-spacing="4" fill="#7D8E9E">SELF-HOSTED · DOCKER COMPOSE</text>
+
+    <text x="72" y="286" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+          font-size="104" font-weight="700" fill="#E9EEF2">yt-dlp-bot</text>
+
+    <text x="72" y="356" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+          font-size="36" fill="#A8BACA">Paste a link, choose a format,</text>
+    <text x="72" y="404" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+          font-size="36" fill="#A8BACA">get the file in the same chat.</text>
+
+    <rect x="72" y="444" width="88" height="4" rx="2" fill="#56A2E8"/>
+
+    <text x="72" y="512" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="24" fill="#7D8E9E">yt-dlp · Pyrogram · RabbitMQ · Docker</text>
+
+    <text x="72" y="556" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="24" fill="#4A5B69">Creative Commons video only</text>
+  </g>
+
+  <!-- ============ the chat this project is ============ -->
+  <g id="chat-proof" transform="translate(704 82)">
+    <rect x="0" y="0" width="504" height="476" rx="20" fill="#17212B"/>
+
+    <!-- outgoing: the link you paste -->
+    <g id="msg-url">
+      <rect x="112" y="30" width="360" height="62" rx="16" fill="#2B5278"/>
+      <text x="136" y="70" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+            font-size="26" fill="#E9EEF2">youtu.be/AWy1qiTF64M</text>
+    </g>
+
+    <!-- incoming: the format keyboard -->
+    <g id="msg-buttons" transform="translate(32 112)">
+      <rect x="0" y="0" width="212" height="60" rx="12" fill="#232F3D"
+            stroke="#33475C" stroke-width="1.5"/>
+      <rect x="26" y="22" width="22" height="17" rx="4" fill="#56A2E8"/>
+      <path d="M53 24 L68 30.5 L53 37 Z" fill="#56A2E8"/>
+      <text x="84" y="39" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+            font-size="26" fill="#E9EEF2">Video</text>
+
+      <rect x="228" y="0" width="212" height="60" rx="12" fill="#232F3D"
+            stroke="#33475C" stroke-width="1.5"/>
+      <circle cx="258" cy="38" r="9" fill="#56A2E8"/>
+      <rect x="264" y="18" width="4" height="18" rx="2" fill="#56A2E8"/>
+      <text x="312" y="39" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+            font-size="26" fill="#E9EEF2">Audio</text>
+    </g>
+
+    <!-- incoming: one status message that keeps updating -->
+    <g id="msg-progress" transform="translate(32 200)">
+      <path d="M10 6 L10 22 M3 15 L10 22 L17 15" stroke="#56A2E8" stroke-width="3"
+            fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="36" y="24" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+            font-size="30" font-weight="600" fill="#E9EEF2">Downloading 42.5%</text>
+      <rect x="0" y="44" width="440" height="14" rx="7" fill="#22303F"/>
+      <rect x="0" y="44" width="187" height="14" rx="7" fill="url(#bar)"/>
+      <text x="0" y="94" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+            font-size="24" fill="#7D8E9E">67.7 / 159.3 MiB · 9.6 MiB/s</text>
+    </g>
+
+    <!-- incoming: the file itself -->
+    <g id="msg-file" transform="translate(32 320)">
+      <rect x="0" y="0" width="440" height="96" rx="16" fill="#1F2C3A"/>
+      <g transform="translate(16 14)" clip-path="url(#thumbClip)">
+        <rect x="0" y="0" width="96" height="68" fill="#2A3B4D"/>
+        <path d="M0 52 L26 31 L45 47 L69 23 L96 44 L96 68 L0 68 Z" fill="#3A5065"/>
+        <circle cx="73" cy="18" r="9" fill="#46617A"/>
+      </g>
+      <path d="M55 37 L71 47 L55 57 Z" fill="#E9EEF2"/>
+      <text x="132" y="42" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+            font-size="26" fill="#E9EEF2">Rufford Ford | part 47</text>
+      <text x="132" y="76" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+            font-size="24" fill="#7D8E9E">4:21 · 159.3 MB</text>
+      <path d="M406 72 l7 7 l13 -15" stroke="#4FBF67" stroke-width="3.5" fill="none"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

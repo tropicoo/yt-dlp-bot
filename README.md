@@ -31,6 +31,8 @@ back — no browser, no desktop app, no files left on someone else's server.
   ETA through processing to upload, then makes way for the file itself.
 - **Files that look right in Telegram** — source covers survive as thumbnails,
   and audio arrives tagged with its artist and track.
+- **Chapters you can jump to** — when the source has them, the timestamps come
+  along and Telegram seeks the file when you tap one.
 - **Readable failures** — a suspended account, a private video or an expired
   cookie is explained in a sentence instead of a stack trace.
 - **Run it from the chat** — admins add users and change settings without

@@ -19,6 +19,7 @@ from yt_shared.schemas.success import SuccessDownloadPayload
 from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.utils.tasks.tasks import create_task
 
+from bot.core.chapters import format_chapters, group_into_messages
 from bot.core.config.config import get_main_config, settings
 from bot.core.progress import UploadProgressReporter
 from bot.core.schemas import AnonymousUserSchema, UserSchema, VideoCaptionSchema
@@ -71,6 +72,8 @@ class AbstractUploadTask(AbstractTask, ABC):
         self._users = users
         self._semaphore = semaphore
         self._ctx = context
+        # Filled in while building the caption, when the chapters do not fit.
+        self._chapter_messages: list[str] = []
         self._media_ctx = self._create_media_context()
 
         self._forward_chat_ids = self._get_forward_chat_ids()
@@ -94,7 +97,46 @@ class AbstractUploadTask(AbstractTask, ABC):
         pass
 
     def _generate_file_caption(self) -> str:
-        return '\n'.join(self._generate_caption_items())[: settings.TG_MAX_CAPTION_SIZE]
+        """Caption for the media, with the chapter list when it fits.
+
+        Telegram seeks the media when a timestamp in its caption is tapped, so
+        chapters belong there whenever there is room. An overlong list is not
+        truncated: half a table of contents is worse than none, and the rest is
+        sent as a reply, where the timestamps stay just as clickable.
+        """
+        caption = '\n'.join(self._generate_caption_items())
+        lines = format_chapters(self._media_object.chapters)
+        if not lines:
+            return caption[: settings.TG_MAX_CAPTION_SIZE]
+
+        with_chapters = f'{caption}\n\n' + '\n'.join(lines)
+        if len(with_chapters) <= settings.TG_MAX_CAPTION_SIZE:
+            return with_chapters
+
+        self._chapter_messages = group_into_messages(lines, settings.TG_MAX_MSG_SIZE)
+        self._log.info(
+            'Chapter list for "%s" does not fit the caption, sending %d follow-up '
+            'message(s)',
+            self._filename,
+            len(self._chapter_messages),
+        )
+        return caption[: settings.TG_MAX_CAPTION_SIZE]
+
+    async def _send_chapters(self, chat_id: int, message: Message | None) -> None:
+        """Deliver the chapter list as replies to the file it belongs to."""
+        if not (self._chapter_messages and message):
+            return
+        for text in self._chapter_messages:
+            try:
+                await self._bot.send_message(
+                    chat_id=chat_id,
+                    text=text,
+                    reply_to_message_id=message.id,
+                    parse_mode=ParseMode.DISABLED,
+                )
+            except Exception:
+                self._log.exception('Failed to send the chapter list to %d', chat_id)
+                return
 
     def _progress_kwargs(self, chat_id: int) -> dict:
         """Report upload progress, but only on the message that tracks the task.
@@ -158,6 +200,7 @@ class AbstractUploadTask(AbstractTask, ABC):
                 raise
 
             self._log.debug('Telegram response message: %s', message)
+            await self._send_chapters(chat_id, message)
             if not self._cached_message and message:
                 self._cache_data(message)
 

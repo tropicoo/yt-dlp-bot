@@ -303,6 +303,7 @@ class MediaDownloader:
             file_size=file_size(dest_path),
             thumb_path=thumb_path,
             thumb_name=thumb_name,
+            chapters=self._extract_chapters(meta),
         )
 
     def _create_audio_dto(
@@ -337,6 +338,7 @@ class MediaDownloader:
             file_size=file_size(destination_dir / audio_filename),
             thumb_path=thumb_path,
             thumb_name=thumb_name,
+            chapters=self._extract_chapters(meta),
             # Music sources name the artist outright; for everything else the
             # uploading channel is the closest thing to a performer.
             artist=self._to_str(
@@ -344,6 +346,22 @@ class MediaDownloader:
             ),
             track=self._to_str(meta.get('track')),
         )
+
+    @staticmethod
+    def _extract_chapters(meta: dict) -> list[dict]:
+        """Chapters as the source defines them, if it defines any.
+
+        yt-dlp already fills in missing start times and titles, so anything left
+        incomplete here is genuinely unusable and is dropped.
+        """
+        chapters = []
+        for chapter in meta.get('chapters') or []:
+            start = chapter.get('start_time')
+            title = str(chapter.get('title') or '').strip()
+            if start is None or not title:
+                continue
+            chapters.append({'start_time': float(start), 'title': title})
+        return chapters
 
     @staticmethod
     def _to_str(value: Any) -> str | None:

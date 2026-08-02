@@ -44,6 +44,13 @@ class InbMediaPayload(StrictRealBaseModel):
     added_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
+class Chapter(StrictRealBaseModel):
+    """One navigable point in the media, as the source defines it."""
+
+    start_time: float
+    title: str
+
+
 class BaseMedia(StrictRealBaseModel, ABC):
     """Model representing abstract downloaded media with common fields."""
 
@@ -53,6 +60,7 @@ class BaseMedia(StrictRealBaseModel, ABC):
     directory_path: Annotated[DirectoryPath, Field(strict=False)]
     file_size: int
     duration: float | None = None
+    chapters: list[Chapter] = []
     orm_file_id: uuid.UUID | None = None
 
     saved_to_storage: bool = False

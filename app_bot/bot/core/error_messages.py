@@ -65,6 +65,28 @@ _MEMBERS_ONLY = FriendlyError(
     'This is restricted to channel members. Cookies for a subscribed account are '
     'required.',
 )
+_DRM = FriendlyError(
+    '🔒',
+    'Protected by DRM',
+    'This site encrypts its media, so yt-dlp will not download from it. Spotify, '
+    'Netflix, Disney+ and similar services all work this way.',
+)
+_SITE_UNSUPPORTED = FriendlyError(
+    '🚷',
+    'Site not supported',
+    'yt-dlp deliberately does not support this site and will not add it.',
+)
+_SUBSCRIPTION = FriendlyError(
+    '💳',
+    'Paid content',
+    'The account behind the cookies does not have access to this. A subscription '
+    'or purchase is required.',
+)
+_NETWORK = FriendlyError(
+    '🌐',
+    'Could not reach the site',
+    'The request never completed. This is usually temporary — try again shortly.',
+)
 _NO_MEDIA = FriendlyError(
     '📭',
     'Nothing to download',
@@ -107,11 +129,15 @@ _UNAVAILABLE = FriendlyError(
 _PATTERNS: Final[tuple[tuple[re.Pattern[str], FriendlyError], ...]] = tuple(
     (re.compile(pattern, re.IGNORECASE), error)
     for pattern, error in (
+        # Refusals yt-dlp issues on principle, before it even looks at the URL.
+        (r'known to use drm|drm protection|drm[- ]protected', _DRM),
+        (r'primarily used for piracy|not supported and will not be supported'
+         r'|no longer supported since', _SITE_UNSUPPORTED),
         (r'\bsuspended\b', _SUSPENDED),
         (r'sign in to confirm your age|age[- ]restricted|\bnsfw\b', _AGE_RESTRICTED),
         (r"members[- ]only|join this channel|channel's members", _MEMBERS_ONLY),
         (r'will begin in|premieres in|\bupcoming\b|has not started', _NOT_STARTED),
-        (r'available in your country|geo[- ]?restricted|geo[- ]?block'
+        (r'available in your country|geo[- ]?restrict|geo[- ]?block'
          r'|blocked it in your country|available from your location', _GEO_BLOCKED),
         # Checked before the broad "private" rule: these say "sign in" too.
         # yt-dlp writes some of these with a typographic apostrophe.
@@ -121,6 +147,8 @@ _PATTERNS: Final[tuple[tuple[re.Pattern[str], FriendlyError], ...]] = tuple(
         # mistaken for a plain authentication problem.
         (r'\bprivate\b|\bprotected\b', _PRIVATE),
         (r'\bremoved\b|\bdeleted\b|taken down|terminated', _REMOVED),
+        (r'not subscribed|subscription required|requires a subscription'
+         r'|purchase this|rent this|paid (?:video|content)', _SUBSCRIPTION),
         (r'login required|requires authentication|authentication is required'
          r'|\bsign in\b|\blog in\b', _LOGIN_REQUIRED),
         # "No video in this post" is a different problem from "the formats I
@@ -133,6 +161,9 @@ _PATTERNS: Final[tuple[tuple[re.Pattern[str], FriendlyError], ...]] = tuple(
         (r'unsupported url|is not a valid url', _UNSUPPORTED_URL),
         (r'http error 404|\bnot found\b', _NOT_FOUND),
         (r'http error 403|\bforbidden\b', _FORBIDDEN),
+        (r'unable to download (?:webpage|json|xml|api page)|a network error'
+         r'|failed to resolve|connection (?:broken|reset|refused)|timed out'
+         r'|read timeout', _NETWORK),
         (r'unavailable|does not exist|no longer available', _UNAVAILABLE),
     )
 )

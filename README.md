@@ -147,6 +147,12 @@ is upstream.
 
 **Logging.** `LOG_LEVEL` in `envs/common.env`.
 
+**Tidying the chat.** Set `delete_source_message` for a user in `config.yml` and
+the message their link arrived in is removed once the file has been delivered —
+the caption on the file already carries the link. It is off by default, only
+runs after a successful upload, and needs the bot to be an administrator in
+group chats. Telegram refuses to delete anything older than 48 hours.
+
 ### Running with limited resources
 
 On a small VPS the default staging area is the thing most likely to hurt you.

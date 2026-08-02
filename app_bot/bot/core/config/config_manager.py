@@ -153,6 +153,7 @@ class ConfigManager:
             'save_to_storage': False,
             'use_url_regex_match': True,
             'save_to_database': True,
+            'delete_source_message': False,
             'upload': {
                 'upload_video_file': True,
                 'upload_video_max_file_size': 2147483648,

@@ -25,6 +25,9 @@ telegram:
           include_link: !!bool True
           include_size: !!bool True
       save_to_database: !!bool True
+      # Remove the message the link arrived in once the file has been delivered.
+      # Needs the bot to be an administrator in groups; private chats always work.
+      delete_source_message: !!bool False
   api:
     upload_video_file: !!bool False
     upload_video_max_file_size: 2147483648

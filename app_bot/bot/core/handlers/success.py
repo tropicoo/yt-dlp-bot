@@ -47,6 +47,7 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             # so removing it here would race that and leave the user with nothing.
             if not self._reported_error:
                 await self._delete_acknowledgment_message()
+                await self._delete_source_message()
 
     async def _delete_acknowledgment_message(self) -> None:
         if self._body.from_chat_id and self._body.context.ack_message_id:
@@ -54,6 +55,39 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
                 chat_id=self._body.from_chat_id,
                 message_ids=self._body.context.ack_message_id,
             )
+
+    async def _delete_source_message(self) -> None:
+        """Remove the message the link arrived in, once the file has replaced it.
+
+        Opt-in per user: the link is theirs, and the caption on the delivered
+        file already carries it. Only ever runs after a successful upload, so a
+        failure never costs someone the link they need to retry with.
+        """
+        if not self._wants_source_message_deleted():
+            return
+
+        try:
+            await self._bot.delete_messages(
+                chat_id=self._body.from_chat_id,
+                message_ids=self._body.message_id,
+            )
+        except Exception as err:
+            # Telegram only allows this in private chats and where the bot is an
+            # administrator, and never for messages older than 48 hours.
+            self._log.warning(
+                'Could not delete the source message %s in chat %s: %s',
+                self._body.message_id,
+                self._body.from_chat_id,
+                err,
+            )
+
+    def _wants_source_message_deleted(self) -> bool:
+        if not (self._body.from_chat_id and self._body.message_id):
+            return False
+        if self._body.context.source is TaskSource.API:
+            return False
+        user = self._bot.allowed_users.get(self._get_sender_id())
+        return bool(user and user.delete_source_message)
 
     async def _set_upload_message(self, media_object: BaseMedia) -> None:
         if not (self._body.from_chat_id and self._body.context.ack_message_id):

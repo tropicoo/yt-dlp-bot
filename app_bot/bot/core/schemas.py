@@ -41,6 +41,9 @@ class UserSchema(_BaseUserSchema):
     use_url_regex_match: bool
     upload: UploadSchema
     save_to_database: bool = True
+    # Off by default: removing someone's own message is not reversible, and in
+    # a group it also needs the bot to be an administrator.
+    delete_source_message: bool = False
 
 
 class ApiSchema(StrictBaseConfigModel):

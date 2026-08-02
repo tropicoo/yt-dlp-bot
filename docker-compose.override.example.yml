@@ -24,18 +24,30 @@ services:
   #   mem_limit: 256m
   #   memswap_limit: 256m
 
-# Staging area for in-flight downloads. As shipped this is a tmpfs, so it lives
-# in RAM — size it below the memory the host can spare. To stage on disk
-# instead, drop driver_opts entirely and remove the volume once:
+# Size of the staging area for in-flight downloads. As shipped it is a tmpfs, so
+# it lives in RAM — keep this below the memory the host can spare.
+#
+# Changing it does not resize an existing volume: Docker only creates one that
+# does not exist yet. Remove it once, and that volume only, because pgdata holds
+# the task history:
 #
 #   docker compose down
 #   docker volume rm "${COMPOSE_PROJECT_NAME:-yt}_shared-tmpfs"
 #   docker compose up -d
-#
-# Docker only creates a volume that does not exist yet, so an existing one keeps
-# its old settings until removed. Remove that volume only — pgdata holds the
-# task history.
 volumes:
   shared-tmpfs:
     driver_opts:
       o: "size=2048m,uid=1000"
+
+# To stage on disk instead of in RAM, leave the volume above alone and mount a
+# host directory over the same path in both services that use it. The bind
+# replaces the volume by mount target, so shared-tmpfs is simply left unused —
+# nothing to remove, nothing to recreate. Create the directory first.
+#
+# services:
+#   yt_bot:
+#     volumes:
+#       - "/var/lib/yt-dlp-bot/staging:/tmp/download_tmpfs"
+#   yt_worker:
+#     volumes:
+#       - "/var/lib/yt-dlp-bot/staging:/tmp/download_tmpfs"

@@ -113,14 +113,25 @@ Changes are written to `config.yml` and survive a restart.
 
 ## Configuration
 
-Per-user behaviour lives in `app_bot/config.yml`; service behaviour lives in
-`envs/`.
+**These are the files you edit. Nothing else.** Everything else in the
+repository is a shipped default: edit one of those in place and every later
+`git pull` stops with *"Your local changes would be overwritten by merge"*.
+Every file in the left column is gitignored, so it survives each pull untouched.
 
-**Where to put your settings.** The `envs/*.env` files below are the shipped
-defaults and are tracked by git — edit them in place and every later `git pull`
-stops with *"Your local changes would be overwritten by merge"*. Put your own
-values in a `*.local.env` next to them instead; those are gitignored and loaded
-last, so whatever you set there wins:
+| Edit | For | Shipped default it overrides |
+|---|---|---|
+| `app_bot/config.yml` | tokens, who may use the bot, per-user behaviour | `app_bot/config-example.yml` (copy it) |
+| `envs/common.local.env` | settings shared by every service | `envs/common.env` |
+| `envs/worker.local.env` | downloading, storage, thumbnails | `envs/worker.env` |
+| `envs/bot.local.env` · `envs/api.local.env` | one service each | `envs/bot.env` · `envs/api.env` |
+| `docker-compose.override.yml` | volumes, memory limits, ports | `docker-compose.yml` |
+| `app_worker/ytdl_opts/user.py` | raw yt-dlp options | `app_worker/ytdl_opts/default.py` (copy it) |
+
+`./redeploy.sh` creates the `*.local.env` files empty if they are missing, so
+they are there waiting the first time you look.
+
+**How the env files layer.** Put your own values in a `*.local.env` next to the
+shipped one; those are loaded last, so whatever you set there wins:
 
 ```sh
 cat > envs/worker.local.env <<'EOF'
@@ -246,29 +257,41 @@ nothing in the application layer can prevent that.
 
 Two changes make a small machine safe.
 
-**Stage downloads on disk instead of in RAM.** An override cannot delete the
-`driver_opts` block that makes the volume a tmpfs, so this is the one change to
-make in `docker-compose.yml` itself — remove those four lines, leaving:
+**Stage downloads on disk instead of in RAM.** Mount a host directory over the
+staging path in both services that use it. The bind replaces the `shared-tmpfs`
+volume by mount target, so that volume is simply left unused — nothing to remove
+and nothing to recreate. In `docker-compose.override.yml`:
+
+```yml
+services:
+  yt_bot:
+    volumes:
+      - "/var/lib/yt-dlp-bot/staging:/tmp/download_tmpfs"
+  yt_worker:
+    volumes:
+      - "/var/lib/yt-dlp-bot/staging:/tmp/download_tmpfs"
+```
+
+Create the directory first; Docker would otherwise create it as root. Downloads
+are then bounded by free disk rather than free memory, and a file too large
+simply fails with "no space left on device".
+
+To keep it in RAM but make it smaller, override the size instead. That does not
+resize an existing volume — Docker only creates one that does not exist yet — so
+remove it once, and that one only, because `pgdata` holds the task history:
 
 ```yml
 volumes:
-  pgdata:
   shared-tmpfs:
-    driver: local
+    driver_opts:
+      o: "size=2048m,uid=1000"
 ```
-
-Docker only creates a volume that does not exist yet, so an existing one keeps
-its old settings until you remove it. Remove that volume only — `pgdata` holds
-the task history:
 
 ```bash
 docker compose down
 docker volume rm "${COMPOSE_PROJECT_NAME:-yt}_shared-tmpfs"
 docker compose up -d
 ```
-
-Downloads are then bounded by free disk rather than free memory, and a file too
-large simply fails with "no space left on device".
 
 **Give each service a memory ceiling** so a runaway container is killed instead
 of the host. This one goes in `docker-compose.override.yml`:

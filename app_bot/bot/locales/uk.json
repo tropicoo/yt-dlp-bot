@@ -1,0 +1,148 @@
+{
+  "start": {
+    "greeting": "Надішліть посилання на відео, щоб почати.",
+    "startup": "✨ <b>{name}</b> запущено — надішліть посилання, і почнеться завантаження."
+  },
+
+  "format": {
+    "choose": "🎯 Що завантажити?",
+    "choose_quality": "📊 У якій якості?",
+    "button_video": "🎬 Відео",
+    "button_audio": "🎵 Аудіо",
+    "button_both": "🎬+🎵 Обидва",
+    "button_cancel": "❌ Скасувати",
+    "button_back": "⬅️ Назад",
+    "button_download_audio": "⬇️ Завантажити аудіо",
+    "button_best": "🏆 Найкраща якість",
+    "quality_best": "Найкраща",
+    "started": "✅ <b>Завантаження почалося</b>",
+    "started_toast": "Завантаження почалося",
+    "cancelled": "❌ Завантаження скасовано",
+    "cancelled_toast": "Скасовано",
+    "queue_failed": "🛑 <b>Не вдалося поставити посилання в чергу</b>",
+    "invalid_selection": "Ця кнопка вже не діє",
+    "session_expired": "Запит застарів — надішліть посилання ще раз",
+    "invalid_media_type": "Невідомий тип медіа"
+  },
+
+  "progress": {
+    "downloading": "⬇️ <b>Завантаження</b> {percent}%",
+    "downloading_plain": "⬇️ <b>Завантаження</b>",
+    "uploading": "⬆️ <b>Надсилання</b> {percent}%",
+    "uploading_plain": "⬆️ <b>Надсилання</b>",
+    "processing": "⚙️ <b>Обробка</b>",
+    "processing_generic": "Склеювання та конвертація завантаженого…",
+    "eta": "⏳ лишилося {time}",
+    "size": "📦 {done} з {total}",
+    "size_done": "📦 {done}",
+    "speed": "🚀 {speed}/с",
+    "elapsed": "⏱ минуло {time}",
+    "notice": "⚠️ {text}"
+  },
+
+  "postprocess": {
+    "merger": "Склеювання відео та аудіо",
+    "video_convertor": "Конвертація відео",
+    "video_remuxer": "Перепакування відео",
+    "extract_audio": "Витягання аудіо",
+    "thumbnails_convertor": "Конвертація обкладинки",
+    "metadata": "Запис метаданих",
+    "embed_thumbnail": "Вбудовування обкладинки",
+    "concat": "З’єднання частин",
+    "fixup": "Полагодження потоку"
+  },
+
+  "notice": {
+    "cookies_rejected": "Куки відхилено й пропущено — оновіть їх"
+  },
+
+  "error": {
+    "header_download": "Помилка завантаження",
+    "header_general": "Загальна помилка",
+    "label_reason": "Причина",
+    "label_url": "Посилання",
+    "label_task_id": "ID завдання",
+    "label_source": "Джерело",
+    "label_details": "Подробиці",
+    "label_ytdlp_version": "Версія yt-dlp",
+    "label_bot_version": "Версія yt-dlp-bot",
+    "label_tag": "Тег",
+    "label_site_response": "Відповідь сайту",
+    "tag_error": "#error",
+    "tag_unavailable": "#unavailable"
+  },
+
+  "reason": {
+    "suspended_title": "Обліковий запис заблоковано",
+    "suspended_hint": "Обліковий запис, який це опублікував, заблоковано, і сайт більше не віддає матеріал.",
+    "private_title": "Приватний запис",
+    "private_hint": "Запис закритий, і без дозволу власника доступу до нього немає.",
+    "removed_title": "Запис видалено",
+    "removed_hint": "Матеріал видалено або знято з публікації, і він більше недоступний.",
+    "age_restricted_title": "Вікове обмеження",
+    "age_restricted_hint": "Сайт віддає це лише авторизованому дорослому обліковому запису. Можуть допомогти куки від такого запису.",
+    "login_required_title": "Потрібна авторизація",
+    "login_required_hint": "Сайт відмовився віддавати матеріал без авторизованої сесії. Додайте куки — див. розділ Cookies у README.",
+    "geo_blocked_title": "Недоступно в цьому регіоні",
+    "geo_blocked_hint": "Сайт не віддає цей матеріал із країни, де стоїть сервер.",
+    "not_started_title": "Ще не почалося",
+    "not_started_hint": "Це анонс трансляції або прем’єри. Спробуйте, коли вона почнеться.",
+    "members_only_title": "Лише для учасників",
+    "members_only_hint": "Доступ мають лише учасники каналу. Потрібні куки від запису з підпискою.",
+    "drm_title": "Захищено DRM",
+    "drm_hint": "Сайт шифрує свої медіа, і yt-dlp з них не завантажує. Так влаштовані Spotify, Netflix, Disney+ та подібні сервіси.",
+    "site_unsupported_title": "Сайт не підтримується",
+    "site_unsupported_hint": "yt-dlp принципово не підтримує цей сайт і не буде.",
+    "subscription_title": "Платний матеріал",
+    "subscription_hint": "Обліковий запис із кук не має доступу. Потрібна підписка або купівля.",
+    "network_title": "Сайт недоступний",
+    "network_hint": "Запит не дійшов до кінця. Зазвичай це тимчасово — спробуйте трохи згодом.",
+    "no_media_title": "Немає чого завантажувати",
+    "no_media_hint": "Посилання відкривається, але відео чи аудіо в ньому немає.",
+    "format_unavailable_title": "Немає такої якості",
+    "format_unavailable_hint": "Для цього матеріалу обраної якості не існує. Візьміть іншу.",
+    "rate_limited_title": "Забагато запитів",
+    "rate_limited_hint": "Сайт тимчасово відмовляє цьому серверу. Зачекайте й спробуйте знову.",
+    "unsupported_url_title": "Посилання не підтримується",
+    "unsupported_url_hint": "У yt-dlp немає обробника для цієї адреси. Перевірте, чи правильне посилання.",
+    "not_found_title": "Не знайдено",
+    "not_found_hint": "Сайт повернув 404. Найімовірніше, посилання хибне або запис уже видалено.",
+    "forbidden_title": "Доступ закрито",
+    "forbidden_hint": "Сайт повернув 403. Можливо, потрібні куки або він блокує цей сервер.",
+    "unavailable_title": "Матеріал недоступний",
+    "unavailable_hint": "Сайт повідомляє, що матеріал недоступний, але причини не називає."
+  },
+
+  "admin": {
+    "not_admin": "🚫 Команда лише для адміністраторів.",
+    "adduser_usage": "❌ Використання: <b>/adduser &lt;telegram_id&gt;</b>\nПриклад: /adduser 123456789",
+    "deleteuser_usage": "❌ Використання: <b>/deleteuser &lt;telegram_id&gt;</b>\nПриклад: /deleteuser 123456789",
+    "invalid_user_id": "❌ Це не схоже на ID — потрібне число.",
+    "user_added": "✅ Користувача <b>{user_id}</b> додано.\n\nНалаштування:\n• Адміністратор: {is_admin}\n• Тип медіа: {media_type}\n• Зберігати у сховище: {save_to_storage}\n\n💡 Записано в конфіг і застосовано.",
+    "user_exists": "❌ Користувач {user_id} вже є в конфізі.",
+    "user_deleted": "✅ Користувача <b>{user_id}</b> видалено.\n\n💡 Записано в конфіг і застосовано.",
+    "user_not_found": "❌ Користувача {user_id} немає в конфізі.",
+    "cannot_delete_admin": "❌ {user_id} — адміністратор, видаліть його з конфігу вручну.",
+    "add_user_failed": "❌ Не вдалося додати користувача: {error}",
+    "delete_user_failed": "❌ Не вдалося видалити користувача: {error}",
+    "config_usage": "❌ Використання:\n<b>/config get &lt;шлях&gt;</b> — прочитати значення\n<b>/config set &lt;шлях&gt; &lt;значення&gt;</b> — змінити\n\nПриклади:\n/config get telegram.max_upload_tasks\n/config set telegram.max_upload_tasks 10",
+    "config_value_missing": "❌ Значення не вказано. Використання: <b>/config set &lt;шлях&gt; &lt;значення&gt;</b>",
+    "config_get_result": "📋 <b>{path}</b> = {value}",
+    "config_set_result": "✅ Конфіг оновлено.\n<b>{path}</b> = {value}\n\n💡 Записано в конфіг і застосовано.",
+    "config_get_failed": "❌ Не вдалося прочитати значення: {error}",
+    "config_set_failed": "❌ Не вдалося змінити значення: {error}",
+    "config_unknown_action": "❌ Невідома дія: {action}\nВикористовуйте <b>get</b> або <b>set</b>",
+    "users_header": "📋 <b>Користувачі в конфізі</b> ({count})",
+    "users_none": "📋 Користувачів немає.",
+    "users_row": "{badge} <b>{user_id}</b>\n   Медіа: {media_type} | Сховище: {storage}",
+    "users_failed": "❌ Не вдалося отримати список: {error}",
+    "config_reloaded": "✅ Конфіг перечитано.\n\n• Користувачів: {users}\n• Адміністраторів: {admins}\n• Паралельних надсилань: {max_upload_tasks}",
+    "reload_failed": "❌ Не вдалося перечитати конфіг: {error}",
+    "restarting": "🔄 Перезапускаюся…"
+  },
+
+  "ytdlp": {
+    "new_version": "Вийшла нова версія {channel} <code>yt-dlp</code>: <b>{latest}</b>\nПоточна версія: <b>{current}</b>\nПерезберіть воркер: <code>./redeploy.sh yt_worker</code>",
+    "up_to_date": "ℹ️ Ваша версія {channel} <code>yt-dlp</code> <b>{current}</b> актуальна."
+  }
+}

@@ -1,13 +1,16 @@
 import asyncio
+import html
 import logging
+from collections import defaultdict
 from collections.abc import Iterable
+from typing import Any
 
 from pyrogram import Client
 from pyrogram.enums import ParseMode
 from pyrogram.errors import RPCError
 
+from bot.core.i18n import t
 from bot.core.schemas import ConfigSchema, UserSchema
-from bot.core.utils import bold
 
 
 class VideoBotClient(Client):
@@ -43,15 +46,47 @@ class VideoBotClient(Client):
                 user_ids.append(user.id)
         return user_ids
 
+    def language_for(self, *candidate_ids: int | None) -> str:
+        """Pick the language to address someone in: theirs, or the global default.
+
+        Several ids may be offered because a group is configured under its chat
+        id while the person writing has one of their own; the first that names a
+        user with a language of their own wins.
+        """
+        for candidate_id in candidate_ids:
+            user = self.allowed_users.get(candidate_id) if candidate_id else None
+            if user is not None and user.lang_code:
+                return user.lang_code
+        return self.conf.telegram.lang_code
+
     async def send_startup_message(self) -> None:
         """Send welcome message after bot launch."""
         self._log.info('Sending welcome message')
-        await self.send_message_to_users(
-            text=(
-                f'✨ {bold((await self.get_me()).first_name)} started, '
-                f'paste a video URL(s) to start download'
-            ),
+        await self.send_translated_to_users(
+            key='start.startup',
             user_ids=self.get_startup_users(),
+            name=html.escape((await self.get_me()).first_name),
+        )
+
+    async def send_translated_to_users(
+        self, key: str, user_ids: Iterable[int], **params: Any
+    ) -> None:
+        """Send one message, rendered in each recipient's own language.
+
+        Recipients are grouped by language so a message still costs one render
+        and one gather, however many people receive it.
+        """
+        by_language: dict[str, list[int]] = defaultdict(list)
+        for user_id in user_ids:
+            by_language[self.language_for(user_id)].append(user_id)
+        for language, ids in by_language.items():
+            await self.send_message_to_users(
+                text=t(key, language, **params), user_ids=ids
+            )
+
+    async def send_translated_to_admins(self, key: str, **params: Any) -> None:
+        await self.send_translated_to_users(
+            key=key, user_ids=self.admin_users.keys(), **params
         )
 
     async def send_message_to_users(

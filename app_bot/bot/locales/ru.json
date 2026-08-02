@@ -1,0 +1,148 @@
+{
+  "start": {
+    "greeting": "Пришлите ссылку на видео, чтобы начать.",
+    "startup": "✨ <b>{name}</b> запущен — пришлите ссылку, и начнётся загрузка."
+  },
+
+  "format": {
+    "choose": "🎯 Что скачать?",
+    "choose_quality": "📊 В каком качестве?",
+    "button_video": "🎬 Видео",
+    "button_audio": "🎵 Аудио",
+    "button_both": "🎬+🎵 Оба",
+    "button_cancel": "❌ Отмена",
+    "button_back": "⬅️ Назад",
+    "button_download_audio": "⬇️ Скачать аудио",
+    "button_best": "🏆 Лучшее качество",
+    "quality_best": "Лучшее",
+    "started": "✅ <b>Загрузка началась</b>",
+    "started_toast": "Загрузка началась",
+    "cancelled": "❌ Загрузка отменена",
+    "cancelled_toast": "Отменено",
+    "queue_failed": "🛑 <b>Не удалось поставить ссылку в очередь</b>",
+    "invalid_selection": "Эта кнопка больше не действует",
+    "session_expired": "Запрос устарел — пришлите ссылку заново",
+    "invalid_media_type": "Неизвестный тип медиа"
+  },
+
+  "progress": {
+    "downloading": "⬇️ <b>Загрузка</b> {percent}%",
+    "downloading_plain": "⬇️ <b>Загрузка</b>",
+    "uploading": "⬆️ <b>Отправка</b> {percent}%",
+    "uploading_plain": "⬆️ <b>Отправка</b>",
+    "processing": "⚙️ <b>Обработка</b>",
+    "processing_generic": "Склейка и конвертация скачанного…",
+    "eta": "⏳ осталось {time}",
+    "size": "📦 {done} из {total}",
+    "size_done": "📦 {done}",
+    "speed": "🚀 {speed}/с",
+    "elapsed": "⏱ прошло {time}",
+    "notice": "⚠️ {text}"
+  },
+
+  "postprocess": {
+    "merger": "Склейка видео и аудио",
+    "video_convertor": "Конвертация видео",
+    "video_remuxer": "Перепаковка видео",
+    "extract_audio": "Извлечение аудио",
+    "thumbnails_convertor": "Конвертация обложки",
+    "metadata": "Запись метаданных",
+    "embed_thumbnail": "Встраивание обложки",
+    "concat": "Соединение частей",
+    "fixup": "Починка потока"
+  },
+
+  "notice": {
+    "cookies_rejected": "Куки отвергнуты и пропущены — обновите их"
+  },
+
+  "error": {
+    "header_download": "Ошибка загрузки",
+    "header_general": "Общая ошибка",
+    "label_reason": "Причина",
+    "label_url": "Ссылка",
+    "label_task_id": "ID задачи",
+    "label_source": "Источник",
+    "label_details": "Подробности",
+    "label_ytdlp_version": "Версия yt-dlp",
+    "label_bot_version": "Версия yt-dlp-bot",
+    "label_tag": "Тег",
+    "label_site_response": "Ответ сайта",
+    "tag_error": "#error",
+    "tag_unavailable": "#unavailable"
+  },
+
+  "reason": {
+    "suspended_title": "Аккаунт заблокирован",
+    "suspended_hint": "Аккаунт, опубликовавший это, заблокирован, и сайт больше не отдаёт материал.",
+    "private_title": "Приватная запись",
+    "private_hint": "Запись закрыта, и без разрешения владельца доступа к ней нет.",
+    "removed_title": "Запись удалена",
+    "removed_hint": "Материал удалён или снят с публикации и больше недоступен.",
+    "age_restricted_title": "Возрастное ограничение",
+    "age_restricted_hint": "Сайт отдаёт это только авторизованному взрослому аккаунту. Могут помочь куки от такого аккаунта.",
+    "login_required_title": "Нужна авторизация",
+    "login_required_hint": "Сайт отказался отдавать материал без авторизованной сессии. Добавьте куки — см. раздел Cookies в README.",
+    "geo_blocked_title": "Недоступно в этом регионе",
+    "geo_blocked_hint": "Сайт не отдаёт этот материал из страны, где стоит сервер.",
+    "not_started_title": "Ещё не началось",
+    "not_started_hint": "Это анонс трансляции или премьеры. Попробуйте, когда она начнётся.",
+    "members_only_title": "Только для подписчиков",
+    "members_only_hint": "Доступ есть только у участников канала. Нужны куки от аккаунта с подпиской.",
+    "drm_title": "Защищено DRM",
+    "drm_hint": "Сайт шифрует свои медиа, и yt-dlp с них не качает. Так устроены Spotify, Netflix, Disney+ и подобные сервисы.",
+    "site_unsupported_title": "Сайт не поддерживается",
+    "site_unsupported_hint": "yt-dlp принципиально не поддерживает этот сайт и не будет.",
+    "subscription_title": "Платный материал",
+    "subscription_hint": "У аккаунта из кук нет доступа. Нужна подписка или покупка.",
+    "network_title": "Сайт недоступен",
+    "network_hint": "Запрос не дошёл до конца. Обычно это временно — попробуйте чуть позже.",
+    "no_media_title": "Скачивать нечего",
+    "no_media_hint": "Ссылка открывается, но видео или аудио в ней нет.",
+    "format_unavailable_title": "Нет такого качества",
+    "format_unavailable_hint": "Для этого материала выбранного качества не существует. Возьмите другое.",
+    "rate_limited_title": "Слишком частые запросы",
+    "rate_limited_hint": "Сайт временно отказывает этому серверу. Подождите и попробуйте снова.",
+    "unsupported_url_title": "Ссылка не поддерживается",
+    "unsupported_url_hint": "У yt-dlp нет обработчика для этого адреса. Проверьте, верна ли ссылка.",
+    "not_found_title": "Не найдено",
+    "not_found_hint": "Сайт вернул 404. Скорее всего, ссылка неверна или запись уже удалена.",
+    "forbidden_title": "Доступ закрыт",
+    "forbidden_hint": "Сайт вернул 403. Возможно, нужны куки или он блокирует этот сервер.",
+    "unavailable_title": "Материал недоступен",
+    "unavailable_hint": "Сайт сообщает, что материал недоступен, но причину не называет."
+  },
+
+  "admin": {
+    "not_admin": "🚫 Команда только для администраторов.",
+    "adduser_usage": "❌ Использование: <b>/adduser &lt;telegram_id&gt;</b>\nПример: /adduser 123456789",
+    "deleteuser_usage": "❌ Использование: <b>/deleteuser &lt;telegram_id&gt;</b>\nПример: /deleteuser 123456789",
+    "invalid_user_id": "❌ Это не похоже на ID — нужно число.",
+    "user_added": "✅ Пользователь <b>{user_id}</b> добавлен.\n\nНастройки:\n• Администратор: {is_admin}\n• Тип медиа: {media_type}\n• Сохранять в хранилище: {save_to_storage}\n\n💡 Записано в конфиг и применено.",
+    "user_exists": "❌ Пользователь {user_id} уже есть в конфиге.",
+    "user_deleted": "✅ Пользователь <b>{user_id}</b> удалён.\n\n💡 Записано в конфиг и применено.",
+    "user_not_found": "❌ Пользователя {user_id} нет в конфиге.",
+    "cannot_delete_admin": "❌ {user_id} — администратор, удалите его из конфига вручную.",
+    "add_user_failed": "❌ Не удалось добавить пользователя: {error}",
+    "delete_user_failed": "❌ Не удалось удалить пользователя: {error}",
+    "config_usage": "❌ Использование:\n<b>/config get &lt;путь&gt;</b> — прочитать значение\n<b>/config set &lt;путь&gt; &lt;значение&gt;</b> — изменить\n\nПримеры:\n/config get telegram.max_upload_tasks\n/config set telegram.max_upload_tasks 10",
+    "config_value_missing": "❌ Значение не указано. Использование: <b>/config set &lt;путь&gt; &lt;значение&gt;</b>",
+    "config_get_result": "📋 <b>{path}</b> = {value}",
+    "config_set_result": "✅ Конфиг обновлён.\n<b>{path}</b> = {value}\n\n💡 Записано в конфиг и применено.",
+    "config_get_failed": "❌ Не удалось прочитать значение: {error}",
+    "config_set_failed": "❌ Не удалось изменить значение: {error}",
+    "config_unknown_action": "❌ Неизвестное действие: {action}\nИспользуйте <b>get</b> или <b>set</b>",
+    "users_header": "📋 <b>Пользователи в конфиге</b> ({count})",
+    "users_none": "📋 Пользователей нет.",
+    "users_row": "{badge} <b>{user_id}</b>\n   Медиа: {media_type} | Хранилище: {storage}",
+    "users_failed": "❌ Не удалось получить список: {error}",
+    "config_reloaded": "✅ Конфиг перечитан.\n\n• Пользователей: {users}\n• Администраторов: {admins}\n• Параллельных отправок: {max_upload_tasks}",
+    "reload_failed": "❌ Не удалось перечитать конфиг: {error}",
+    "restarting": "🔄 Перезапускаюсь…"
+  },
+
+  "ytdlp": {
+    "new_version": "Вышла новая версия {channel} <code>yt-dlp</code>: <b>{latest}</b>\nТекущая версия: <b>{current}</b>\nПересоберите воркер: <code>./redeploy.sh yt_worker</code>",
+    "up_to_date": "ℹ️ Ваша версия {channel} <code>yt-dlp</code> <b>{current}</b> актуальна."
+  }
+}

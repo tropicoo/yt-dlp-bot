@@ -14,115 +14,44 @@ from typing import Final
 
 @dataclass(frozen=True)
 class FriendlyError:
-    """A recognised, expected download failure."""
+    """A recognised, expected download failure.
+
+    The wording lives in the message catalogues under ``reason.<name>_title``
+    and ``reason.<name>_hint``, so the same failure reads in whichever language
+    the recipient has configured.
+    """
 
     emoji: str
-    title: str
-    hint: str
+    name: str
+
+    @property
+    def title_key(self) -> str:
+        return f'reason.{self.name}_title'
+
+    @property
+    def hint_key(self) -> str:
+        return f'reason.{self.name}_hint'
 
 
-_SUSPENDED = FriendlyError(
-    '🚫',
-    'Account suspended',
-    'The account that posted this has been suspended, so the media is no longer '
-    'served by the site.',
-)
-_PRIVATE = FriendlyError(
-    '🔒',
-    'Private content',
-    'This content is private and cannot be accessed without permission from its owner.',
-)
-_REMOVED = FriendlyError(
-    '🗑',
-    'Content removed',
-    'This content has been deleted or taken down and is no longer available.',
-)
-_AGE_RESTRICTED = FriendlyError(
-    '🔞',
-    'Age-restricted content',
-    'The site only serves this to a signed-in adult account. Adding cookies for a '
-    'logged-in account may help.',
-)
-_LOGIN_REQUIRED = FriendlyError(
-    '🍪',
-    'Login required',
-    'The site refused to serve this without an authenticated session. Add your '
-    'cookies to fix it — see the Cookies section in the README.',
-)
-_GEO_BLOCKED = FriendlyError(
-    '🌍',
-    'Blocked in this region',
-    'The site does not serve this content from the server\'s location.',
-)
-_NOT_STARTED = FriendlyError(
-    '⏳',
-    'Not available yet',
-    'This is an upcoming stream or premiere. Try again once it has started.',
-)
-_MEMBERS_ONLY = FriendlyError(
-    '💎',
-    'Members-only content',
-    'This is restricted to channel members. Cookies for a subscribed account are '
-    'required.',
-)
-_DRM = FriendlyError(
-    '🔒',
-    'Protected by DRM',
-    'This site encrypts its media, so yt-dlp will not download from it. Spotify, '
-    'Netflix, Disney+ and similar services all work this way.',
-)
-_SITE_UNSUPPORTED = FriendlyError(
-    '🚷',
-    'Site not supported',
-    'yt-dlp deliberately does not support this site and will not add it.',
-)
-_SUBSCRIPTION = FriendlyError(
-    '💳',
-    'Paid content',
-    'The account behind the cookies does not have access to this. A subscription '
-    'or purchase is required.',
-)
-_NETWORK = FriendlyError(
-    '🌐',
-    'Could not reach the site',
-    'The request never completed. This is usually temporary — try again shortly.',
-)
-_NO_MEDIA = FriendlyError(
-    '📭',
-    'Nothing to download',
-    'The link opens fine, but there is no video or audio in it to download.',
-)
-_FORMAT_UNAVAILABLE = FriendlyError(
-    '🎞',
-    'Requested quality unavailable',
-    'The chosen quality does not exist for this media. Try another one.',
-)
-_RATE_LIMITED = FriendlyError(
-    '🐌',
-    'Rate limited',
-    'The site is temporarily refusing requests from this server. Wait a while and '
-    'try again.',
-)
-_UNSUPPORTED_URL = FriendlyError(
-    '🔗',
-    'Unsupported link',
-    'yt-dlp has no extractor for this URL. Double-check the link is correct.',
-)
-_NOT_FOUND = FriendlyError(
-    '🔍',
-    'Not found',
-    'The site returned 404 for this link. It is likely wrong or already deleted.',
-)
-_FORBIDDEN = FriendlyError(
-    '⛔',
-    'Access denied',
-    'The site returned 403. It may require cookies or be blocking this server.',
-)
-_UNAVAILABLE = FriendlyError(
-    '❓',
-    'Content unavailable',
-    'The site reports this content as unavailable without giving a specific reason.',
-)
+_SUSPENDED = FriendlyError('🚫', 'suspended')
+_PRIVATE = FriendlyError('🔒', 'private')
+_REMOVED = FriendlyError('🗑', 'removed')
+_AGE_RESTRICTED = FriendlyError('🔞', 'age_restricted')
+_LOGIN_REQUIRED = FriendlyError('🍪', 'login_required')
+_GEO_BLOCKED = FriendlyError('🌍', 'geo_blocked')
+_NOT_STARTED = FriendlyError('⏳', 'not_started')
+_MEMBERS_ONLY = FriendlyError('💎', 'members_only')
+_DRM = FriendlyError('🔒', 'drm')
+_SITE_UNSUPPORTED = FriendlyError('🚷', 'site_unsupported')
+_SUBSCRIPTION = FriendlyError('💳', 'subscription')
+_NETWORK = FriendlyError('🌐', 'network')
+_NO_MEDIA = FriendlyError('📭', 'no_media')
+_FORMAT_UNAVAILABLE = FriendlyError('🎞', 'format_unavailable')
+_RATE_LIMITED = FriendlyError('🐌', 'rate_limited')
+_UNSUPPORTED_URL = FriendlyError('🔗', 'unsupported_url')
+_NOT_FOUND = FriendlyError('🔍', 'not_found')
+_FORBIDDEN = FriendlyError('⛔', 'forbidden')
+_UNAVAILABLE = FriendlyError('❓', 'unavailable')
 
 # Ordered from most to least specific: the first match wins, so narrow patterns
 # such as "sign in to confirm your age" must be tried before the broad ones.

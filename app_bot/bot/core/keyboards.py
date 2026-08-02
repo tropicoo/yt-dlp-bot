@@ -3,6 +3,8 @@
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from yt_shared.enums import DownMediaType, VideoQuality
 
+from bot.core.i18n import t
+
 
 # Callback data prefixes
 MEDIA_TYPE_PREFIX = 'mt:'
@@ -11,28 +13,28 @@ DOWNLOAD_PREFIX = 'dl:'
 CANCEL_PREFIX = 'cancel:'
 
 
-def build_media_type_keyboard(url_id: str) -> InlineKeyboardMarkup:
+def build_media_type_keyboard(url_id: str, language: str) -> InlineKeyboardMarkup:
     """Build keyboard for selecting media type (Video/Audio)."""
     return InlineKeyboardMarkup([
         [
             InlineKeyboardButton(
-                '🎬 Video',
+                t('format.button_video', language),
                 callback_data=f'{MEDIA_TYPE_PREFIX}{DownMediaType.VIDEO}:{url_id}',
             ),
             InlineKeyboardButton(
-                '🎵 Audio',
+                t('format.button_audio', language),
                 callback_data=f'{MEDIA_TYPE_PREFIX}{DownMediaType.AUDIO}:{url_id}',
             ),
         ],
         [
             InlineKeyboardButton(
-                '🎬+🎵 Both',
+                t('format.button_both', language),
                 callback_data=f'{MEDIA_TYPE_PREFIX}{DownMediaType.AUDIO_VIDEO}:{url_id}',
             ),
         ],
         [
             InlineKeyboardButton(
-                '❌ Cancel',
+                t('format.button_cancel', language),
                 callback_data=f'{CANCEL_PREFIX}{url_id}',
             ),
         ],
@@ -40,7 +42,7 @@ def build_media_type_keyboard(url_id: str) -> InlineKeyboardMarkup:
 
 
 def build_quality_keyboard(
-    url_id: str, media_type: DownMediaType
+    url_id: str, media_type: DownMediaType, language: str
 ) -> InlineKeyboardMarkup:
     """Build keyboard for selecting video quality."""
     if media_type == DownMediaType.AUDIO:
@@ -48,13 +50,13 @@ def build_quality_keyboard(
         return InlineKeyboardMarkup([
             [
                 InlineKeyboardButton(
-                    '⬇️ Download Audio',
+                    t('format.button_download_audio', language),
                     callback_data=f'{DOWNLOAD_PREFIX}{media_type}:{VideoQuality.BEST}:{url_id}',
                 ),
             ],
             [
                 InlineKeyboardButton(
-                    '⬅️ Back',
+                    t('format.button_back', language),
                     callback_data=f'{MEDIA_TYPE_PREFIX}back:{url_id}',
                 ),
             ],
@@ -64,7 +66,7 @@ def build_quality_keyboard(
     quality_buttons = [
         [
             InlineKeyboardButton(
-                '🏆 Best Quality',
+                t('format.button_best', language),
                 callback_data=f'{DOWNLOAD_PREFIX}{media_type}:{VideoQuality.BEST}:{url_id}',
             ),
         ],
@@ -100,11 +102,11 @@ def build_quality_keyboard(
         ],
         [
             InlineKeyboardButton(
-                '⬅️ Back',
+                t('format.button_back', language),
                 callback_data=f'{MEDIA_TYPE_PREFIX}back:{url_id}',
             ),
             InlineKeyboardButton(
-                '❌ Cancel',
+                t('format.button_cancel', language),
                 callback_data=f'{CANCEL_PREFIX}{url_id}',
             ),
         ],

@@ -8,7 +8,7 @@ from yt_shared.enums import ProgressStage
 from yt_shared.schemas.progress import ProgressPayload
 from yt_shared.utils.common import format_bytes
 
-from bot.core.utils import bold
+from bot.core.i18n import has_message, t
 
 _BAR_SEGMENTS: Final[int] = 10
 _BAR_FILLED: Final[str] = '▰'
@@ -33,60 +33,90 @@ def _format_eta(seconds: int) -> str:
     return f'{minutes}:{secs:02d}'
 
 
-def _headline(emoji: str, title: str, percent: float | None) -> list[str]:
+def _headline(key: str, language: str, percent: float | None) -> list[str]:
     if percent is None:
-        return [f'{emoji} {bold(title)}']
-    return [f'{emoji} {bold(title)} {percent:.1f}%', _progress_bar(percent)]
+        return [t(f'{key}_plain', language)]
+    return [t(key, language, percent=f'{percent:.1f}'), _progress_bar(percent)]
 
 
-def format_download_progress(payload: ProgressPayload) -> str:
+def format_download_progress(payload: ProgressPayload, language: str) -> str:
     """Render a download progress update for the acknowledgement message."""
     if payload.stage is ProgressStage.POSTPROCESSING:
         # There is no percentage to show here, so the step and how long it has
         # been running are what tell the user it is progressing at all.
-        lines = [f'⚙️ {bold("Processing")}']
-        lines.append(payload.detail or 'Merging and converting the downloaded media…')
+        lines = [t('progress.processing', language)]
+        lines.append(
+            t(payload.detail_key, language)
+            if has_message(payload.detail_key)
+            else t('progress.processing_generic', language)
+        )
         if payload.elapsed:
-            lines.append(f'⏱ {_format_eta(payload.elapsed)} elapsed')
+            lines.append(
+                t('progress.elapsed', language, time=_format_eta(payload.elapsed))
+            )
         return '\n'.join(lines)
 
-    lines = _headline('⬇️', 'Downloading', payload.percent)
-    if payload.detail:
-        lines.append(f'⚠️ {payload.detail}')
+    lines = _headline('progress.downloading', language, payload.percent)
+    if has_message(payload.detail_key):
+        lines.append(
+            t('progress.notice', language, text=t(payload.detail_key, language))
+        )
 
     details = []
     if payload.eta is not None:
-        details.append(f'⏳ {_format_eta(payload.eta)} left')
+        details.append(t('progress.eta', language, time=_format_eta(payload.eta)))
     if payload.total_bytes:
-        downloaded = format_bytes(payload.downloaded_bytes or 0)
-        details.append(f'📦 {downloaded} of {format_bytes(payload.total_bytes)}')
+        details.append(
+            t(
+                'progress.size',
+                language,
+                done=format_bytes(payload.downloaded_bytes or 0),
+                total=format_bytes(payload.total_bytes),
+            )
+        )
     elif payload.downloaded_bytes:
-        details.append(f'📦 {format_bytes(payload.downloaded_bytes)}')
+        details.append(
+            t(
+                'progress.size_done',
+                language,
+                done=format_bytes(payload.downloaded_bytes),
+            )
+        )
     if payload.speed:
-        details.append(f'🚀 {format_bytes(int(payload.speed))}/s')
+        details.append(
+            t('progress.speed', language, speed=format_bytes(int(payload.speed)))
+        )
 
     if details:
         lines.append(' · '.join(details))
     return '\n'.join(lines)
 
 
-def format_upload_progress(current: int, total: int) -> str:
+def format_upload_progress(current: int, total: int, language: str) -> str:
     """Render an upload progress update for the acknowledgement message."""
     percent = round(min(current / total, 1.0) * 100, 1) if total else None
-    lines = _headline('⬆️', 'Uploading', percent)
+    lines = _headline('progress.uploading', language, percent)
     if total:
-        lines.append(f'📦 {format_bytes(current)} of {format_bytes(total)}')
+        lines.append(
+            t(
+                'progress.size',
+                language,
+                done=format_bytes(current),
+                total=format_bytes(total),
+            )
+        )
     return '\n'.join(lines)
 
 
 class UploadProgressReporter:
     """Throttled Pyrogram upload callback that refreshes a status message."""
 
-    def __init__(self, bot, chat_id: int, message_id: int) -> None:
+    def __init__(self, bot, chat_id: int, message_id: int, language: str) -> None:
         self._log = logging.getLogger(self.__class__.__name__)
         self._bot = bot
         self._chat_id = chat_id
         self._message_id = message_id
+        self._language = language
         self._last_sent_at = 0.0
 
     async def __call__(self, current: int, total: int) -> None:
@@ -100,7 +130,7 @@ class UploadProgressReporter:
             await self._bot.edit_message_text(
                 chat_id=self._chat_id,
                 message_id=self._message_id,
-                text=format_upload_progress(current, total),
+                text=format_upload_progress(current, total, self._language),
             )
         except Exception as err:
             self._log.debug('Could not refresh upload progress: %s', err)

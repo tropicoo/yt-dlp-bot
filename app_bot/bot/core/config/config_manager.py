@@ -15,6 +15,11 @@ from ruamel.yaml.scalarbool import ScalarBoolean
 from ruamel.yaml.scalarint import ScalarInt
 from ruamel.yaml.scalarfloat import ScalarFloat
 
+from bot.core.exceptions import (
+    CannotDeleteAdminError,
+    UserAlreadyExistsError,
+    UserNotFoundError,
+)
 from bot.core.schemas import ConfigSchema, UserSchema
 
 if TYPE_CHECKING:
@@ -139,7 +144,7 @@ class ConfigManager:
         self._log.info('Adding user: %d', user_id)
 
         if user_id in bot.allowed_users:
-            raise ValueError(f'User {user_id} already exists')
+            raise UserAlreadyExistsError(user_id)
 
         self._create_backup()
         raw_config = self._load_raw_config()
@@ -181,10 +186,10 @@ class ConfigManager:
         self._log.info('Deleting user: %d', user_id)
 
         if user_id not in bot.allowed_users:
-            raise ValueError(f'User {user_id} not found')
+            raise UserNotFoundError(user_id)
 
         if user_id in bot.admin_users:
-            raise ValueError(f'Cannot delete admin user {user_id}. Edit config file manually.')
+            raise CannotDeleteAdminError(user_id)
 
         self._create_backup()
         raw_config = self._load_raw_config()

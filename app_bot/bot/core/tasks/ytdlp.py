@@ -4,14 +4,12 @@ from typing import TYPE_CHECKING
 
 from yt_shared.clients.github import YtdlpGithubClient
 from yt_shared.db.session import get_db
-from yt_shared.emoji import INFORMATION_EMOJI
 from yt_shared.repositories.ytdlp import YtdlpRepository
 from yt_shared.schemas.ytdlp import VersionContext
 from yt_shared.utils.tasks.abstract import AbstractTask
 from yt_shared.ytdlp.version_checker import YtdlpVersionChecker
 
 from bot.core.config.config import get_main_config
-from bot.core.utils import bold, code
 
 if TYPE_CHECKING:
     from bot.bot.client import VideoBotClient
@@ -76,20 +74,20 @@ class YtdlpNewVersionNotifyTask(AbstractTask):
                 self._startup_message_sent = True
 
     async def _notify_outdated(self, ctx: VersionContext) -> None:
-        text = (
-            f'New {bold(self._ytdlp_conf.release_channel)} {code("yt-dlp")} version available: '
-            f'{bold(ctx.latest.version)}\n'
-            f'Current version: {bold(ctx.current.version)}\n'
-            f'Rebuild worker with {code("docker compose build --no-cache yt_worker && docker compose up -d -t 0 yt_worker")}'
+        await self._bot.send_translated_to_admins(
+            key='ytdlp.new_version',
+            channel=self._ytdlp_conf.release_channel,
+            latest=ctx.latest.version,
+            current=ctx.current.version,
         )
-        await self._bot.send_message_admins(text)
 
     async def _notify_up_to_date(
         self, ctx: VersionContext, user_ids: list[int]
     ) -> None:
         """Send startup message that yt-dlp version is up-to-date."""
-        text = (
-            f'{INFORMATION_EMOJI} Your {bold(self._ytdlp_conf.release_channel)} {code("yt-dlp")} '
-            f'version {bold(ctx.current.version)} is up to date, have fun'
+        await self._bot.send_translated_to_users(
+            key='ytdlp.up_to_date',
+            user_ids=user_ids,
+            channel=self._ytdlp_conf.release_channel,
+            current=ctx.current.version,
         )
-        await self._bot.send_message_to_users(text=text, user_ids=user_ids)

@@ -12,8 +12,8 @@ from yt_shared.utils.file import list_files_human, remove_dir
 from yt_shared.utils.tasks.tasks import create_task
 
 from bot.core.handlers.abstract import AbstractDownloadHandler
+from bot.core.i18n import t
 from bot.core.tasks.upload import AbstractUploadTask, AudioUploadTask, VideoUploadTask
-from bot.core.utils import bold
 
 
 class SuccessDownloadHandler(AbstractDownloadHandler):
@@ -99,11 +99,21 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
         if not (self._body.from_chat_id and self._body.context.ack_message_id):
             return
 
+        language = self._bot.language_for(
+            self._get_sender_id(), self._body.from_chat_id
+        )
         try:
             await self._bot.edit_message_text(
                 chat_id=self._body.from_chat_id,
                 message_id=self._body.context.ack_message_id,
-                text=f'⬆️ {bold(f"Uploading {media_object.file_size_human()}")}',
+                text='\n'.join((
+                    t('progress.uploading_plain', language),
+                    t(
+                        'progress.size_done',
+                        language,
+                        done=media_object.file_size_human(),
+                    ),
+                )),
             )
         except (MessageIdInvalid, MessageNotModified) as err:
             # Expected behaviour when several links where pasted in one message and

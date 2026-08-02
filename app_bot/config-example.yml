@@ -2,6 +2,8 @@ telegram:
   api_id: 00000000000
   api_hash: "REPLACE-WITH-TELEGRAM-API-HASH"
   token: "REPLACE-WITH-TELEGRAM-TOKEN"
+  # Language the bot speaks: en, uk, ru, he or lv. Applies to everyone; a user
+  # below may pick a different one.
   lang_code: !!str "en"
   max_upload_tasks: 5
   url_validation_regexes:
@@ -31,6 +33,8 @@ telegram:
       # Omit to follow the global setting above, or set it to override for
       # this user. Needs the bot to be an administrator in group chats.
       # delete_source_message: !!bool True
+      # Omit to follow telegram.lang_code above.
+      # lang_code: !!str "uk"
   api:
     upload_video_file: !!bool False
     upload_video_max_file_size: 2147483648

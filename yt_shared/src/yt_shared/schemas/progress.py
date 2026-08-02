@@ -16,8 +16,10 @@ class ProgressPayload(StrictBaseRabbitPayloadModel):
     ack_message_id: int
     stage: ProgressStage
     # Post-processing reports no percentage, so the step being run and how long
-    # it has been running are all the feedback there is to give.
-    detail: str | None = None
+    # it has been running are all the feedback there is to give. The worker does
+    # not know which language the recipient reads, so it names a message rather
+    # than writing one and the bot translates it.
+    detail_key: str | None = None
     elapsed: int | None = None
     filename: str | None = None
     percent: float | None = None

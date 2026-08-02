@@ -1,0 +1,148 @@
+{
+  "start": {
+    "greeting": "Nosūtiet video saiti, lai sāktu.",
+    "startup": "✨ <b>{name}</b> ir gatavs — nosūtiet saiti, un lejupielāde sāksies."
+  },
+
+  "format": {
+    "choose": "🎯 Ko lejupielādēt?",
+    "choose_quality": "📊 Kādā kvalitātē?",
+    "button_video": "🎬 Video",
+    "button_audio": "🎵 Audio",
+    "button_both": "🎬+🎵 Abus",
+    "button_cancel": "❌ Atcelt",
+    "button_back": "⬅️ Atpakaļ",
+    "button_download_audio": "⬇️ Lejupielādēt audio",
+    "button_best": "🏆 Labākā kvalitāte",
+    "quality_best": "Labākā",
+    "started": "✅ <b>Lejupielāde sākta</b>",
+    "started_toast": "Lejupielāde sākta",
+    "cancelled": "❌ Lejupielāde atcelta",
+    "cancelled_toast": "Atcelts",
+    "queue_failed": "🛑 <b>Neizdevās ielikt saiti rindā</b>",
+    "invalid_selection": "Šī poga vairs nav derīga",
+    "session_expired": "Šis pieprasījums ir novecojis — nosūtiet saiti vēlreiz",
+    "invalid_media_type": "Nezināms medija tips"
+  },
+
+  "progress": {
+    "downloading": "⬇️ <b>Lejupielāde</b> {percent}%",
+    "downloading_plain": "⬇️ <b>Lejupielāde</b>",
+    "uploading": "⬆️ <b>Augšupielāde</b> {percent}%",
+    "uploading_plain": "⬆️ <b>Augšupielāde</b>",
+    "processing": "⚙️ <b>Apstrāde</b>",
+    "processing_generic": "Apvieno un pārveido lejupielādēto…",
+    "eta": "⏳ atlicis {time}",
+    "size": "📦 {done} no {total}",
+    "size_done": "📦 {done}",
+    "speed": "🚀 {speed}/s",
+    "elapsed": "⏱ pagājis {time}",
+    "notice": "⚠️ {text}"
+  },
+
+  "postprocess": {
+    "merger": "Apvieno video un audio",
+    "video_convertor": "Pārveido video",
+    "video_remuxer": "Pārpako video",
+    "extract_audio": "Atdala audio",
+    "thumbnails_convertor": "Pārveido vāciņu",
+    "metadata": "Ieraksta metadatus",
+    "embed_thumbnail": "Iegulda vāciņu",
+    "concat": "Savieno daļas",
+    "fixup": "Labo plūsmu"
+  },
+
+  "notice": {
+    "cookies_rejected": "Sīkdatnes tika noraidītas un izlaistas — atjaunojiet tās"
+  },
+
+  "error": {
+    "header_download": "Lejupielādes kļūda",
+    "header_general": "Vispārīga kļūda",
+    "label_reason": "Iemesls",
+    "label_url": "Saite",
+    "label_task_id": "Uzdevuma ID",
+    "label_source": "Avots",
+    "label_details": "Sīkāk",
+    "label_ytdlp_version": "yt-dlp versija",
+    "label_bot_version": "yt-dlp-bot versija",
+    "label_tag": "Birka",
+    "label_site_response": "Vietnes atbilde",
+    "tag_error": "#error",
+    "tag_unavailable": "#unavailable"
+  },
+
+  "reason": {
+    "suspended_title": "Konts ir bloķēts",
+    "suspended_hint": "Konts, kas to publicēja, ir bloķēts, tāpēc vietne saturu vairs nepiedāvā.",
+    "private_title": "Privāts saturs",
+    "private_hint": "Šis saturs ir privāts, un bez īpašnieka atļaujas tam nevar piekļūt.",
+    "removed_title": "Saturs ir dzēsts",
+    "removed_hint": "Šis saturs ir dzēsts vai noņemts un vairs nav pieejams.",
+    "age_restricted_title": "Vecuma ierobežojums",
+    "age_restricted_hint": "Vietne to piedāvā tikai pieteiktam pieaugušā kontam. Var palīdzēt šāda konta sīkdatnes.",
+    "login_required_title": "Nepieciešama pieteikšanās",
+    "login_required_hint": "Vietne atteicās izsniegt saturu bez autorizētas sesijas. Pievienojiet sīkdatnes — skatiet README sadaļu Cookies.",
+    "geo_blocked_title": "Nav pieejams šajā reģionā",
+    "geo_blocked_hint": "Vietne šo saturu nepiedāvā no valsts, kurā atrodas serveris.",
+    "not_started_title": "Vēl nav sācies",
+    "not_started_hint": "Šī ir gaidāma tiešraide vai pirmizrāde. Mēģiniet vēlreiz, kad tā būs sākusies.",
+    "members_only_title": "Tikai biedriem",
+    "members_only_hint": "Tas ir pieejams tikai kanāla biedriem. Nepieciešamas abonēta konta sīkdatnes.",
+    "drm_title": "Aizsargāts ar DRM",
+    "drm_hint": "Šī vietne šifrē savus medijus, tāpēc yt-dlp no tās neko nelejupielādē. Tā darbojas Spotify, Netflix, Disney+ un līdzīgi pakalpojumi.",
+    "site_unsupported_title": "Vietne netiek atbalstīta",
+    "site_unsupported_hint": "yt-dlp apzināti neatbalsta šo vietni un to nemainīs.",
+    "subscription_title": "Maksas saturs",
+    "subscription_hint": "Kontam, kuram pieder sīkdatnes, nav piekļuves. Nepieciešams abonements vai pirkums.",
+    "network_title": "Neizdevās sasniegt vietni",
+    "network_hint": "Pieprasījums netika pabeigts. Parasti tas ir īslaicīgi — mēģiniet vēlreiz pēc brīža.",
+    "no_media_title": "Nav ko lejupielādēt",
+    "no_media_hint": "Saite atveras, bet tajā nav ne video, ne audio.",
+    "format_unavailable_title": "Izvēlētā kvalitāte nav pieejama",
+    "format_unavailable_hint": "Šim saturam izvēlētā kvalitāte neeksistē. Izvēlieties citu.",
+    "rate_limited_title": "Pārāk daudz pieprasījumu",
+    "rate_limited_hint": "Vietne uz laiku atsaka šim serverim. Uzgaidiet un mēģiniet vēlreiz.",
+    "unsupported_url_title": "Neatbalstīta saite",
+    "unsupported_url_hint": "yt-dlp nav ekstraktora šai adresei. Pārbaudiet, vai saite ir pareiza.",
+    "not_found_title": "Nav atrasts",
+    "not_found_hint": "Vietne atgrieza 404. Visticamāk, saite ir nepareiza vai saturs jau dzēsts.",
+    "forbidden_title": "Piekļuve liegta",
+    "forbidden_hint": "Vietne atgrieza 403. Iespējams, nepieciešamas sīkdatnes vai tā bloķē šo serveri.",
+    "unavailable_title": "Saturs nav pieejams",
+    "unavailable_hint": "Vietne ziņo, ka saturs nav pieejams, bet iemeslu nenorāda."
+  },
+
+  "admin": {
+    "not_admin": "🚫 Šī komanda ir tikai administratoriem.",
+    "adduser_usage": "❌ Lietojums: <b>/adduser &lt;telegram_id&gt;</b>\nPiemērs: /adduser 123456789",
+    "deleteuser_usage": "❌ Lietojums: <b>/deleteuser &lt;telegram_id&gt;</b>\nPiemērs: /deleteuser 123456789",
+    "invalid_user_id": "❌ Tas neizskatās pēc ID — jābūt skaitlim.",
+    "user_added": "✅ Lietotājs <b>{user_id}</b> pievienots.\n\nIestatījumi:\n• Administrators: {is_admin}\n• Medija tips: {media_type}\n• Saglabāt krātuvē: {save_to_storage}\n\n💡 Ierakstīts konfigurācijā un pārlādēts.",
+    "user_exists": "❌ Lietotājs {user_id} konfigurācijā jau ir.",
+    "user_deleted": "✅ Lietotājs <b>{user_id}</b> noņemts.\n\n💡 Ierakstīts konfigurācijā un pārlādēts.",
+    "user_not_found": "❌ Lietotāja {user_id} konfigurācijā nav.",
+    "cannot_delete_admin": "❌ {user_id} ir administrators — noņemiet to no konfigurācijas manuāli.",
+    "add_user_failed": "❌ Neizdevās pievienot lietotāju: {error}",
+    "delete_user_failed": "❌ Neizdevās noņemt lietotāju: {error}",
+    "config_usage": "❌ Lietojums:\n<b>/config get &lt;ceļš&gt;</b> — nolasīt vērtību\n<b>/config set &lt;ceļš&gt; &lt;vērtība&gt;</b> — nomainīt\n\nPiemēri:\n/config get telegram.max_upload_tasks\n/config set telegram.max_upload_tasks 10",
+    "config_value_missing": "❌ Vērtība nav norādīta. Lietojums: <b>/config set &lt;ceļš&gt; &lt;vērtība&gt;</b>",
+    "config_get_result": "📋 <b>{path}</b> = {value}",
+    "config_set_result": "✅ Konfigurācija atjaunināta.\n<b>{path}</b> = {value}\n\n💡 Ierakstīts konfigurācijā un pārlādēts.",
+    "config_get_failed": "❌ Neizdevās nolasīt vērtību: {error}",
+    "config_set_failed": "❌ Neizdevās nomainīt vērtību: {error}",
+    "config_unknown_action": "❌ Nezināma darbība: {action}\nIzmantojiet <b>get</b> vai <b>set</b>",
+    "users_header": "📋 <b>Konfigurētie lietotāji</b> ({count})",
+    "users_none": "📋 Nav neviena lietotāja.",
+    "users_row": "{badge} <b>{user_id}</b>\n   Mediji: {media_type} | Krātuve: {storage}",
+    "users_failed": "❌ Neizdevās iegūt sarakstu: {error}",
+    "config_reloaded": "✅ Konfigurācija pārlādēta.\n\n• Lietotāji: {users}\n• Administratori: {admins}\n• Vienlaicīgas augšupielādes: {max_upload_tasks}",
+    "reload_failed": "❌ Neizdevās pārlādēt konfigurāciju: {error}",
+    "restarting": "🔄 Pārstartējos…"
+  },
+
+  "ytdlp": {
+    "new_version": "Pieejama jauna {channel} <code>yt-dlp</code> versija: <b>{latest}</b>\nPašreizējā versija: <b>{current}</b>\nPārbūvējiet darbinieku: <code>./redeploy.sh yt_worker</code>",
+    "up_to_date": "ℹ️ Jūsu {channel} <code>yt-dlp</code> versija <b>{current}</b> ir aktuāla."
+  }
+}

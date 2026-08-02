@@ -20,18 +20,22 @@ _MIN_INTERVAL_SECONDS: Final[float] = 3.0
 # enough to show it is still alive.
 _POSTPROCESSING_TICK_SECONDS: Final[float] = 10.0
 
-# yt-dlp names its post-processors after their classes.
-_STEP_LABELS: Final[dict[str, str]] = {
-    'Merger': 'Merging video and audio',
-    'FFmpegVideoConvertor': 'Converting video',
-    'FFmpegVideoRemuxer': 'Repackaging video',
-    'FFmpegExtractAudio': 'Extracting audio',
-    'FFmpegThumbnailsConvertor': 'Converting the thumbnail',
-    'FFmpegMetadata': 'Writing metadata',
-    'EmbedThumbnail': 'Embedding the cover',
-    'FFmpegConcat': 'Joining the parts',
-    'FFmpegFixupM3u8': 'Repairing the stream',
+# yt-dlp names its post-processors after their classes. The worker has no idea
+# which language the person waiting reads, so each one maps to a message key the
+# bot resolves against its own catalogues.
+_STEP_KEYS: Final[dict[str, str]] = {
+    'Merger': 'postprocess.merger',
+    'FFmpegVideoConvertor': 'postprocess.video_convertor',
+    'FFmpegVideoRemuxer': 'postprocess.video_remuxer',
+    'FFmpegExtractAudio': 'postprocess.extract_audio',
+    'FFmpegThumbnailsConvertor': 'postprocess.thumbnails_convertor',
+    'FFmpegMetadata': 'postprocess.metadata',
+    'EmbedThumbnail': 'postprocess.embed_thumbnail',
+    'FFmpegConcat': 'postprocess.concat',
+    'FFmpegFixupM3u8': 'postprocess.fixup',
 }
+
+_COOKIES_REJECTED_KEY: Final[str] = 'notice.cookies_rejected'
 
 
 class ProgressReporter:
@@ -53,8 +57,8 @@ class ProgressReporter:
         self._last_sample: tuple[float, int] | None = None
         self._in_flight: Future | None = None
         self._postprocessing_since: float | None = None
-        self._step: str | None = None
-        self._notice: str | None = None
+        self._step_key: str | None = None
+        self._notice_key: str | None = None
         self._ticker: Future | None = None
         # yt-dlp calls the hook from every fragment thread at once, so deciding
         # whether to publish has to be atomic or each of them publishes a tick.
@@ -105,7 +109,7 @@ class ProgressReporter:
             if status.get('status') != 'started':
                 return
             with self._lock:
-                self._step = _STEP_LABELS.get(status.get('postprocessor', ''))
+                self._step_key = _STEP_KEYS.get(status.get('postprocessor', ''))
             self._report_postprocessing()
         except Exception:
             self._log.exception('Failed to report a post-processing step')
@@ -113,12 +117,12 @@ class ProgressReporter:
     def report_cookies_rejected(self) -> None:
         """Tell the user their cookies were turned down and are being skipped."""
         with self._lock:
-            self._notice = 'Cookies were rejected and skipped — refresh them'
+            self._notice_key = _COOKIES_REJECTED_KEY
             payload = ProgressPayload(
                 from_chat_id=self._payload.from_chat_id,
                 ack_message_id=self._payload.ack_message_id,
                 stage=ProgressStage.DOWNLOADING,
-                detail=self._notice,
+                detail_key=self._notice_key,
             )
             # A fresh start: the retry downloads from scratch.
             self._last_sample = None
@@ -151,7 +155,7 @@ class ProgressReporter:
                 from_chat_id=self._payload.from_chat_id,
                 ack_message_id=self._payload.ack_message_id,
                 stage=ProgressStage.POSTPROCESSING,
-                detail=self._step,
+                detail_key=self._step_key,
                 elapsed=int(time.monotonic() - self._postprocessing_since),
             )
         self._publish(payload)
@@ -196,7 +200,7 @@ class ProgressReporter:
             ack_message_id=self._payload.ack_message_id,
             stage=stage,
             percent=percent,
-            detail=self._notice,
+            detail_key=self._notice_key,
             downloaded_bytes=int(downloaded) if downloaded is not None else None,
             total_bytes=int(total) if total else None,
             speed=speed,

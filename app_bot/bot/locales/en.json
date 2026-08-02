@@ -1,0 +1,148 @@
+{
+  "start": {
+    "greeting": "Send a video link to begin.",
+    "startup": "✨ <b>{name}</b> is up — paste a link to start a download."
+  },
+
+  "format": {
+    "choose": "🎯 What should I download?",
+    "choose_quality": "📊 Which quality?",
+    "button_video": "🎬 Video",
+    "button_audio": "🎵 Audio",
+    "button_both": "🎬+🎵 Both",
+    "button_cancel": "❌ Cancel",
+    "button_back": "⬅️ Back",
+    "button_download_audio": "⬇️ Download audio",
+    "button_best": "🏆 Best quality",
+    "quality_best": "Best",
+    "started": "✅ <b>Download started</b>",
+    "started_toast": "Download started",
+    "cancelled": "❌ Download cancelled",
+    "cancelled_toast": "Cancelled",
+    "queue_failed": "🛑 <b>Could not queue the link</b>",
+    "invalid_selection": "That button is no longer valid",
+    "session_expired": "This request has expired — send the link again",
+    "invalid_media_type": "Unknown media type"
+  },
+
+  "progress": {
+    "downloading": "⬇️ <b>Downloading</b> {percent}%",
+    "downloading_plain": "⬇️ <b>Downloading</b>",
+    "uploading": "⬆️ <b>Uploading</b> {percent}%",
+    "uploading_plain": "⬆️ <b>Uploading</b>",
+    "processing": "⚙️ <b>Processing</b>",
+    "processing_generic": "Merging and converting the downloaded media…",
+    "eta": "⏳ {time} left",
+    "size": "📦 {done} of {total}",
+    "size_done": "📦 {done}",
+    "speed": "🚀 {speed}/s",
+    "elapsed": "⏱ {time} elapsed",
+    "notice": "⚠️ {text}"
+  },
+
+  "postprocess": {
+    "merger": "Merging video and audio",
+    "video_convertor": "Converting video",
+    "video_remuxer": "Repackaging video",
+    "extract_audio": "Extracting audio",
+    "thumbnails_convertor": "Converting the thumbnail",
+    "metadata": "Writing metadata",
+    "embed_thumbnail": "Embedding the cover",
+    "concat": "Joining the parts",
+    "fixup": "Repairing the stream"
+  },
+
+  "notice": {
+    "cookies_rejected": "Cookies were rejected and skipped — refresh them"
+  },
+
+  "error": {
+    "header_download": "Download error",
+    "header_general": "General error",
+    "label_reason": "Reason",
+    "label_url": "Video URL",
+    "label_task_id": "Task ID",
+    "label_source": "Source",
+    "label_details": "Details",
+    "label_ytdlp_version": "yt-dlp version",
+    "label_bot_version": "yt-dlp-bot version",
+    "label_tag": "Tag",
+    "label_site_response": "Site response",
+    "tag_error": "#error",
+    "tag_unavailable": "#unavailable"
+  },
+
+  "reason": {
+    "suspended_title": "Account suspended",
+    "suspended_hint": "The account that posted this has been suspended, so the media is no longer served by the site.",
+    "private_title": "Private content",
+    "private_hint": "This content is private and cannot be accessed without permission from its owner.",
+    "removed_title": "Content removed",
+    "removed_hint": "This content has been deleted or taken down and is no longer available.",
+    "age_restricted_title": "Age-restricted content",
+    "age_restricted_hint": "The site only serves this to a signed-in adult account. Adding cookies for a logged-in account may help.",
+    "login_required_title": "Login required",
+    "login_required_hint": "The site refused to serve this without an authenticated session. Add your cookies to fix it — see the Cookies section in the README.",
+    "geo_blocked_title": "Blocked in this region",
+    "geo_blocked_hint": "The site does not serve this content from the server's location.",
+    "not_started_title": "Not available yet",
+    "not_started_hint": "This is an upcoming stream or premiere. Try again once it has started.",
+    "members_only_title": "Members-only content",
+    "members_only_hint": "This is restricted to channel members. Cookies for a subscribed account are required.",
+    "drm_title": "Protected by DRM",
+    "drm_hint": "This site encrypts its media, so yt-dlp will not download from it. Spotify, Netflix, Disney+ and similar services all work this way.",
+    "site_unsupported_title": "Site not supported",
+    "site_unsupported_hint": "yt-dlp deliberately does not support this site and will not add it.",
+    "subscription_title": "Paid content",
+    "subscription_hint": "The account behind the cookies does not have access to this. A subscription or purchase is required.",
+    "network_title": "Could not reach the site",
+    "network_hint": "The request never completed. This is usually temporary — try again shortly.",
+    "no_media_title": "Nothing to download",
+    "no_media_hint": "The link opens fine, but there is no video or audio in it to download.",
+    "format_unavailable_title": "Requested quality unavailable",
+    "format_unavailable_hint": "The chosen quality does not exist for this media. Try another one.",
+    "rate_limited_title": "Rate limited",
+    "rate_limited_hint": "The site is temporarily refusing requests from this server. Wait a while and try again.",
+    "unsupported_url_title": "Unsupported link",
+    "unsupported_url_hint": "yt-dlp has no extractor for this URL. Double-check the link is correct.",
+    "not_found_title": "Not found",
+    "not_found_hint": "The site returned 404 for this link. It is likely wrong or already deleted.",
+    "forbidden_title": "Access denied",
+    "forbidden_hint": "The site returned 403. It may require cookies or be blocking this server.",
+    "unavailable_title": "Content unavailable",
+    "unavailable_hint": "The site reports this content as unavailable without giving a specific reason."
+  },
+
+  "admin": {
+    "not_admin": "🚫 This command is for admins only.",
+    "adduser_usage": "❌ Usage: <b>/adduser &lt;telegram_id&gt;</b>\nExample: /adduser 123456789",
+    "deleteuser_usage": "❌ Usage: <b>/deleteuser &lt;telegram_id&gt;</b>\nExample: /deleteuser 123456789",
+    "invalid_user_id": "❌ That is not a valid ID — it must be a number.",
+    "user_added": "✅ User <b>{user_id}</b> added.\n\nSettings:\n• Admin: {is_admin}\n• Media type: {media_type}\n• Save to storage: {save_to_storage}\n\n💡 Written to the config and reloaded.",
+    "user_exists": "❌ User {user_id} is already in the config.",
+    "user_deleted": "✅ User <b>{user_id}</b> removed.\n\n💡 Written to the config and reloaded.",
+    "user_not_found": "❌ User {user_id} is not in the config.",
+    "cannot_delete_admin": "❌ {user_id} is an admin — remove them from the config by hand.",
+    "add_user_failed": "❌ Could not add the user: {error}",
+    "delete_user_failed": "❌ Could not remove the user: {error}",
+    "config_usage": "❌ Usage:\n<b>/config get &lt;path&gt;</b> — read a value\n<b>/config set &lt;path&gt; &lt;value&gt;</b> — change one\n\nExamples:\n/config get telegram.max_upload_tasks\n/config set telegram.max_upload_tasks 10",
+    "config_value_missing": "❌ No value given. Usage: <b>/config set &lt;path&gt; &lt;value&gt;</b>",
+    "config_get_result": "📋 <b>{path}</b> = {value}",
+    "config_set_result": "✅ Config updated.\n<b>{path}</b> = {value}\n\n💡 Written to the config and reloaded.",
+    "config_get_failed": "❌ Could not read the value: {error}",
+    "config_set_failed": "❌ Could not change the value: {error}",
+    "config_unknown_action": "❌ Unknown action: {action}\nUse <b>get</b> or <b>set</b>",
+    "users_header": "📋 <b>Configured users</b> ({count})",
+    "users_none": "📋 No users configured.",
+    "users_row": "{badge} <b>{user_id}</b>\n   Media: {media_type} | Storage: {storage}",
+    "users_failed": "❌ Could not list the users: {error}",
+    "config_reloaded": "✅ Config reloaded.\n\n• Users: {users}\n• Admins: {admins}\n• Max upload tasks: {max_upload_tasks}",
+    "reload_failed": "❌ Could not reload the config: {error}",
+    "restarting": "🔄 Restarting…"
+  },
+
+  "ytdlp": {
+    "new_version": "New {channel} <code>yt-dlp</code> version available: <b>{latest}</b>\nCurrent version: <b>{current}</b>\nRebuild the worker with <code>./redeploy.sh yt_worker</code>",
+    "up_to_date": "ℹ️ Your {channel} <code>yt-dlp</code> version <b>{current}</b> is up to date."
+  }
+}

@@ -72,6 +72,7 @@ class AbstractUploadTask(AbstractTask, ABC):
         self._users = users
         self._semaphore = semaphore
         self._ctx = context
+        self._language = bot.language_for(context.from_user_id, context.from_chat_id)
         # Filled in while building the caption, when the chapters do not fit.
         self._chapter_messages: list[str] = []
         self._media_ctx = self._create_media_context()
@@ -153,7 +154,10 @@ class AbstractUploadTask(AbstractTask, ABC):
             return {}
         return {
             'progress': UploadProgressReporter(
-                bot=self._bot, chat_id=chat_id, message_id=ack_message_id
+                bot=self._bot,
+                chat_id=chat_id,
+                message_id=ack_message_id,
+                language=self._language,
             )
         }
 

@@ -1,12 +1,24 @@
 from abc import ABC
-from typing import Annotated, Final
+from typing import Annotated
 
-from pydantic import Field, PositiveInt, StringConstraints, field_validator
+from pydantic import AfterValidator, Field, PositiveInt, field_validator
 from yt_shared.enums import DownMediaType, YtdlpReleaseChannelType
 from yt_shared.schemas.base import StrictBaseConfigModel
 
-_LANG_CODE_LEN: Final[int] = 2
-_LANG_CODE_REGEX: Final[str] = rf'^[a-z]{{{_LANG_CODE_LEN}}}$'
+from bot.core.i18n import LANGUAGES
+
+
+def _validate_language(value: str) -> str:
+    """Reject an unknown language here rather than silently speaking English."""
+    language = value.strip().lower()
+    if language not in LANGUAGES:
+        raise ValueError(
+            f'unsupported language "{value}", choose one of: {", ".join(LANGUAGES)}'
+        )
+    return language
+
+
+Language = Annotated[str, AfterValidator(_validate_language)]
 
 
 class _BaseUserSchema(StrictBaseConfigModel, ABC):
@@ -44,6 +56,8 @@ class UserSchema(_BaseUserSchema):
     # Leave unset to follow telegram.delete_source_message; set it here to opt
     # this user in or out regardless of the global default.
     delete_source_message: bool | None = None
+    # Leave unset to follow telegram.lang_code.
+    lang_code: Language | None = None
 
 
 class ApiSchema(StrictBaseConfigModel):
@@ -63,9 +77,8 @@ class TelegramSchema(StrictBaseConfigModel):
     api_id: int
     api_hash: str
     token: str
-    lang_code: Annotated[
-        str, StringConstraints(pattern=_LANG_CODE_REGEX, to_lower=True)
-    ]
+    # The language everyone gets unless they set their own below.
+    lang_code: Language
     max_upload_tasks: PositiveInt
     url_validation_regexes: list[str]
     # Default for everyone; a user may still opt out individually.

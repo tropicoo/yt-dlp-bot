@@ -35,6 +35,8 @@ back — no browser, no desktop app, no files left on someone else's server.
   along and Telegram seeks the file when you tap one.
 - **Readable failures** — a suspended account, a private video or an expired
   cookie is explained in a sentence instead of a stack trace.
+- **Speaks five languages** — English, Ukrainian, Russian, Hebrew and Latvian,
+  set for everyone or per person.
 - **Run it from the chat** — admins add users and change settings without
   touching the server.
 - **Works headless too** — the same downloads can be triggered over HTTP.
@@ -147,7 +149,31 @@ shape. Otherwise FFmpeg grabs a frame at `THUMBNAIL_FRAME_SECOND` seconds
 it; the [full option list](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180)
 is upstream.
 
-**Metadata language.** YouTube serves titles, descriptions and chapters in
+**Language.** Everything the bot says — buttons, progress, errors, admin
+replies — is translated. `telegram.lang_code` in `config.yml` sets the language
+for everyone; any user may choose their own:
+
+```yml
+telegram:
+  lang_code: !!str "en"          # the default for everyone
+  allowed_users:
+    - id: 11111111111
+      lang_code: !!str "uk"      # except this one
+```
+
+Available: `en`, `uk`, `ru`, `he`, `lv`. Anything else is rejected at startup
+with the list of valid values rather than silently falling back. A translation
+missing a string falls back to English and says so in the log.
+
+Admins can switch the default without restarting:
+`/config set telegram.lang_code uk`.
+
+Translations live in `app_bot/bot/locales/<language>.json`. To add a language,
+copy `en.json`, translate the values, and add its code to `LANGUAGES` in
+`app_bot/bot/core/i18n.py`.
+
+**Metadata language.** Separate from the above: this is the language the *video*
+comes in, not the bot. YouTube serves titles, descriptions and chapters in
 English by default, even for videos in another language, because that is what
 the request asks for. Set `METADATA_LANGUAGE` in `envs/worker.env` to a tag such
 as `ru` or `pt-BR` to prefer the translation the uploader provided. Where no

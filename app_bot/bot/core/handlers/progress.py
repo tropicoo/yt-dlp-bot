@@ -24,7 +24,9 @@ class ProgressHandler:
             await self._bot.edit_message_text(
                 chat_id=payload.from_chat_id,
                 message_id=payload.ack_message_id,
-                text=format_download_progress(payload),
+                text=format_download_progress(
+                    payload, self._bot.language_for(payload.from_chat_id)
+                ),
                 parse_mode=ParseMode.HTML,
             )
         except Exception as err:

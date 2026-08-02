@@ -1,0 +1,148 @@
+{
+  "start": {
+    "greeting": "שלחו קישור לסרטון כדי להתחיל.",
+    "startup": "✨ <b>{name}</b> פעיל — שלחו קישור וההורדה תתחיל."
+  },
+
+  "format": {
+    "choose": "🎯 מה להוריד?",
+    "choose_quality": "📊 באיזו איכות?",
+    "button_video": "🎬 וידאו",
+    "button_audio": "🎵 אודיו",
+    "button_both": "🎬+🎵 שניהם",
+    "button_cancel": "❌ ביטול",
+    "button_back": "⬅️ חזרה",
+    "button_download_audio": "⬇️ הורדת אודיו",
+    "button_best": "🏆 האיכות הטובה ביותר",
+    "quality_best": "הטובה ביותר",
+    "started": "✅ <b>ההורדה החלה</b>",
+    "started_toast": "ההורדה החלה",
+    "cancelled": "❌ ההורדה בוטלה",
+    "cancelled_toast": "בוטל",
+    "queue_failed": "🛑 <b>לא הצלחתי להכניס את הקישור לתור</b>",
+    "invalid_selection": "הכפתור הזה כבר לא תקף",
+    "session_expired": "הבקשה פגה — שלחו את הקישור שוב",
+    "invalid_media_type": "סוג מדיה לא מוכר"
+  },
+
+  "progress": {
+    "downloading": "⬇️ <b>מוריד</b> {percent}%",
+    "downloading_plain": "⬇️ <b>מוריד</b>",
+    "uploading": "⬆️ <b>מעלה</b> {percent}%",
+    "uploading_plain": "⬆️ <b>מעלה</b>",
+    "processing": "⚙️ <b>מעבד</b>",
+    "processing_generic": "מאחד וממיר את מה שהורד…",
+    "eta": "⏳ נותרו {time}",
+    "size": "📦 {done} מתוך {total}",
+    "size_done": "📦 {done}",
+    "speed": "🚀 {speed} לשנייה",
+    "elapsed": "⏱ עברו {time}",
+    "notice": "⚠️ {text}"
+  },
+
+  "postprocess": {
+    "merger": "מאחד וידאו ואודיו",
+    "video_convertor": "ממיר וידאו",
+    "video_remuxer": "אורז מחדש את הווידאו",
+    "extract_audio": "מחלץ אודיו",
+    "thumbnails_convertor": "ממיר את התמונה הממוזערת",
+    "metadata": "כותב מטא-נתונים",
+    "embed_thumbnail": "משבץ את העטיפה",
+    "concat": "מחבר את החלקים",
+    "fixup": "מתקן את הזרם"
+  },
+
+  "notice": {
+    "cookies_rejected": "העוגיות נדחו ודולגו — רעננו אותן"
+  },
+
+  "error": {
+    "header_download": "שגיאת הורדה",
+    "header_general": "שגיאה כללית",
+    "label_reason": "סיבה",
+    "label_url": "קישור",
+    "label_task_id": "מזהה משימה",
+    "label_source": "מקור",
+    "label_details": "פרטים",
+    "label_ytdlp_version": "גרסת yt-dlp",
+    "label_bot_version": "גרסת yt-dlp-bot",
+    "label_tag": "תגית",
+    "label_site_response": "תשובת האתר",
+    "tag_error": "#error",
+    "tag_unavailable": "#unavailable"
+  },
+
+  "reason": {
+    "suspended_title": "החשבון הושעה",
+    "suspended_hint": "החשבון שפרסם את זה הושעה, והאתר כבר לא מגיש את התוכן.",
+    "private_title": "תוכן פרטי",
+    "private_hint": "התוכן מוגדר כפרטי ואי אפשר לגשת אליו בלי אישור מהבעלים.",
+    "removed_title": "התוכן הוסר",
+    "removed_hint": "התוכן נמחק או הוסר ואינו זמין עוד.",
+    "age_restricted_title": "הגבלת גיל",
+    "age_restricted_hint": "האתר מגיש את זה רק לחשבון מחובר של בגיר. עוגיות מחשבון כזה עשויות לעזור.",
+    "login_required_title": "נדרשת התחברות",
+    "login_required_hint": "האתר סירב להגיש את התוכן בלי סשן מחובר. הוסיפו עוגיות — ראו את פרק Cookies בקובץ README.",
+    "geo_blocked_title": "חסום באזור הזה",
+    "geo_blocked_hint": "האתר לא מגיש את התוכן מהמדינה שבה נמצא השרת.",
+    "not_started_title": "עוד לא התחיל",
+    "not_started_hint": "זהו שידור או בכורה שטרם התחילו. נסו שוב לאחר שיתחילו.",
+    "members_only_title": "לחברי הערוץ בלבד",
+    "members_only_hint": "התוכן פתוח רק לחברי הערוץ. נדרשות עוגיות מחשבון מנוי.",
+    "drm_title": "מוגן ב-DRM",
+    "drm_hint": "האתר מצפין את המדיה שלו, ולכן yt-dlp לא מוריד ממנו. כך פועלים Spotify, Netflix, Disney+ ושירותים דומים.",
+    "site_unsupported_title": "האתר אינו נתמך",
+    "site_unsupported_hint": "yt-dlp לא תומך באתר הזה במכוון ולא יתמוך בו.",
+    "subscription_title": "תוכן בתשלום",
+    "subscription_hint": "לחשבון שמאחורי העוגיות אין גישה. נדרש מנוי או רכישה.",
+    "network_title": "לא הצלחתי להגיע לאתר",
+    "network_hint": "הבקשה לא הושלמה. בדרך כלל זה זמני — נסו שוב בעוד רגע.",
+    "no_media_title": "אין מה להוריד",
+    "no_media_hint": "הקישור נפתח, אבל אין בו וידאו או אודיו.",
+    "format_unavailable_title": "האיכות המבוקשת אינה זמינה",
+    "format_unavailable_hint": "האיכות שנבחרה לא קיימת עבור התוכן הזה. בחרו אחרת.",
+    "rate_limited_title": "יותר מדי בקשות",
+    "rate_limited_hint": "האתר מסרב זמנית לבקשות מהשרת הזה. המתינו ונסו שוב.",
+    "unsupported_url_title": "קישור לא נתמך",
+    "unsupported_url_hint": "ל-yt-dlp אין מחלץ לכתובת הזו. בדקו שהקישור נכון.",
+    "not_found_title": "לא נמצא",
+    "not_found_hint": "האתר החזיר 404. סביר שהקישור שגוי או שהתוכן כבר נמחק.",
+    "forbidden_title": "הגישה נדחתה",
+    "forbidden_hint": "האתר החזיר 403. ייתכן שנדרשות עוגיות או שהוא חוסם את השרת הזה.",
+    "unavailable_title": "התוכן אינו זמין",
+    "unavailable_hint": "האתר מדווח שהתוכן אינו זמין בלי לפרט סיבה."
+  },
+
+  "admin": {
+    "not_admin": "🚫 הפקודה הזו למנהלים בלבד.",
+    "adduser_usage": "❌ שימוש: <b>‎/adduser &lt;telegram_id&gt;</b>\nדוגמה: ‎/adduser 123456789",
+    "deleteuser_usage": "❌ שימוש: <b>‎/deleteuser &lt;telegram_id&gt;</b>\nדוגמה: ‎/deleteuser 123456789",
+    "invalid_user_id": "❌ זה לא נראה כמו מזהה — צריך מספר.",
+    "user_added": "✅ המשתמש <b>{user_id}</b> נוסף.\n\nהגדרות:\n• מנהל: {is_admin}\n• סוג מדיה: {media_type}\n• שמירה באחסון: {save_to_storage}\n\n💡 נכתב לקובץ ההגדרות והוחל.",
+    "user_exists": "❌ המשתמש {user_id} כבר קיים בהגדרות.",
+    "user_deleted": "✅ המשתמש <b>{user_id}</b> הוסר.\n\n💡 נכתב לקובץ ההגדרות והוחל.",
+    "user_not_found": "❌ המשתמש {user_id} לא קיים בהגדרות.",
+    "cannot_delete_admin": "❌ {user_id} הוא מנהל — הסירו אותו מקובץ ההגדרות ידנית.",
+    "add_user_failed": "❌ לא הצלחתי להוסיף את המשתמש: {error}",
+    "delete_user_failed": "❌ לא הצלחתי להסיר את המשתמש: {error}",
+    "config_usage": "❌ שימוש:\n<b>‎/config get &lt;path&gt;</b> — קריאת ערך\n<b>‎/config set &lt;path&gt; &lt;value&gt;</b> — שינוי ערך\n\nדוגמאות:\n‎/config get telegram.max_upload_tasks\n‎/config set telegram.max_upload_tasks 10",
+    "config_value_missing": "❌ לא צוין ערך. שימוש: <b>‎/config set &lt;path&gt; &lt;value&gt;</b>",
+    "config_get_result": "📋 <b>{path}</b> = {value}",
+    "config_set_result": "✅ ההגדרות עודכנו.\n<b>{path}</b> = {value}\n\n💡 נכתב לקובץ ההגדרות והוחל.",
+    "config_get_failed": "❌ לא הצלחתי לקרוא את הערך: {error}",
+    "config_set_failed": "❌ לא הצלחתי לשנות את הערך: {error}",
+    "config_unknown_action": "❌ פעולה לא מוכרת: {action}\nהשתמשו ב-<b>get</b> או ב-<b>set</b>",
+    "users_header": "📋 <b>המשתמשים בהגדרות</b> ({count})",
+    "users_none": "📋 אין משתמשים מוגדרים.",
+    "users_row": "{badge} <b>{user_id}</b>\n   מדיה: {media_type} | אחסון: {storage}",
+    "users_failed": "❌ לא הצלחתי להציג את הרשימה: {error}",
+    "config_reloaded": "✅ ההגדרות נטענו מחדש.\n\n• משתמשים: {users}\n• מנהלים: {admins}\n• העלאות במקביל: {max_upload_tasks}",
+    "reload_failed": "❌ לא הצלחתי לטעון את ההגדרות מחדש: {error}",
+    "restarting": "🔄 מפעיל מחדש…"
+  },
+
+  "ytdlp": {
+    "new_version": "יצאה גרסה חדשה של <code>yt-dlp</code> בערוץ {channel}: <b>{latest}</b>\nהגרסה הנוכחית: <b>{current}</b>\nבנו מחדש את הוורקר: <code>./redeploy.sh yt_worker</code>",
+    "up_to_date": "ℹ️ גרסת <code>yt-dlp</code> {channel} שלכם <b>{current}</b> מעודכנת."
+  }
+}

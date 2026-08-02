@@ -9,6 +9,7 @@ from bot.bot.client import VideoBotClient
 from bot.core.callbacks import TelegramCallback
 from bot.core.config.config import get_main_config
 from bot.core.handlers.admin import AdminCommandHandler
+from bot.core.i18n import report_catalogue_health
 from bot.core.tasks.db_cleanup import DbCleanupTask
 from bot.core.tasks.ytdlp import YtdlpNewVersionNotifyTask
 from bot.core.workers.manager import RabbitWorkerManager
@@ -34,6 +35,9 @@ class BotLauncher:
 
     async def run(self) -> None:
         """Run bot."""
+        # An untranslated string is worth knowing about at startup, not when
+        # someone happens to trigger it.
+        report_catalogue_health()
         await self._setup_rabbit()
         self._setup_handlers()
         await self._start_bot()

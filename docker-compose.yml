@@ -85,7 +85,11 @@ volumes:
   pgdata:
   shared-tmpfs:
     driver: local
+    # Staging area for in-flight downloads. This is a tmpfs, so it lives in RAM:
+    # keep the size below the memory the host can actually spare, or the first
+    # large download will push the machine into swap. See the README section on
+    # running with limited resources.
     driver_opts:
       type: "tmpfs"
       device: "tmpfs"
-      o: "size=27168m,uid=1000"
+      o: "size=7168m,uid=1000"

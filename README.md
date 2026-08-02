@@ -123,10 +123,8 @@ Per-user behaviour lives in `app_bot/config.yml`; service behaviour lives in
 ```
 
 **Temporary space.** Downloads are staged in the `shared-tmpfs` volume, which is
-**RAM-backed** and declared at 27 GB in `docker-compose.yml`. On a small machine
-a large download will exhaust memory and take the host down with it — size it
-below your available RAM, or drop the `driver_opts` block to stage on disk
-instead.
+**RAM-backed** and declared at 7 GB in `docker-compose.yml`. Size it below the
+memory your host can spare — see below if that is not much.
 
 **Upload limits.** Telegram accepts 2 GB per file, or 4 GB with Premium. That
 ceiling is `upload_video_max_file_size` in `config.yml`.
@@ -148,6 +146,58 @@ it; the [full option list](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/Y
 is upstream.
 
 **Logging.** `LOG_LEVEL` in `envs/common.env`.
+
+### Running with limited resources
+
+On a small VPS the default staging area is the thing most likely to hurt you.
+`shared-tmpfs` is RAM, so a download larger than your free memory does not fail
+politely — it fills RAM, spills into swap, and the whole host stops responding
+while the kernel thrashes. The bot, the API and SSH all go down with it, and
+nothing in the application layer can prevent that.
+
+Two changes make a small machine safe.
+
+**Stage downloads on disk instead of in RAM.** Drop the `driver_opts` block so
+the volume becomes an ordinary disk volume:
+
+```yml
+volumes:
+  pgdata:
+  shared-tmpfs:
+    driver: local
+```
+
+Docker only creates a volume that does not exist yet, so an existing one keeps
+its old settings until you remove it. Remove that volume only — `pgdata` holds
+the task history:
+
+```bash
+docker compose down
+docker volume rm "${COMPOSE_PROJECT_NAME:-yt}_shared-tmpfs"
+docker compose up -d
+```
+
+Downloads are then bounded by free disk rather than free memory, and a file too
+large simply fails with "no space left on device".
+
+**Give each service a memory ceiling** so a runaway container is killed instead
+of the host:
+
+```yml
+  yt_worker:
+    mem_limit: 512m
+    memswap_limit: 512m   # equal to mem_limit forbids swap for this container
+```
+
+This is enforced by the kernel, which is the point: a monitoring script cannot
+help once the machine is thrashing, because it will not be scheduled or able to
+allocate. A cgroup limit acts immediately and cannot be starved. Combined with
+the `restart: unless-stopped` the services already carry, the worst case becomes
+one failed download and an automatic restart rather than a machine you have to
+power-cycle.
+
+Also lower `MAX_SIMULTANEOUS_DOWNLOADS`, and consider `DOWNLOAD_RATE_LIMIT` if
+the bot shares its connection with anything you care about.
 
 ## Cookies
 

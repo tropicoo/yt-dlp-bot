@@ -2,7 +2,7 @@ import uuid
 from abc import ABC
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Annotated, Literal, Self
+from typing import Annotated, Final, Literal, Self
 
 from PIL import Image
 from pydantic import ConfigDict, DirectoryPath, Field, FilePath, model_validator
@@ -17,6 +17,9 @@ from yt_shared.enums import (
 from yt_shared.schemas.base import StrictRealBaseModel
 from yt_shared.utils.common import calculate_aspect_ratio, format_bytes
 from yt_shared.utils.file import file_size
+
+# A thumbnail within this much of the video's shape counts as matching it.
+_ASPECT_RATIO_TOLERANCE: Final[float] = 0.02
 
 
 class InbMediaPayload(StrictRealBaseModel):
@@ -139,6 +142,29 @@ class Video(BaseMedia):
         with Image.open(self.thumb_path) as thumb:
             width, height = thumb.size
         return calculate_aspect_ratio(width=width, height=height)
+
+    def thumb_fits_shape(self) -> bool:
+        """Whether the downloaded thumbnail is shaped like the video.
+
+        Compared with a tolerance rather than as exact fractions: standard
+        resolutions round to whole pixels, so 854x480 is 427:240 and not the
+        16:9 it is meant to be. Demanding an exact match throws away a
+        perfectly good cover over a rounding error of a fraction of a percent.
+        """
+        if not self.thumb_path:
+            return False
+        if not self.width or not self.height:
+            # Nothing to compare against, so keep what the site provided.
+            return True
+
+        with Image.open(self.thumb_path) as thumb:
+            thumb_width, thumb_height = thumb.size
+        if not thumb_height:
+            return False
+
+        video_ratio = int(self.width) / int(self.height)
+        thumb_ratio = thumb_width / thumb_height
+        return abs(video_ratio - thumb_ratio) <= video_ratio * _ASPECT_RATIO_TOLERANCE
 
 
 class DownMedia(StrictRealBaseModel):

@@ -1,0 +1,41 @@
+# Machine-specific changes to docker-compose.yml.
+#
+# Copy this file to `docker-compose.override.yml` and keep only the parts you
+# need. Compose reads that name automatically and merges it over the tracked
+# `docker-compose.yml`, so the tracked file stays exactly as shipped and a
+# `git pull` never collides with your edits. The override is gitignored.
+#
+#   cp docker-compose.override.example.yml docker-compose.override.yml
+#
+# Lists of volumes merge by mount target: an entry here replaces the one in
+# docker-compose.yml with the same target and leaves the others alone.
+
+services:
+  yt_worker:
+    volumes:
+      # Where finished downloads are kept, when save_to_storage is on.
+      - "/data/downloads:/filestorage"
+    # A ceiling the kernel enforces, so a runaway download is killed instead of
+    # the host. Setting memswap_limit to the same value forbids swap here.
+    # mem_limit: 512m
+    # memswap_limit: 512m
+
+  # yt_bot:
+  #   mem_limit: 256m
+  #   memswap_limit: 256m
+
+# Staging area for in-flight downloads. As shipped this is a tmpfs, so it lives
+# in RAM — size it below the memory the host can spare. To stage on disk
+# instead, drop driver_opts entirely and remove the volume once:
+#
+#   docker compose down
+#   docker volume rm "${COMPOSE_PROJECT_NAME:-yt}_shared-tmpfs"
+#   docker compose up -d
+#
+# Docker only creates a volume that does not exist yet, so an existing one keeps
+# its old settings until removed. Remove that volume only — pgdata holds the
+# task history.
+volumes:
+  shared-tmpfs:
+    driver_opts:
+      o: "size=2048m,uid=1000"

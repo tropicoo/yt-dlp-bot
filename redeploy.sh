@@ -24,6 +24,7 @@ readonly APP_SERVICES=(yt_bot yt_worker yt_api)
 readonly BASE_SERVICE='base-image'
 # Kept so an ordinary rebuild stays fast; only the excess is dropped.
 readonly KEEP_BUILD_CACHE='5GB'
+readonly ENV_NAMES=(common api bot worker)
 
 DO_PULL=false
 DO_BASE=false
@@ -64,6 +65,38 @@ disk_free() {
     df -Ph "${root}" | awk 'NR==2 {print $4 " free of " $2}'
 }
 
+# Compose before 2.24 has no "required: false", so a missing env_file is a hard
+# error there. Creating the overrides empty costs nothing and keeps both old and
+# new Compose working from a bare clone.
+ensure_local_envs() {
+    local name path created=()
+    for name in "${ENV_NAMES[@]}"; do
+        path="envs/${name}.local.env"
+        [[ -e "${path}" ]] && continue
+        cat > "${path}" <<EOF
+# Your settings for ${name}.env. Gitignored and loaded last, so anything set
+# here wins over the shipped default. See envs/README.md.
+EOF
+        created+=("${path}")
+    done
+    [[ ${#created[@]} -gt 0 ]] && info "Created empty overrides: ${created[*]}"
+    return 0
+}
+
+# The tracked files are shipped defaults; editing them in place is what makes a
+# pull stop dead, and the message git gives says nothing about the fix.
+warn_if_tracked_config_edited() {
+    local dirty
+    dirty="$(git diff --name-only -- envs/ docker-compose.yml 2>/dev/null || true)"
+    [[ -z "${dirty}" ]] && return 0
+    warn "These shipped defaults have been edited in place:
+$(printf '    %s\n' ${dirty})
+  A pull will refuse to overwrite them. Move your changes into the file beside
+  each one that is meant for them — envs/*.local.env, or
+  docker-compose.override.yml — then run 'git checkout -- <file>'.
+  See envs/README.md and docker-compose.override.example.yml."
+}
+
 reclaim_space() {
     info "Reclaiming space (was: $(disk_free))"
     # Untagged leftovers only: images still carrying a tag are never touched,
@@ -90,10 +123,13 @@ if [[ "${DO_PULL}" == true ]]; then
     git branch --set-upstream-to=<remote>/<branch>
   then rerun, or build without --pull."
     fi
+    warn_if_tracked_config_edited
     info "Updating ${branch} from ${upstream}"
     git pull --ff-only \
         || die "Pull failed. Resolve it by hand, then rerun without --pull."
 fi
+
+ensure_local_envs
 
 build_args=()
 [[ "${NO_CACHE}" == true ]] && build_args+=(--no-cache)

@@ -116,19 +116,49 @@ Changes are written to `config.yml` and survive a restart.
 Per-user behaviour lives in `app_bot/config.yml`; service behaviour lives in
 `envs/`.
 
+**Where to put your settings.** The `envs/*.env` files below are the shipped
+defaults and are tracked by git — edit them in place and every later `git pull`
+stops with *"Your local changes would be overwritten by merge"*. Put your own
+values in a `*.local.env` next to them instead; those are gitignored and loaded
+last, so whatever you set there wins:
+
+```sh
+cat > envs/worker.local.env <<'EOF'
+MAX_SIMULTANEOUS_DOWNLOADS=1
+DOWNLOAD_RATE_LIMIT=2M
+EOF
+```
+
+Only the keys you want to change need to be there — `common.local.env` reaches
+every service, and `api`/`bot`/`worker.local.env` reach one each. See
+[`envs/README.md`](envs/README.md), including how to move settings you have
+already changed in place.
+
+**Changing the Compose file.** Same rule as the env files: `docker-compose.yml`
+is shipped as-is. Put machine-specific changes — where downloads land, how large
+the staging area is, memory ceilings — in `docker-compose.override.yml`, which
+Compose reads automatically and merges over it:
+
+```bash
+cp docker-compose.override.example.yml docker-compose.override.yml
+```
+
+It is gitignored, and the example lists the changes people actually make.
+
 **Where downloads are kept.** `STORAGE_PATH` in `envs/worker.env` is
 `/filestorage` inside the container. Map it to a real directory for the
-`yt_worker` service in `docker-compose.yml`:
+`yt_worker` service in your override file:
 
 ```yml
+services:
   yt_worker:
     volumes:
       - "D:/Videos:/filestorage"
 ```
 
 **Temporary space.** Downloads are staged in the `shared-tmpfs` volume, which is
-**RAM-backed** and declared at 7 GB in `docker-compose.yml`. Size it below the
-memory your host can spare — see below if that is not much.
+**RAM-backed** and declared at 7 GB. Size it below the memory your host can
+spare — see below if that is not much.
 
 **Upload limits.** Telegram accepts 2 GB per file, or 4 GB with Premium. That
 ceiling is `upload_video_max_file_size` in `config.yml`.
@@ -146,7 +176,9 @@ shape. Otherwise FFmpeg grabs a frame at `THUMBNAIL_FRAME_SECOND` seconds
 (`envs/worker.env`), or at the midpoint for shorter videos.
 
 **yt-dlp options.** Copy `app_worker/ytdl_opts/default.py` to `user.py` and edit
-it; the [full option list](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180)
+it; the worker prefers `user.py` when it is there and falls back to `default.py`
+when it is not. `user.py` is gitignored, so it survives every pull. The
+[full option list](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180)
 is upstream.
 
 **Language.** Everything the bot says — buttons, progress, errors, admin
@@ -214,8 +246,9 @@ nothing in the application layer can prevent that.
 
 Two changes make a small machine safe.
 
-**Stage downloads on disk instead of in RAM.** Drop the `driver_opts` block so
-the volume becomes an ordinary disk volume:
+**Stage downloads on disk instead of in RAM.** An override cannot delete the
+`driver_opts` block that makes the volume a tmpfs, so this is the one change to
+make in `docker-compose.yml` itself — remove those four lines, leaving:
 
 ```yml
 volumes:
@@ -238,9 +271,10 @@ Downloads are then bounded by free disk rather than free memory, and a file too
 large simply fails with "no space left on device".
 
 **Give each service a memory ceiling** so a runaway container is killed instead
-of the host:
+of the host. This one goes in `docker-compose.override.yml`:
 
 ```yml
+services:
   yt_worker:
     mem_limit: 512m
     memswap_limit: 512m   # equal to mem_limit forbids swap for this container
@@ -254,7 +288,8 @@ one failed download and an automatic restart rather than a machine you have to
 power-cycle.
 
 Also lower `MAX_SIMULTANEOUS_DOWNLOADS`, and consider `DOWNLOAD_RATE_LIMIT` if
-the bot shares its connection with anything you care about.
+the bot shares its connection with anything you care about — both in
+`envs/worker.local.env`.
 
 ## Cookies
 
@@ -335,5 +370,5 @@ and `360P`. The response carries the task `id` to poll:
 }
 ```
 
-RabbitMQ and PostgreSQL credentials are in `envs/common.env`; the API port is in
-`docker-compose.yml`.
+RabbitMQ and PostgreSQL credentials default to the values in `envs/common.env`;
+change them in `envs/common.local.env`. The API port is in `docker-compose.yml`.

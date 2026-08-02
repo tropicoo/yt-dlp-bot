@@ -12,6 +12,13 @@ rsync_exclude.txt
 config*.yml
 config*.yaml
 !app_bot/config-example.yml
+
+# Anything below is where your own settings go. The tracked defaults they sit
+# next to stay pristine, so a pull never collides with them.
+envs/*.local.env
+docker-compose.override.yml
+!docker-compose.override.example.yml
+app_worker/ytdl_opts/user.py
 .ruff_cache
 app_worker/debian.Dockerfile
 

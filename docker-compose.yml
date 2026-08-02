@@ -14,6 +14,13 @@ services:
     env_file:
       - envs/common.env
       - envs/api.env
+      # Your own settings. Tracked files above hold the shipped defaults and are
+      # meant to stay untouched, so that `git pull` never collides with them;
+      # anything you set here wins. Optional — see envs/README.md.
+      - path: envs/common.local.env
+        required: false
+      - path: envs/api.local.env
+        required: false
     restart: unless-stopped
     ports:
       - "1984:8000"
@@ -31,6 +38,10 @@ services:
     env_file:
       - envs/common.env
       - envs/bot.env
+      - path: envs/common.local.env
+        required: false
+      - path: envs/bot.local.env
+        required: false
     restart: unless-stopped
     command: >
       bash -c "python start.py && python main.py"
@@ -50,6 +61,10 @@ services:
     env_file:
       - envs/common.env
       - envs/worker.env
+      - path: envs/common.local.env
+        required: false
+      - path: envs/worker.local.env
+        required: false
     restart: unless-stopped
     command: >
       bash -c "python start.py && alembic upgrade head && python main.py"
@@ -64,6 +79,8 @@ services:
     image: "postgres:15"
     env_file:
       - envs/common.env
+      - path: envs/common.local.env
+        required: false
     ports:
       - "5435:5432"
     restart: unless-stopped

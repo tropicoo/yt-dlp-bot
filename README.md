@@ -147,11 +147,24 @@ is upstream.
 
 **Logging.** `LOG_LEVEL` in `envs/common.env`.
 
-**Tidying the chat.** Set `delete_source_message` for a user in `config.yml` and
-the message their link arrived in is removed once the file has been delivered —
-the caption on the file already carries the link. It is off by default, only
-runs after a successful upload, and needs the bot to be an administrator in
-group chats. Telegram refuses to delete anything older than 48 hours.
+**Tidying the chat.** `telegram.delete_source_message` removes the message a
+link arrived in once the file has been delivered — the caption on the file
+already carries the link. It applies to everyone, and any user can override it:
+
+```yml
+telegram:
+  delete_source_message: !!bool True   # the default for everyone
+  allowed_users:
+    - id: 11111111111
+      delete_source_message: !!bool False   # except this one
+```
+
+Off unless you turn it on. It only runs after a successful upload, so a failure
+never costs you the link you need to retry with, and it needs the bot to be an
+administrator in group chats. Telegram refuses to delete anything older than 48
+hours; a refusal is logged and otherwise ignored.
+
+Admins can flip it without restarting: `/config set telegram.delete_source_message true`.
 
 ### Running with limited resources
 

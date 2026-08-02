@@ -82,12 +82,18 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             )
 
     def _wants_source_message_deleted(self) -> bool:
+        """A user's own setting wins; otherwise the global default applies."""
         if not (self._body.from_chat_id and self._body.message_id):
             return False
         if self._body.context.source is TaskSource.API:
             return False
+
         user = self._bot.allowed_users.get(self._get_sender_id())
-        return bool(user and user.delete_source_message)
+        if user is None:
+            return False
+        if user.delete_source_message is not None:
+            return user.delete_source_message
+        return self._bot.conf.telegram.delete_source_message
 
     async def _set_upload_message(self, media_object: BaseMedia) -> None:
         if not (self._body.from_chat_id and self._body.context.ack_message_id):

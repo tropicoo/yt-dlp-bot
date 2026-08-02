@@ -41,9 +41,9 @@ class UserSchema(_BaseUserSchema):
     use_url_regex_match: bool
     upload: UploadSchema
     save_to_database: bool = True
-    # Off by default: removing someone's own message is not reversible, and in
-    # a group it also needs the bot to be an administrator.
-    delete_source_message: bool = False
+    # Leave unset to follow telegram.delete_source_message; set it here to opt
+    # this user in or out regardless of the global default.
+    delete_source_message: bool | None = None
 
 
 class ApiSchema(StrictBaseConfigModel):
@@ -68,6 +68,8 @@ class TelegramSchema(StrictBaseConfigModel):
     ]
     max_upload_tasks: PositiveInt
     url_validation_regexes: list[str]
+    # Default for everyone; a user may still opt out individually.
+    delete_source_message: bool = False
     allowed_users: list[UserSchema]
     api: ApiSchema
 

@@ -6,6 +6,9 @@ telegram:
   max_upload_tasks: 5
   url_validation_regexes:
     - "^http(s)?:\\/\\/.+$"
+  # Remove the message a link arrived in once the file has been delivered.
+  # Applies to everyone; a user below may override it either way.
+  delete_source_message: !!bool False
   allowed_users:  # Multiple users/groups are allowed.
     - id: 11111111111  # User or group ID.
       is_admin: !!bool True
@@ -25,9 +28,9 @@ telegram:
           include_link: !!bool True
           include_size: !!bool True
       save_to_database: !!bool True
-      # Remove the message the link arrived in once the file has been delivered.
-      # Needs the bot to be an administrator in groups; private chats always work.
-      delete_source_message: !!bool False
+      # Omit to follow the global setting above, or set it to override for
+      # this user. Needs the bot to be an administrator in group chats.
+      # delete_source_message: !!bool True
   api:
     upload_video_file: !!bool False
     upload_video_max_file_size: 2147483648

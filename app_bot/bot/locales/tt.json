@@ -1,0 +1,148 @@
+{
+  "start": {
+    "greeting": "Башлау өчен видеога сылтама җибәрегез.",
+    "startup": "✨ <b>{name}</b> эшли — сылтама җибәрегез, йөкләү башланыр."
+  },
+
+  "format": {
+    "choose": "🎯 Нәрсә йөкләргә?",
+    "choose_quality": "📊 Нинди сыйфатта?",
+    "button_video": "🎬 Видео",
+    "button_audio": "🎵 Аудио",
+    "button_both": "🎬+🎵 Икесе дә",
+    "button_cancel": "❌ Баш тарту",
+    "button_back": "⬅️ Артка",
+    "button_download_audio": "⬇️ Аудионы йөкләү",
+    "button_best": "🏆 Иң яхшы сыйфат",
+    "quality_best": "Иң яхшы",
+    "started": "✅ <b>Йөкләү башланды</b>",
+    "started_toast": "Йөкләү башланды",
+    "cancelled": "❌ Йөкләүдән баш тартылды",
+    "cancelled_toast": "Баш тартылды",
+    "queue_failed": "🛑 <b>Сылтаманы чиратка куя алмадым</b>",
+    "invalid_selection": "Бу төймә инде эшләми",
+    "session_expired": "Сорау искергән — сылтаманы яңадан җибәрегез",
+    "invalid_media_type": "Билгесез медиа төре"
+  },
+
+  "progress": {
+    "downloading": "⬇️ <b>Йөкләнә</b> {percent}%",
+    "downloading_plain": "⬇️ <b>Йөкләнә</b>",
+    "uploading": "⬆️ <b>Җибәрелә</b> {percent}%",
+    "uploading_plain": "⬆️ <b>Җибәрелә</b>",
+    "processing": "⚙️ <b>Эшкәртелә</b>",
+    "processing_generic": "Йөкләнгәне берләштерелә һәм үзгәртелә…",
+    "eta": "⏳ {time} калды",
+    "size": "📦 {total} эченнән {done}",
+    "size_done": "📦 {done}",
+    "speed": "🚀 {speed}/сек",
+    "elapsed": "⏱ {time} узды",
+    "notice": "⚠️ {text}"
+  },
+
+  "postprocess": {
+    "merger": "Видео һәм аудио берләштерелә",
+    "video_convertor": "Видео үзгәртелә",
+    "video_remuxer": "Видео яңадан төрелә",
+    "extract_audio": "Аудио аерып алына",
+    "thumbnails_convertor": "Кечкенә рәсем үзгәртелә",
+    "metadata": "Метамәгълүматлар языла",
+    "embed_thumbnail": "Тышлык урнаштырыла",
+    "concat": "Өлешләр тоташтырыла",
+    "fixup": "Агым төзәтелә"
+  },
+
+  "notice": {
+    "cookies_rejected": "Cookie кабул ителмәде һәм читләтеп үтелде — аларны яңартыгыз"
+  },
+
+  "error": {
+    "header_download": "Йөкләү хатасы",
+    "header_general": "Гомуми хата",
+    "label_reason": "Сәбәбе",
+    "label_url": "Сылтама",
+    "label_task_id": "Бурыч ID-сы",
+    "label_source": "Чыганак",
+    "label_details": "Тәфсилләп",
+    "label_ytdlp_version": "yt-dlp версиясе",
+    "label_bot_version": "yt-dlp-bot версиясе",
+    "label_tag": "Тег",
+    "label_site_response": "Сайт җавабы",
+    "tag_error": "#error",
+    "tag_unavailable": "#unavailable"
+  },
+
+  "reason": {
+    "suspended_title": "Хисап язмасы блокланган",
+    "suspended_hint": "Моны бастырган хисап язмасы блокланган, шуңа сайт материалны бирми инде.",
+    "private_title": "Шәхси язма",
+    "private_hint": "Бу язма ябык, хуҗасының рөхсәтеннән башка аңа керү мөмкин түгел.",
+    "removed_title": "Язма бетерелгән",
+    "removed_hint": "Материал бетерелгән яки алынган, ул инде юк.",
+    "age_restricted_title": "Яшь чикләүе",
+    "age_restricted_hint": "Сайт моны кергән олы кеше хисап язмасына гына бирә. Шундый язманың cookie файлы ярдәм итәргә мөмкин.",
+    "login_required_title": "Керү таләп ителә",
+    "login_required_hint": "Сайт материалны кергән сессиясез бирүдән баш тартты. Cookie өстәгез — README эчендәге Cookies бүлеген карагыз.",
+    "geo_blocked_title": "Бу төбәктә юк",
+    "geo_blocked_hint": "Сайт бу материалны сервер урнашкан илдән бирми.",
+    "not_started_title": "Әле башланмаган",
+    "not_started_hint": "Бу — планлаштырылган эфир яки премьера. Башлангач кабатлап карагыз.",
+    "members_only_title": "Әгъзалар өчен генә",
+    "members_only_hint": "Бу канал әгъзаларына гына ачык. Язылуы булган язманың cookie файлы кирәк.",
+    "drm_title": "DRM белән якланган",
+    "drm_hint": "Бу сайт үз медиасын шифрлый, шуңа yt-dlp аннан бернәрсә дә йөкләми. Spotify, Netflix, Disney+ һәм шуңа охшаш хезмәтләр барысы да шулай эшли.",
+    "site_unsupported_title": "Сайт хуплана торган түгел",
+    "site_unsupported_hint": "yt-dlp бу сайтны махсус хупламый һәм хупламаячак та.",
+    "subscription_title": "Түләүле материал",
+    "subscription_hint": "Cookie хуҗасы булган хисап язмасының керү хокукы юк. Язылу яки сатып алу кирәк.",
+    "network_title": "Сайтка җитә алмадым",
+    "network_hint": "Сорау тәмамланмады. Гадәттә бу вакытлыча — бераздан кабатлап карагыз.",
+    "no_media_title": "Йөкләр нәрсә юк",
+    "no_media_hint": "Сылтама ачыла, ләкин анда видео да, аудио да юк.",
+    "format_unavailable_title": "Сорала торган сыйфат юк",
+    "format_unavailable_hint": "Бу материал өчен сайланган сыйфат юк. Башкасын алыгыз.",
+    "rate_limited_title": "Сораулар артык еш",
+    "rate_limited_hint": "Сайт бу сервердан килгән сорауларны вакытлыча кире кага. Көтеп торыгыз һәм кабатлагыз.",
+    "unsupported_url_title": "Сылтама хуплана торган түгел",
+    "unsupported_url_hint": "yt-dlp-та бу адрес өчен эшкәрткеч юк. Сылтаманың дөреслеген тикшерегез.",
+    "not_found_title": "Табылмады",
+    "not_found_hint": "Сайт 404 кайтарды. Күрәсең, сылтама дөрес түгел яки материал бетерелгән.",
+    "forbidden_title": "Керү ябык",
+    "forbidden_hint": "Сайт 403 кайтарды. Cookie кирәк булырга мөмкин яки ул бу серверны блоклый.",
+    "unavailable_title": "Материал юк",
+    "unavailable_hint": "Сайт материал юк дип хәбәр итә, ләкин сәбәбен әйтми."
+  },
+
+  "admin": {
+    "not_admin": "🚫 Бу команда администраторлар өчен генә.",
+    "adduser_usage": "❌ Куллану: <b>/adduser &lt;telegram_id&gt;</b>\nМисал: /adduser 123456789",
+    "deleteuser_usage": "❌ Куллану: <b>/deleteuser &lt;telegram_id&gt;</b>\nМисал: /deleteuser 123456789",
+    "invalid_user_id": "❌ Бу ID-га охшамаган — сан булырга тиеш.",
+    "user_added": "✅ <b>{user_id}</b> кулланучысы өстәлде.\n\nКөйләүләр:\n• Администратор: {is_admin}\n• Медиа төре: {media_type}\n• Саклагычка язу: {save_to_storage}\n\n💡 Конфигка язылды һәм кулланылды.",
+    "user_exists": "❌ {user_id} кулланучысы конфигта бар инде.",
+    "user_deleted": "✅ <b>{user_id}</b> кулланучысы бетерелде.\n\n💡 Конфигка язылды һәм кулланылды.",
+    "user_not_found": "❌ {user_id} кулланучысы конфигта юк.",
+    "cannot_delete_admin": "❌ {user_id} — администратор, аны конфигтан кул белән бетерегез.",
+    "add_user_failed": "❌ Кулланучыны өсти алмадым: {error}",
+    "delete_user_failed": "❌ Кулланучыны бетерә алмадым: {error}",
+    "config_usage": "❌ Куллану:\n<b>/config get &lt;юл&gt;</b> — кыйммәтне уку\n<b>/config set &lt;юл&gt; &lt;кыйммәт&gt;</b> — үзгәртү\n\nМисаллар:\n/config get telegram.max_upload_tasks\n/config set telegram.max_upload_tasks 10",
+    "config_value_missing": "❌ Кыйммәт күрсәтелмәгән. Куллану: <b>/config set &lt;юл&gt; &lt;кыйммәт&gt;</b>",
+    "config_get_result": "📋 <b>{path}</b> = {value}",
+    "config_set_result": "✅ Конфиг яңартылды.\n<b>{path}</b> = {value}\n\n💡 Конфигка язылды һәм кулланылды.",
+    "config_get_failed": "❌ Кыйммәтне укый алмадым: {error}",
+    "config_set_failed": "❌ Кыйммәтне үзгәртә алмадым: {error}",
+    "config_unknown_action": "❌ Билгесез гамәл: {action}\n<b>get</b> яки <b>set</b> кулланыгыз",
+    "users_header": "📋 <b>Конфигтагы кулланучылар</b> ({count})",
+    "users_none": "📋 Кулланучылар юк.",
+    "users_row": "{badge} <b>{user_id}</b>\n   Медиа: {media_type} | Саклагыч: {storage}",
+    "users_failed": "❌ Исемлекне ала алмадым: {error}",
+    "config_reloaded": "✅ Конфиг яңадан укылды.\n\n• Кулланучылар: {users}\n• Администраторлар: {admins}\n• Бер үк вакытта җибәрү: {max_upload_tasks}",
+    "reload_failed": "❌ Конфигны яңадан укый алмадым: {error}",
+    "restarting": "🔄 Яңадан җибәрәм…"
+  },
+
+  "ytdlp": {
+    "new_version": "<code>yt-dlp</code> яңа {channel} версиясе чыкты: <b>{latest}</b>\nХәзерге версия: <b>{current}</b>\nWorker-ны яңадан җыегыз: <code>./redeploy.sh yt_worker</code>",
+    "up_to_date": "ℹ️ Сездәге {channel} <code>yt-dlp</code> версиясе <b>{current}</b> — иң соңгысы."
+  }
+}

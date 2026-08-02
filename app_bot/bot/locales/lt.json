@@ -1,0 +1,148 @@
+{
+  "start": {
+    "greeting": "Atsiųskite vaizdo įrašo nuorodą, kad pradėtumėte.",
+    "startup": "✨ <b>{name}</b> paruoštas — atsiųskite nuorodą ir atsisiuntimas prasidės."
+  },
+
+  "format": {
+    "choose": "🎯 Ką atsisiųsti?",
+    "choose_quality": "📊 Kokios kokybės?",
+    "button_video": "🎬 Vaizdas",
+    "button_audio": "🎵 Garsas",
+    "button_both": "🎬+🎵 Abu",
+    "button_cancel": "❌ Atšaukti",
+    "button_back": "⬅️ Atgal",
+    "button_download_audio": "⬇️ Atsisiųsti garsą",
+    "button_best": "🏆 Geriausia kokybė",
+    "quality_best": "Geriausia",
+    "started": "✅ <b>Atsisiuntimas pradėtas</b>",
+    "started_toast": "Atsisiuntimas pradėtas",
+    "cancelled": "❌ Atsisiuntimas atšauktas",
+    "cancelled_toast": "Atšaukta",
+    "queue_failed": "🛑 <b>Nepavyko įtraukti nuorodos į eilę</b>",
+    "invalid_selection": "Šis mygtukas nebegalioja",
+    "session_expired": "Užklausa pasenusi — atsiųskite nuorodą dar kartą",
+    "invalid_media_type": "Nežinomas medijos tipas"
+  },
+
+  "progress": {
+    "downloading": "⬇️ <b>Atsiunčiama</b> {percent}%",
+    "downloading_plain": "⬇️ <b>Atsiunčiama</b>",
+    "uploading": "⬆️ <b>Siunčiama</b> {percent}%",
+    "uploading_plain": "⬆️ <b>Siunčiama</b>",
+    "processing": "⚙️ <b>Apdorojama</b>",
+    "processing_generic": "Sujungiama ir konvertuojama tai, kas atsiųsta…",
+    "eta": "⏳ liko {time}",
+    "size": "📦 {done} iš {total}",
+    "size_done": "📦 {done}",
+    "speed": "🚀 {speed}/s",
+    "elapsed": "⏱ praėjo {time}",
+    "notice": "⚠️ {text}"
+  },
+
+  "postprocess": {
+    "merger": "Sujungiamas vaizdas ir garsas",
+    "video_convertor": "Konvertuojamas vaizdas",
+    "video_remuxer": "Perpakuojamas vaizdas",
+    "extract_audio": "Išskiriamas garsas",
+    "thumbnails_convertor": "Konvertuojama miniatiūra",
+    "metadata": "Rašomi metaduomenys",
+    "embed_thumbnail": "Įterpiamas viršelis",
+    "concat": "Jungiamos dalys",
+    "fixup": "Taisomas srautas"
+  },
+
+  "notice": {
+    "cookies_rejected": "Slapukai buvo atmesti ir praleisti — atnaujinkite juos"
+  },
+
+  "error": {
+    "header_download": "Atsisiuntimo klaida",
+    "header_general": "Bendra klaida",
+    "label_reason": "Priežastis",
+    "label_url": "Nuoroda",
+    "label_task_id": "Užduoties ID",
+    "label_source": "Šaltinis",
+    "label_details": "Išsamiau",
+    "label_ytdlp_version": "yt-dlp versija",
+    "label_bot_version": "yt-dlp-bot versija",
+    "label_tag": "Žyma",
+    "label_site_response": "Svetainės atsakymas",
+    "tag_error": "#error",
+    "tag_unavailable": "#unavailable"
+  },
+
+  "reason": {
+    "suspended_title": "Paskyra užblokuota",
+    "suspended_hint": "Paskyra, kuri tai paskelbė, užblokuota, todėl svetainė turinio nebeteikia.",
+    "private_title": "Privatus turinys",
+    "private_hint": "Šis turinys yra privatus, ir be savininko leidimo jo pasiekti negalima.",
+    "removed_title": "Turinys pašalintas",
+    "removed_hint": "Šis turinys ištrintas arba nuimtas ir nebepasiekiamas.",
+    "age_restricted_title": "Amžiaus apribojimas",
+    "age_restricted_hint": "Svetainė tai teikia tik prisijungusiai suaugusiojo paskyrai. Gali padėti tokios paskyros slapukai.",
+    "login_required_title": "Reikia prisijungti",
+    "login_required_hint": "Svetainė atsisakė pateikti turinį be autorizuoto seanso. Pridėkite slapukus — žr. README skyrių Cookies.",
+    "geo_blocked_title": "Neprieinama šiame regione",
+    "geo_blocked_hint": "Svetainė šio turinio neteikia iš šalies, kurioje yra serveris.",
+    "not_started_title": "Dar neprasidėjo",
+    "not_started_hint": "Tai būsima transliacija arba premjera. Pabandykite, kai ji prasidės.",
+    "members_only_title": "Tik nariams",
+    "members_only_hint": "Tai prieinama tik kanalo nariams. Reikia prenumeratą turinčios paskyros slapukų.",
+    "drm_title": "Apsaugota DRM",
+    "drm_hint": "Ši svetainė šifruoja savo mediją, todėl yt-dlp iš jos nieko neatsisiunčia. Taip veikia Spotify, Netflix, Disney+ ir panašios paslaugos.",
+    "site_unsupported_title": "Svetainė nepalaikoma",
+    "site_unsupported_hint": "yt-dlp sąmoningai nepalaiko šios svetainės ir jos nepridės.",
+    "subscription_title": "Mokamas turinys",
+    "subscription_hint": "Paskyra, kuriai priklauso slapukai, prieigos neturi. Reikia prenumeratos arba pirkinio.",
+    "network_title": "Nepavyko pasiekti svetainės",
+    "network_hint": "Užklausa nebuvo užbaigta. Paprastai tai laikina — pabandykite netrukus dar kartą.",
+    "no_media_title": "Nėra ko atsisiųsti",
+    "no_media_hint": "Nuoroda atsidaro, bet joje nėra nei vaizdo, nei garso.",
+    "format_unavailable_title": "Pasirinkta kokybė neprieinama",
+    "format_unavailable_hint": "Šiam turiniui pasirinktos kokybės nėra. Pasirinkite kitą.",
+    "rate_limited_title": "Per daug užklausų",
+    "rate_limited_hint": "Svetainė laikinai atmeta užklausas iš šio serverio. Palaukite ir pabandykite dar kartą.",
+    "unsupported_url_title": "Nuoroda nepalaikoma",
+    "unsupported_url_hint": "yt-dlp neturi šio adreso apdorojimo modulio. Patikrinkite, ar nuoroda teisinga.",
+    "not_found_title": "Nerasta",
+    "not_found_hint": "Svetainė grąžino 404. Greičiausiai nuoroda klaidinga arba turinys jau ištrintas.",
+    "forbidden_title": "Prieiga uždrausta",
+    "forbidden_hint": "Svetainė grąžino 403. Galbūt reikia slapukų arba ji blokuoja šį serverį.",
+    "unavailable_title": "Turinys neprieinamas",
+    "unavailable_hint": "Svetainė praneša, kad turinys neprieinamas, bet priežasties nenurodo."
+  },
+
+  "admin": {
+    "not_admin": "🚫 Ši komanda skirta tik administratoriams.",
+    "adduser_usage": "❌ Naudojimas: <b>/adduser &lt;telegram_id&gt;</b>\nPavyzdys: /adduser 123456789",
+    "deleteuser_usage": "❌ Naudojimas: <b>/deleteuser &lt;telegram_id&gt;</b>\nPavyzdys: /deleteuser 123456789",
+    "invalid_user_id": "❌ Tai nepanašu į ID — turi būti skaičius.",
+    "user_added": "✅ Naudotojas <b>{user_id}</b> pridėtas.\n\nNustatymai:\n• Administratorius: {is_admin}\n• Medijos tipas: {media_type}\n• Įrašyti į saugyklą: {save_to_storage}\n\n💡 Įrašyta į konfigūraciją ir pritaikyta.",
+    "user_exists": "❌ Naudotojas {user_id} konfigūracijoje jau yra.",
+    "user_deleted": "✅ Naudotojas <b>{user_id}</b> pašalintas.\n\n💡 Įrašyta į konfigūraciją ir pritaikyta.",
+    "user_not_found": "❌ Naudotojo {user_id} konfigūracijoje nėra.",
+    "cannot_delete_admin": "❌ {user_id} yra administratorius — pašalinkite jį iš konfigūracijos rankiniu būdu.",
+    "add_user_failed": "❌ Nepavyko pridėti naudotojo: {error}",
+    "delete_user_failed": "❌ Nepavyko pašalinti naudotojo: {error}",
+    "config_usage": "❌ Naudojimas:\n<b>/config get &lt;kelias&gt;</b> — perskaityti reikšmę\n<b>/config set &lt;kelias&gt; &lt;reikšmė&gt;</b> — pakeisti\n\nPavyzdžiai:\n/config get telegram.max_upload_tasks\n/config set telegram.max_upload_tasks 10",
+    "config_value_missing": "❌ Reikšmė nenurodyta. Naudojimas: <b>/config set &lt;kelias&gt; &lt;reikšmė&gt;</b>",
+    "config_get_result": "📋 <b>{path}</b> = {value}",
+    "config_set_result": "✅ Konfigūracija atnaujinta.\n<b>{path}</b> = {value}\n\n💡 Įrašyta į konfigūraciją ir pritaikyta.",
+    "config_get_failed": "❌ Nepavyko perskaityti reikšmės: {error}",
+    "config_set_failed": "❌ Nepavyko pakeisti reikšmės: {error}",
+    "config_unknown_action": "❌ Nežinomas veiksmas: {action}\nNaudokite <b>get</b> arba <b>set</b>",
+    "users_header": "📋 <b>Konfigūracijos naudotojai</b> ({count})",
+    "users_none": "📋 Naudotojų nėra.",
+    "users_row": "{badge} <b>{user_id}</b>\n   Medija: {media_type} | Saugykla: {storage}",
+    "users_failed": "❌ Nepavyko gauti sąrašo: {error}",
+    "config_reloaded": "✅ Konfigūracija perskaityta iš naujo.\n\n• Naudotojų: {users}\n• Administratorių: {admins}\n• Lygiagrečių siuntimų: {max_upload_tasks}",
+    "reload_failed": "❌ Nepavyko perskaityti konfigūracijos iš naujo: {error}",
+    "restarting": "🔄 Paleidžiama iš naujo…"
+  },
+
+  "ytdlp": {
+    "new_version": "Išleista nauja {channel} <code>yt-dlp</code> versija: <b>{latest}</b>\nDabartinė versija: <b>{current}</b>\nPerkurkite worker: <code>./redeploy.sh yt_worker</code>",
+    "up_to_date": "ℹ️ Jūsų {channel} <code>yt-dlp</code> versija <b>{current}</b> yra naujausia."
+  }
+}

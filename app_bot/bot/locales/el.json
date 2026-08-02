@@ -1,0 +1,148 @@
+{
+  "start": {
+    "greeting": "Στείλτε έναν σύνδεσμο βίντεο για να ξεκινήσετε.",
+    "startup": "✨ Το <b>{name}</b> είναι έτοιμο — στείλτε έναν σύνδεσμο και θα ξεκινήσει η λήψη."
+  },
+
+  "format": {
+    "choose": "🎯 Τι να κατεβάσω;",
+    "choose_quality": "📊 Σε ποια ποιότητα;",
+    "button_video": "🎬 Βίντεο",
+    "button_audio": "🎵 Ήχος",
+    "button_both": "🎬+🎵 Και τα δύο",
+    "button_cancel": "❌ Ακύρωση",
+    "button_back": "⬅️ Πίσω",
+    "button_download_audio": "⬇️ Λήψη ήχου",
+    "button_best": "🏆 Καλύτερη ποιότητα",
+    "quality_best": "Καλύτερη",
+    "started": "✅ <b>Η λήψη ξεκίνησε</b>",
+    "started_toast": "Η λήψη ξεκίνησε",
+    "cancelled": "❌ Η λήψη ακυρώθηκε",
+    "cancelled_toast": "Ακυρώθηκε",
+    "queue_failed": "🛑 <b>Δεν μπόρεσα να βάλω τον σύνδεσμο στην ουρά</b>",
+    "invalid_selection": "Αυτό το κουμπί δεν ισχύει πια",
+    "session_expired": "Το αίτημα έληξε — στείλτε ξανά τον σύνδεσμο",
+    "invalid_media_type": "Άγνωστος τύπος πολυμέσου"
+  },
+
+  "progress": {
+    "downloading": "⬇️ <b>Λήψη</b> {percent}%",
+    "downloading_plain": "⬇️ <b>Λήψη</b>",
+    "uploading": "⬆️ <b>Αποστολή</b> {percent}%",
+    "uploading_plain": "⬆️ <b>Αποστολή</b>",
+    "processing": "⚙️ <b>Επεξεργασία</b>",
+    "processing_generic": "Ένωση και μετατροπή όσων κατέβηκαν…",
+    "eta": "⏳ απομένουν {time}",
+    "size": "📦 {done} από {total}",
+    "size_done": "📦 {done}",
+    "speed": "🚀 {speed}/δευτ.",
+    "elapsed": "⏱ πέρασαν {time}",
+    "notice": "⚠️ {text}"
+  },
+
+  "postprocess": {
+    "merger": "Ένωση βίντεο και ήχου",
+    "video_convertor": "Μετατροπή του βίντεο",
+    "video_remuxer": "Επανασυσκευασία του βίντεο",
+    "extract_audio": "Εξαγωγή του ήχου",
+    "thumbnails_convertor": "Μετατροπή της μικρογραφίας",
+    "metadata": "Εγγραφή των μεταδεδομένων",
+    "embed_thumbnail": "Ενσωμάτωση του εξωφύλλου",
+    "concat": "Ένωση των μερών",
+    "fixup": "Επιδιόρθωση της ροής"
+  },
+
+  "notice": {
+    "cookies_rejected": "Τα cookies απορρίφθηκαν και παραλείφθηκαν — ανανεώστε τα"
+  },
+
+  "error": {
+    "header_download": "Σφάλμα λήψης",
+    "header_general": "Γενικό σφάλμα",
+    "label_reason": "Αιτία",
+    "label_url": "Σύνδεσμος",
+    "label_task_id": "Κωδικός εργασίας",
+    "label_source": "Πηγή",
+    "label_details": "Λεπτομέρειες",
+    "label_ytdlp_version": "Έκδοση yt-dlp",
+    "label_bot_version": "Έκδοση yt-dlp-bot",
+    "label_tag": "Ετικέτα",
+    "label_site_response": "Απάντηση του ιστότοπου",
+    "tag_error": "#error",
+    "tag_unavailable": "#unavailable"
+  },
+
+  "reason": {
+    "suspended_title": "Ο λογαριασμός ανεστάλη",
+    "suspended_hint": "Ο λογαριασμός που το δημοσίευσε έχει ανασταλεί, και ο ιστότοπος δεν το διαθέτει πια.",
+    "private_title": "Ιδιωτικό περιεχόμενο",
+    "private_hint": "Το περιεχόμενο είναι ιδιωτικό και δεν είναι προσβάσιμο χωρίς την άδεια του κατόχου του.",
+    "removed_title": "Το περιεχόμενο αφαιρέθηκε",
+    "removed_hint": "Το περιεχόμενο διαγράφηκε ή αποσύρθηκε και δεν είναι πλέον διαθέσιμο.",
+    "age_restricted_title": "Περιορισμός ηλικίας",
+    "age_restricted_hint": "Ο ιστότοπος το δίνει μόνο σε συνδεδεμένο λογαριασμό ενήλικα. Τα cookies ενός τέτοιου λογαριασμού μπορεί να βοηθήσουν.",
+    "login_required_title": "Απαιτείται σύνδεση",
+    "login_required_hint": "Ο ιστότοπος αρνήθηκε να δώσει το περιεχόμενο χωρίς συνδεδεμένη συνεδρία. Προσθέστε cookies — δείτε την ενότητα Cookies στο README.",
+    "geo_blocked_title": "Αποκλεισμένο σε αυτή την περιοχή",
+    "geo_blocked_hint": "Ο ιστότοπος δεν δίνει αυτό το περιεχόμενο από τη χώρα όπου βρίσκεται ο διακομιστής.",
+    "not_started_title": "Δεν έχει ξεκινήσει ακόμη",
+    "not_started_hint": "Πρόκειται για ζωντανή μετάδοση ή πρεμιέρα που δεν έχει αρχίσει. Δοκιμάστε ξανά όταν ξεκινήσει.",
+    "members_only_title": "Μόνο για μέλη",
+    "members_only_hint": "Είναι διαθέσιμο μόνο στα μέλη του καναλιού. Χρειάζονται cookies λογαριασμού με συνδρομή.",
+    "drm_title": "Προστατευμένο με DRM",
+    "drm_hint": "Ο ιστότοπος κρυπτογραφεί το περιεχόμενό του, οπότε το yt-dlp δεν κατεβάζει τίποτα από εκεί. Το Spotify, το Netflix, το Disney+ και παρόμοιες υπηρεσίες λειτουργούν όλες έτσι.",
+    "site_unsupported_title": "Ο ιστότοπος δεν υποστηρίζεται",
+    "site_unsupported_hint": "Το yt-dlp σκόπιμα δεν υποστηρίζει αυτόν τον ιστότοπο και δεν πρόκειται να τον προσθέσει.",
+    "subscription_title": "Περιεχόμενο επί πληρωμή",
+    "subscription_hint": "Ο λογαριασμός των cookies δεν έχει πρόσβαση. Χρειάζεται συνδρομή ή αγορά.",
+    "network_title": "Δεν μπόρεσα να φτάσω στον ιστότοπο",
+    "network_hint": "Το αίτημα δεν ολοκληρώθηκε. Συνήθως είναι προσωρινό — δοκιμάστε ξανά σε λίγο.",
+    "no_media_title": "Δεν υπάρχει τίποτα να κατεβεί",
+    "no_media_hint": "Ο σύνδεσμος ανοίγει, αλλά δεν περιέχει ούτε βίντεο ούτε ήχο.",
+    "format_unavailable_title": "Η ζητούμενη ποιότητα δεν είναι διαθέσιμη",
+    "format_unavailable_hint": "Η ποιότητα που επιλέξατε δεν υπάρχει γι' αυτό το αρχείο. Δοκιμάστε άλλη.",
+    "rate_limited_title": "Πάρα πολλά αιτήματα",
+    "rate_limited_hint": "Ο ιστότοπος απορρίπτει προσωρινά τα αιτήματα από αυτόν τον διακομιστή. Περιμένετε και δοκιμάστε ξανά.",
+    "unsupported_url_title": "Μη υποστηριζόμενος σύνδεσμος",
+    "unsupported_url_hint": "Το yt-dlp δεν έχει εξαγωγέα γι' αυτή τη διεύθυνση. Ελέγξτε ότι ο σύνδεσμος είναι σωστός.",
+    "not_found_title": "Δεν βρέθηκε",
+    "not_found_hint": "Ο ιστότοπος επέστρεψε 404. Πιθανότατα ο σύνδεσμος είναι λάθος ή το περιεχόμενο έχει ήδη διαγραφεί.",
+    "forbidden_title": "Απαγορεύεται η πρόσβαση",
+    "forbidden_hint": "Ο ιστότοπος επέστρεψε 403. Ίσως χρειάζονται cookies, ή μπλοκάρει αυτόν τον διακομιστή.",
+    "unavailable_title": "Το περιεχόμενο δεν είναι διαθέσιμο",
+    "unavailable_hint": "Ο ιστότοπος αναφέρει ότι το περιεχόμενο δεν είναι διαθέσιμο, χωρίς να δίνει συγκεκριμένη αιτία."
+  },
+
+  "admin": {
+    "not_admin": "🚫 Αυτή η εντολή είναι μόνο για διαχειριστές.",
+    "adduser_usage": "❌ Χρήση: <b>/adduser &lt;telegram_id&gt;</b>\nΠαράδειγμα: /adduser 123456789",
+    "deleteuser_usage": "❌ Χρήση: <b>/deleteuser &lt;telegram_id&gt;</b>\nΠαράδειγμα: /deleteuser 123456789",
+    "invalid_user_id": "❌ Αυτό δεν μοιάζει με κωδικό — πρέπει να είναι αριθμός.",
+    "user_added": "✅ Ο χρήστης <b>{user_id}</b> προστέθηκε.\n\nΡυθμίσεις:\n• Διαχειριστής: {is_admin}\n• Τύπος πολυμέσου: {media_type}\n• Αποθήκευση στον χώρο αποθήκευσης: {save_to_storage}\n\n💡 Γράφτηκε στη διαμόρφωση και εφαρμόστηκε.",
+    "user_exists": "❌ Ο χρήστης {user_id} υπάρχει ήδη στη διαμόρφωση.",
+    "user_deleted": "✅ Ο χρήστης <b>{user_id}</b> αφαιρέθηκε.\n\n💡 Γράφτηκε στη διαμόρφωση και εφαρμόστηκε.",
+    "user_not_found": "❌ Ο χρήστης {user_id} δεν υπάρχει στη διαμόρφωση.",
+    "cannot_delete_admin": "❌ Ο {user_id} είναι διαχειριστής — αφαιρέστε τον από τη διαμόρφωση με το χέρι.",
+    "add_user_failed": "❌ Δεν μπόρεσα να προσθέσω τον χρήστη: {error}",
+    "delete_user_failed": "❌ Δεν μπόρεσα να αφαιρέσω τον χρήστη: {error}",
+    "config_usage": "❌ Χρήση:\n<b>/config get &lt;διαδρομή&gt;</b> — ανάγνωση τιμής\n<b>/config set &lt;διαδρομή&gt; &lt;τιμή&gt;</b> — αλλαγή της\n\nΠαραδείγματα:\n/config get telegram.max_upload_tasks\n/config set telegram.max_upload_tasks 10",
+    "config_value_missing": "❌ Δεν δόθηκε τιμή. Χρήση: <b>/config set &lt;διαδρομή&gt; &lt;τιμή&gt;</b>",
+    "config_get_result": "📋 <b>{path}</b> = {value}",
+    "config_set_result": "✅ Η διαμόρφωση ενημερώθηκε.\n<b>{path}</b> = {value}\n\n💡 Γράφτηκε στη διαμόρφωση και εφαρμόστηκε.",
+    "config_get_failed": "❌ Δεν μπόρεσα να διαβάσω την τιμή: {error}",
+    "config_set_failed": "❌ Δεν μπόρεσα να αλλάξω την τιμή: {error}",
+    "config_unknown_action": "❌ Άγνωστη ενέργεια: {action}\nΧρησιμοποιήστε <b>get</b> ή <b>set</b>",
+    "users_header": "📋 <b>Ρυθμισμένοι χρήστες</b> ({count})",
+    "users_none": "📋 Δεν υπάρχουν ρυθμισμένοι χρήστες.",
+    "users_row": "{badge} <b>{user_id}</b>\n   Πολυμέσα: {media_type} | Αποθήκευση: {storage}",
+    "users_failed": "❌ Δεν μπόρεσα να πάρω τη λίστα: {error}",
+    "config_reloaded": "✅ Η διαμόρφωση φορτώθηκε ξανά.\n\n• Χρήστες: {users}\n• Διαχειριστές: {admins}\n• Παράλληλες αποστολές: {max_upload_tasks}",
+    "reload_failed": "❌ Δεν μπόρεσα να φορτώσω ξανά τη διαμόρφωση: {error}",
+    "restarting": "🔄 Επανεκκίνηση…"
+  },
+
+  "ytdlp": {
+    "new_version": "Κυκλοφόρησε νέα έκδοση {channel} του <code>yt-dlp</code>: <b>{latest}</b>\nΤρέχουσα έκδοση: <b>{current}</b>\nΞαναχτίστε τον worker: <code>./redeploy.sh yt_worker</code>",
+    "up_to_date": "ℹ️ Η έκδοση {channel} του <code>yt-dlp</code> <b>{current}</b> που έχετε είναι ενημερωμένη."
+  }
+}

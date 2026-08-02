@@ -1,0 +1,148 @@
+{
+  "start": {
+    "greeting": "Envía el enlace de un vídeo para empezar.",
+    "startup": "✨ <b>{name}</b> está listo — envía un enlace y empezará la descarga."
+  },
+
+  "format": {
+    "choose": "🎯 ¿Qué descargo?",
+    "choose_quality": "📊 ¿En qué calidad?",
+    "button_video": "🎬 Vídeo",
+    "button_audio": "🎵 Audio",
+    "button_both": "🎬+🎵 Ambos",
+    "button_cancel": "❌ Cancelar",
+    "button_back": "⬅️ Atrás",
+    "button_download_audio": "⬇️ Descargar el audio",
+    "button_best": "🏆 Mejor calidad",
+    "quality_best": "La mejor",
+    "started": "✅ <b>Descarga iniciada</b>",
+    "started_toast": "Descarga iniciada",
+    "cancelled": "❌ Descarga cancelada",
+    "cancelled_toast": "Cancelada",
+    "queue_failed": "🛑 <b>No he podido poner el enlace en la cola</b>",
+    "invalid_selection": "Este botón ya no es válido",
+    "session_expired": "La petición ha caducado — envía el enlace otra vez",
+    "invalid_media_type": "Tipo de medio desconocido"
+  },
+
+  "progress": {
+    "downloading": "⬇️ <b>Descargando</b> {percent}%",
+    "downloading_plain": "⬇️ <b>Descargando</b>",
+    "uploading": "⬆️ <b>Enviando</b> {percent}%",
+    "uploading_plain": "⬆️ <b>Enviando</b>",
+    "processing": "⚙️ <b>Procesando</b>",
+    "processing_generic": "Uniendo y convirtiendo lo descargado…",
+    "eta": "⏳ quedan {time}",
+    "size": "📦 {done} de {total}",
+    "size_done": "📦 {done}",
+    "speed": "🚀 {speed}/s",
+    "elapsed": "⏱ {time} transcurridos",
+    "notice": "⚠️ {text}"
+  },
+
+  "postprocess": {
+    "merger": "Uniendo vídeo y audio",
+    "video_convertor": "Convirtiendo el vídeo",
+    "video_remuxer": "Reempaquetando el vídeo",
+    "extract_audio": "Extrayendo el audio",
+    "thumbnails_convertor": "Convirtiendo la miniatura",
+    "metadata": "Escribiendo los metadatos",
+    "embed_thumbnail": "Incrustando la portada",
+    "concat": "Juntando las partes",
+    "fixup": "Reparando el flujo"
+  },
+
+  "notice": {
+    "cookies_rejected": "Las cookies fueron rechazadas y omitidas — renuévalas"
+  },
+
+  "error": {
+    "header_download": "Error de descarga",
+    "header_general": "Error general",
+    "label_reason": "Motivo",
+    "label_url": "Enlace",
+    "label_task_id": "ID de la tarea",
+    "label_source": "Origen",
+    "label_details": "Detalles",
+    "label_ytdlp_version": "Versión de yt-dlp",
+    "label_bot_version": "Versión de yt-dlp-bot",
+    "label_tag": "Etiqueta",
+    "label_site_response": "Respuesta del sitio",
+    "tag_error": "#error",
+    "tag_unavailable": "#unavailable"
+  },
+
+  "reason": {
+    "suspended_title": "Cuenta suspendida",
+    "suspended_hint": "La cuenta que publicó esto ha sido suspendida, y el sitio ya no sirve el contenido.",
+    "private_title": "Contenido privado",
+    "private_hint": "Este contenido es privado y no se puede acceder a él sin permiso de su dueño.",
+    "removed_title": "Contenido eliminado",
+    "removed_hint": "Este contenido se ha borrado o retirado y ya no está disponible.",
+    "age_restricted_title": "Contenido con restricción de edad",
+    "age_restricted_hint": "El sitio solo lo sirve a una cuenta adulta con sesión iniciada. Las cookies de una cuenta así pueden ayudar.",
+    "login_required_title": "Hace falta iniciar sesión",
+    "login_required_hint": "El sitio se negó a servir el contenido sin una sesión autenticada. Añade tus cookies — mira la sección Cookies del README.",
+    "geo_blocked_title": "Bloqueado en esta región",
+    "geo_blocked_hint": "El sitio no sirve este contenido desde el país donde está el servidor.",
+    "not_started_title": "Todavía no está disponible",
+    "not_started_hint": "Es una emisión o un estreno que aún no ha empezado. Inténtalo cuando haya comenzado.",
+    "members_only_title": "Solo para miembros",
+    "members_only_hint": "Está reservado a los miembros del canal. Hacen falta las cookies de una cuenta suscrita.",
+    "drm_title": "Protegido con DRM",
+    "drm_hint": "Este sitio cifra sus contenidos, así que yt-dlp no descarga nada de él. Spotify, Netflix, Disney+ y servicios similares funcionan todos así.",
+    "site_unsupported_title": "Sitio no admitido",
+    "site_unsupported_hint": "yt-dlp no admite este sitio a propósito y no lo va a añadir.",
+    "subscription_title": "Contenido de pago",
+    "subscription_hint": "La cuenta de las cookies no tiene acceso. Hace falta una suscripción o una compra.",
+    "network_title": "No he podido llegar al sitio",
+    "network_hint": "La petición no llegó a completarse. Suele ser algo pasajero — inténtalo en un momento.",
+    "no_media_title": "No hay nada que descargar",
+    "no_media_hint": "El enlace se abre, pero no contiene ni vídeo ni audio.",
+    "format_unavailable_title": "La calidad pedida no está disponible",
+    "format_unavailable_hint": "La calidad elegida no existe para este contenido. Prueba con otra.",
+    "rate_limited_title": "Demasiadas peticiones",
+    "rate_limited_hint": "El sitio está rechazando temporalmente las peticiones de este servidor. Espera e inténtalo de nuevo.",
+    "unsupported_url_title": "Enlace no admitido",
+    "unsupported_url_hint": "yt-dlp no tiene un extractor para esta dirección. Comprueba que el enlace sea correcto.",
+    "not_found_title": "No encontrado",
+    "not_found_hint": "El sitio devolvió 404. Lo más probable es que el enlace sea erróneo o que el contenido ya se haya borrado.",
+    "forbidden_title": "Acceso denegado",
+    "forbidden_hint": "El sitio devolvió 403. Puede que hagan falta cookies, o que esté bloqueando este servidor.",
+    "unavailable_title": "Contenido no disponible",
+    "unavailable_hint": "El sitio informa de que el contenido no está disponible, pero no dice por qué."
+  },
+
+  "admin": {
+    "not_admin": "🚫 Este comando es solo para administradores.",
+    "adduser_usage": "❌ Uso: <b>/adduser &lt;telegram_id&gt;</b>\nEjemplo: /adduser 123456789",
+    "deleteuser_usage": "❌ Uso: <b>/deleteuser &lt;telegram_id&gt;</b>\nEjemplo: /deleteuser 123456789",
+    "invalid_user_id": "❌ Eso no parece un ID — tiene que ser un número.",
+    "user_added": "✅ Usuario <b>{user_id}</b> añadido.\n\nAjustes:\n• Administrador: {is_admin}\n• Tipo de medio: {media_type}\n• Guardar en el almacenamiento: {save_to_storage}\n\n💡 Escrito en la configuración y aplicado.",
+    "user_exists": "❌ El usuario {user_id} ya está en la configuración.",
+    "user_deleted": "✅ Usuario <b>{user_id}</b> eliminado.\n\n💡 Escrito en la configuración y aplicado.",
+    "user_not_found": "❌ El usuario {user_id} no está en la configuración.",
+    "cannot_delete_admin": "❌ {user_id} es administrador — quítalo de la configuración a mano.",
+    "add_user_failed": "❌ No he podido añadir al usuario: {error}",
+    "delete_user_failed": "❌ No he podido eliminar al usuario: {error}",
+    "config_usage": "❌ Uso:\n<b>/config get &lt;ruta&gt;</b> — leer un valor\n<b>/config set &lt;ruta&gt; &lt;valor&gt;</b> — cambiarlo\n\nEjemplos:\n/config get telegram.max_upload_tasks\n/config set telegram.max_upload_tasks 10",
+    "config_value_missing": "❌ No has indicado ningún valor. Uso: <b>/config set &lt;ruta&gt; &lt;valor&gt;</b>",
+    "config_get_result": "📋 <b>{path}</b> = {value}",
+    "config_set_result": "✅ Configuración actualizada.\n<b>{path}</b> = {value}\n\n💡 Escrito en la configuración y aplicado.",
+    "config_get_failed": "❌ No he podido leer el valor: {error}",
+    "config_set_failed": "❌ No he podido cambiar el valor: {error}",
+    "config_unknown_action": "❌ Acción desconocida: {action}\nUsa <b>get</b> o <b>set</b>",
+    "users_header": "📋 <b>Usuarios configurados</b> ({count})",
+    "users_none": "📋 No hay ningún usuario configurado.",
+    "users_row": "{badge} <b>{user_id}</b>\n   Medios: {media_type} | Almacenamiento: {storage}",
+    "users_failed": "❌ No he podido obtener la lista: {error}",
+    "config_reloaded": "✅ Configuración recargada.\n\n• Usuarios: {users}\n• Administradores: {admins}\n• Envíos en paralelo: {max_upload_tasks}",
+    "reload_failed": "❌ No he podido recargar la configuración: {error}",
+    "restarting": "🔄 Reiniciando…"
+  },
+
+  "ytdlp": {
+    "new_version": "Hay una nueva versión {channel} de <code>yt-dlp</code>: <b>{latest}</b>\nVersión actual: <b>{current}</b>\nRecompila el worker: <code>./redeploy.sh yt_worker</code>",
+    "up_to_date": "ℹ️ Tu versión {channel} de <code>yt-dlp</code> <b>{current}</b> está al día."
+  }
+}

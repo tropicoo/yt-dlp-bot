@@ -1,0 +1,148 @@
+{
+  "start": {
+    "greeting": "Пошаљите линк ка видеу да бисте почели.",
+    "startup": "✨ <b>{name}</b> је покренут — пошаљите линк и преузимање ће почети."
+  },
+
+  "format": {
+    "choose": "🎯 Шта да преузмем?",
+    "choose_quality": "📊 У ком квалитету?",
+    "button_video": "🎬 Видео",
+    "button_audio": "🎵 Аудио",
+    "button_both": "🎬+🎵 Оба",
+    "button_cancel": "❌ Откажи",
+    "button_back": "⬅️ Назад",
+    "button_download_audio": "⬇️ Преузми аудио",
+    "button_best": "🏆 Најбољи квалитет",
+    "quality_best": "Најбољи",
+    "started": "✅ <b>Преузимање је почело</b>",
+    "started_toast": "Преузимање је почело",
+    "cancelled": "❌ Преузимање је отказано",
+    "cancelled_toast": "Отказано",
+    "queue_failed": "🛑 <b>Нисам успео да ставим линк у ред</b>",
+    "invalid_selection": "Ово дугме више не важи",
+    "session_expired": "Захтев је истекао — пошаљите линк поново",
+    "invalid_media_type": "Непознат тип медија"
+  },
+
+  "progress": {
+    "downloading": "⬇️ <b>Преузимање</b> {percent}%",
+    "downloading_plain": "⬇️ <b>Преузимање</b>",
+    "uploading": "⬆️ <b>Слање</b> {percent}%",
+    "uploading_plain": "⬆️ <b>Слање</b>",
+    "processing": "⚙️ <b>Обрада</b>",
+    "processing_generic": "Спајање и претварање преузетог…",
+    "eta": "⏳ још {time}",
+    "size": "📦 {done} од {total}",
+    "size_done": "📦 {done}",
+    "speed": "🚀 {speed}/s",
+    "elapsed": "⏱ прошло {time}",
+    "notice": "⚠️ {text}"
+  },
+
+  "postprocess": {
+    "merger": "Спајање видеа и аудија",
+    "video_convertor": "Претварање видеа",
+    "video_remuxer": "Препакивање видеа",
+    "extract_audio": "Издвајање аудија",
+    "thumbnails_convertor": "Претварање сличице",
+    "metadata": "Уписивање метаподатака",
+    "embed_thumbnail": "Уграђивање омота",
+    "concat": "Спајање делова",
+    "fixup": "Поправка тока"
+  },
+
+  "notice": {
+    "cookies_rejected": "Колачићи су одбијени и прескочени — освежите их"
+  },
+
+  "error": {
+    "header_download": "Грешка при преузимању",
+    "header_general": "Општа грешка",
+    "label_reason": "Разлог",
+    "label_url": "Линк",
+    "label_task_id": "ИД задатка",
+    "label_source": "Извор",
+    "label_details": "Детаљи",
+    "label_ytdlp_version": "Верзија yt-dlp",
+    "label_bot_version": "Верзија yt-dlp-bot",
+    "label_tag": "Ознака",
+    "label_site_response": "Одговор сајта",
+    "tag_error": "#error",
+    "tag_unavailable": "#unavailable"
+  },
+
+  "reason": {
+    "suspended_title": "Налог је суспендован",
+    "suspended_hint": "Налог који је ово објавио је суспендован, па сајт садржај више не испоручује.",
+    "private_title": "Приватан садржај",
+    "private_hint": "Овај садржај је приватан и без дозволе власника му се не може приступити.",
+    "removed_title": "Садржај је уклоњен",
+    "removed_hint": "Овај садржај је обрисан или повучен и више није доступан.",
+    "age_restricted_title": "Старосно ограничење",
+    "age_restricted_hint": "Сајт ово даје само пријављеном налогу пунолетне особе. Колачићи таквог налога могу помоћи.",
+    "login_required_title": "Потребна је пријава",
+    "login_required_hint": "Сајт је одбио да преда садржај без пријављене сесије. Додајте колачиће — видите одељак Cookies у README-у.",
+    "geo_blocked_title": "Блокирано у овом региону",
+    "geo_blocked_hint": "Сајт не испоручује овај садржај из земље у којој се налази сервер.",
+    "not_started_title": "Још није почело",
+    "not_started_hint": "Ово је најављени пренос или премијера. Покушајте када почне.",
+    "members_only_title": "Само за чланове",
+    "members_only_hint": "Доступно је само члановима канала. Потребни су колачићи налога са претплатом.",
+    "drm_title": "Заштићено DRM-ом",
+    "drm_hint": "Овај сајт шифрује свој садржај, па yt-dlp са њега ништа не преузима. Spotify, Netflix, Disney+ и слични сервиси сви раде тако.",
+    "site_unsupported_title": "Сајт није подржан",
+    "site_unsupported_hint": "yt-dlp намерно не подржава овај сајт и неће га додати.",
+    "subscription_title": "Садржај који се плаћа",
+    "subscription_hint": "Налог иза колачића нема приступ. Потребна је претплата или куповина.",
+    "network_title": "Сајт није доступан",
+    "network_hint": "Захтев није довршен. То је обично привремено — покушајте поново за кратко.",
+    "no_media_title": "Нема шта да се преузме",
+    "no_media_hint": "Линк се отвара, али у њему нема ни видеа ни аудија.",
+    "format_unavailable_title": "Тражени квалитет није доступан",
+    "format_unavailable_hint": "За овај садржај изабрани квалитет не постоји. Узмите други.",
+    "rate_limited_title": "Превише захтева",
+    "rate_limited_hint": "Сајт привремено одбија захтеве са овог сервера. Сачекајте и покушајте поново.",
+    "unsupported_url_title": "Линк није подржан",
+    "unsupported_url_hint": "yt-dlp нема екстрактор за ову адресу. Проверите да ли је линк исправан.",
+    "not_found_title": "Није пронађено",
+    "not_found_hint": "Сајт је вратио 404. Линк је вероватно погрешан или је садржај већ обрисан.",
+    "forbidden_title": "Приступ је одбијен",
+    "forbidden_hint": "Сајт је вратио 403. Можда су потребни колачићи или блокира овај сервер.",
+    "unavailable_title": "Садржај није доступан",
+    "unavailable_hint": "Сајт пријављује да садржај није доступан, али не наводи разлог."
+  },
+
+  "admin": {
+    "not_admin": "🚫 Ова команда је само за администраторе.",
+    "adduser_usage": "❌ Употреба: <b>/adduser &lt;telegram_id&gt;</b>\nПример: /adduser 123456789",
+    "deleteuser_usage": "❌ Употреба: <b>/deleteuser &lt;telegram_id&gt;</b>\nПример: /deleteuser 123456789",
+    "invalid_user_id": "❌ Ово не личи на ИД — мора да буде број.",
+    "user_added": "✅ Корисник <b>{user_id}</b> је додат.\n\nПодешавања:\n• Администратор: {is_admin}\n• Тип медија: {media_type}\n• Чување у складиште: {save_to_storage}\n\n💡 Уписано у конфигурацију и примењено.",
+    "user_exists": "❌ Корисник {user_id} већ постоји у конфигурацији.",
+    "user_deleted": "✅ Корисник <b>{user_id}</b> је уклоњен.\n\n💡 Уписано у конфигурацију и примењено.",
+    "user_not_found": "❌ Корисника {user_id} нема у конфигурацији.",
+    "cannot_delete_admin": "❌ {user_id} је администратор — уклоните га из конфигурације ручно.",
+    "add_user_failed": "❌ Нисам успео да додам корисника: {error}",
+    "delete_user_failed": "❌ Нисам успео да уклоним корисника: {error}",
+    "config_usage": "❌ Употреба:\n<b>/config get &lt;путања&gt;</b> — читање вредности\n<b>/config set &lt;путања&gt; &lt;вредност&gt;</b> — измена\n\nПримери:\n/config get telegram.max_upload_tasks\n/config set telegram.max_upload_tasks 10",
+    "config_value_missing": "❌ Вредност није наведена. Употреба: <b>/config set &lt;путања&gt; &lt;вредност&gt;</b>",
+    "config_get_result": "📋 <b>{path}</b> = {value}",
+    "config_set_result": "✅ Конфигурација је ажурирана.\n<b>{path}</b> = {value}\n\n💡 Уписано у конфигурацију и примењено.",
+    "config_get_failed": "❌ Нисам успео да прочитам вредност: {error}",
+    "config_set_failed": "❌ Нисам успео да променим вредност: {error}",
+    "config_unknown_action": "❌ Непозната радња: {action}\nКористите <b>get</b> или <b>set</b>",
+    "users_header": "📋 <b>Корисници у конфигурацији</b> ({count})",
+    "users_none": "📋 Нема подешених корисника.",
+    "users_row": "{badge} <b>{user_id}</b>\n   Медији: {media_type} | Складиште: {storage}",
+    "users_failed": "❌ Нисам успео да добијем списак: {error}",
+    "config_reloaded": "✅ Конфигурација је поново учитана.\n\n• Корисника: {users}\n• Администратора: {admins}\n• Истовремених слања: {max_upload_tasks}",
+    "reload_failed": "❌ Нисам успео поново да учитам конфигурацију: {error}",
+    "restarting": "🔄 Поново се покрећем…"
+  },
+
+  "ytdlp": {
+    "new_version": "Изашла је нова {channel} верзија <code>yt-dlp</code>: <b>{latest}</b>\nТренутна верзија: <b>{current}</b>\nПоново изградите worker: <code>./redeploy.sh yt_worker</code>",
+    "up_to_date": "ℹ️ Ваша {channel} верзија <code>yt-dlp</code> <b>{current}</b> је актуелна."
+  }
+}

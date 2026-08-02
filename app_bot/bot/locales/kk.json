@@ -1,0 +1,148 @@
+{
+  "start": {
+    "greeting": "Бастау үшін бейнеге сілтеме жіберіңіз.",
+    "startup": "✨ <b>{name}</b> іске қосылды — сілтеме жіберіңіз, жүктеу басталады."
+  },
+
+  "format": {
+    "choose": "🎯 Нені жүктеу керек?",
+    "choose_quality": "📊 Қандай сапада?",
+    "button_video": "🎬 Бейне",
+    "button_audio": "🎵 Аудио",
+    "button_both": "🎬+🎵 Екеуі де",
+    "button_cancel": "❌ Бас тарту",
+    "button_back": "⬅️ Артқа",
+    "button_download_audio": "⬇️ Аудионы жүктеу",
+    "button_best": "🏆 Ең жақсы сапа",
+    "quality_best": "Ең жақсы",
+    "started": "✅ <b>Жүктеу басталды</b>",
+    "started_toast": "Жүктеу басталды",
+    "cancelled": "❌ Жүктеуден бас тартылды",
+    "cancelled_toast": "Бас тартылды",
+    "queue_failed": "🛑 <b>Сілтемені кезекке қоя алмадым</b>",
+    "invalid_selection": "Бұл түйме енді жарамсыз",
+    "session_expired": "Сұраныс ескірді — сілтемені қайта жіберіңіз",
+    "invalid_media_type": "Медиа түрі белгісіз"
+  },
+
+  "progress": {
+    "downloading": "⬇️ <b>Жүктелуде</b> {percent}%",
+    "downloading_plain": "⬇️ <b>Жүктелуде</b>",
+    "uploading": "⬆️ <b>Жіберілуде</b> {percent}%",
+    "uploading_plain": "⬆️ <b>Жіберілуде</b>",
+    "processing": "⚙️ <b>Өңделуде</b>",
+    "processing_generic": "Жүктелгені біріктіріліп, түрлендірілуде…",
+    "eta": "⏳ {time} қалды",
+    "size": "📦 {total} ішінен {done}",
+    "size_done": "📦 {done}",
+    "speed": "🚀 {speed}/с",
+    "elapsed": "⏱ {time} өтті",
+    "notice": "⚠️ {text}"
+  },
+
+  "postprocess": {
+    "merger": "Бейне мен аудио біріктірілуде",
+    "video_convertor": "Бейне түрлендірілуде",
+    "video_remuxer": "Бейне қайта оралуда",
+    "extract_audio": "Аудио бөлініп алынуда",
+    "thumbnails_convertor": "Нобай түрлендірілуде",
+    "metadata": "Метадеректер жазылуда",
+    "embed_thumbnail": "Мұқаба ендірілуде",
+    "concat": "Бөліктер жалғануда",
+    "fixup": "Ағын жөнделуде"
+  },
+
+  "notice": {
+    "cookies_rejected": "Cookie қабылданбай, өткізіліп жіберілді — оларды жаңартыңыз"
+  },
+
+  "error": {
+    "header_download": "Жүктеу қатесі",
+    "header_general": "Жалпы қате",
+    "label_reason": "Себебі",
+    "label_url": "Сілтеме",
+    "label_task_id": "Тапсырма идентификаторы",
+    "label_source": "Қайдан",
+    "label_details": "Егжей-тегжейі",
+    "label_ytdlp_version": "yt-dlp нұсқасы",
+    "label_bot_version": "yt-dlp-bot нұсқасы",
+    "label_tag": "Тег",
+    "label_site_response": "Сайттың жауабы",
+    "tag_error": "#error",
+    "tag_unavailable": "#unavailable"
+  },
+
+  "reason": {
+    "suspended_title": "Тіркелгі бұғатталған",
+    "suspended_hint": "Мұны жариялаған тіркелгі бұғатталған, сондықтан сайт материалды енді бермейді.",
+    "private_title": "Жеке жазба",
+    "private_hint": "Бұл жазба жабық, иесінің рұқсатынсыз оған қол жеткізу мүмкін емес.",
+    "removed_title": "Жазба жойылған",
+    "removed_hint": "Материал жойылған немесе алынып тасталған және енді қолжетімсіз.",
+    "age_restricted_title": "Жас шектеуі",
+    "age_restricted_hint": "Сайт мұны тек кірген ересек тіркелгіге ғана береді. Сондай тіркелгінің cookie файлы көмектесуі мүмкін.",
+    "login_required_title": "Кіру қажет",
+    "login_required_hint": "Сайт материалды кірген сессиясыз беруден бас тартты. Cookie қосыңыз — README ішіндегі Cookies бөлімін қараңыз.",
+    "geo_blocked_title": "Бұл өңірде қолжетімсіз",
+    "geo_blocked_hint": "Сайт бұл материалды сервер тұрған елден бермейді.",
+    "not_started_title": "Әлі басталған жоқ",
+    "not_started_hint": "Бұл — жоспарланған эфир немесе премьера. Басталған соң қайталап көріңіз.",
+    "members_only_title": "Тек мүшелерге",
+    "members_only_hint": "Бұл тек арна мүшелеріне ашық. Жазылымы бар тіркелгінің cookie файлы керек.",
+    "drm_title": "DRM-мен қорғалған",
+    "drm_hint": "Бұл сайт өз медиасын шифрлайды, сондықтан yt-dlp одан ештеңе жүктемейді. Spotify, Netflix, Disney+ және оған ұқсас қызметтердің бәрі осылай жұмыс істейді.",
+    "site_unsupported_title": "Сайтқа қолдау көрсетілмейді",
+    "site_unsupported_hint": "yt-dlp бұл сайтқа әдейі қолдау көрсетпейді және көрсетпейді де.",
+    "subscription_title": "Ақылы материал",
+    "subscription_hint": "Cookie иесі болған тіркелгінің қол жеткізуі жоқ. Жазылым немесе сатып алу керек.",
+    "network_title": "Сайтқа жете алмадым",
+    "network_hint": "Сұраныс аяқталмады. Әдетте бұл уақытша — сәлден кейін қайталап көріңіз.",
+    "no_media_title": "Жүктейтін ештеңе жоқ",
+    "no_media_hint": "Сілтеме ашылады, бірақ ішінде бейне де, аудио да жоқ.",
+    "format_unavailable_title": "Сұралған сапа қолжетімсіз",
+    "format_unavailable_hint": "Бұл материал үшін таңдалған сапа жоқ. Басқасын алыңыз.",
+    "rate_limited_title": "Сұраныс тым көп",
+    "rate_limited_hint": "Сайт осы серверден келген сұраныстарды уақытша қабылдамай отыр. Күте тұрып, қайталап көріңіз.",
+    "unsupported_url_title": "Сілтемеге қолдау көрсетілмейді",
+    "unsupported_url_hint": "yt-dlp-та бұл мекенжайға арналған өңдеуші жоқ. Сілтеменің дұрыстығын тексеріңіз.",
+    "not_found_title": "Табылмады",
+    "not_found_hint": "Сайт 404 қайтарды. Сілтеме қате болуы немесе материал жойылып кеткен болуы мүмкін.",
+    "forbidden_title": "Қол жеткізу жабық",
+    "forbidden_hint": "Сайт 403 қайтарды. Cookie қажет болуы немесе ол осы серверді бұғаттауы мүмкін.",
+    "unavailable_title": "Материал қолжетімсіз",
+    "unavailable_hint": "Сайт материал қолжетімсіз деп хабарлайды, бірақ себебін айтпайды."
+  },
+
+  "admin": {
+    "not_admin": "🚫 Бұл команда тек әкімшілерге арналған.",
+    "adduser_usage": "❌ Қолданылуы: <b>/adduser &lt;telegram_id&gt;</b>\nМысалы: /adduser 123456789",
+    "deleteuser_usage": "❌ Қолданылуы: <b>/deleteuser &lt;telegram_id&gt;</b>\nМысалы: /deleteuser 123456789",
+    "invalid_user_id": "❌ Бұл идентификаторға ұқсамайды — сан болуы керек.",
+    "user_added": "✅ <b>{user_id}</b> пайдаланушысы қосылды.\n\nБаптаулар:\n• Әкімші: {is_admin}\n• Медиа түрі: {media_type}\n• Қоймаға сақтау: {save_to_storage}\n\n💡 Конфигке жазылып, қолданылды.",
+    "user_exists": "❌ {user_id} пайдаланушысы конфигте бар.",
+    "user_deleted": "✅ <b>{user_id}</b> пайдаланушысы жойылды.\n\n💡 Конфигке жазылып, қолданылды.",
+    "user_not_found": "❌ {user_id} пайдаланушысы конфигте жоқ.",
+    "cannot_delete_admin": "❌ {user_id} — әкімші, оны конфигтен қолмен жойыңыз.",
+    "add_user_failed": "❌ Пайдаланушыны қоса алмадым: {error}",
+    "delete_user_failed": "❌ Пайдаланушыны жоя алмадым: {error}",
+    "config_usage": "❌ Қолданылуы:\n<b>/config get &lt;жол&gt;</b> — мәнді оқу\n<b>/config set &lt;жол&gt; &lt;мән&gt;</b> — өзгерту\n\nМысалдар:\n/config get telegram.max_upload_tasks\n/config set telegram.max_upload_tasks 10",
+    "config_value_missing": "❌ Мән көрсетілмеген. Қолданылуы: <b>/config set &lt;жол&gt; &lt;мән&gt;</b>",
+    "config_get_result": "📋 <b>{path}</b> = {value}",
+    "config_set_result": "✅ Конфиг жаңартылды.\n<b>{path}</b> = {value}\n\n💡 Конфигке жазылып, қолданылды.",
+    "config_get_failed": "❌ Мәнді оқи алмадым: {error}",
+    "config_set_failed": "❌ Мәнді өзгерте алмадым: {error}",
+    "config_unknown_action": "❌ Белгісіз әрекет: {action}\n<b>get</b> немесе <b>set</b> қолданыңыз",
+    "users_header": "📋 <b>Конфигтегі пайдаланушылар</b> ({count})",
+    "users_none": "📋 Пайдаланушы жоқ.",
+    "users_row": "{badge} <b>{user_id}</b>\n   Медиа: {media_type} | Қойма: {storage}",
+    "users_failed": "❌ Тізімді ала алмадым: {error}",
+    "config_reloaded": "✅ Конфиг қайта оқылды.\n\n• Пайдаланушылар: {users}\n• Әкімшілер: {admins}\n• Қатар жіберу саны: {max_upload_tasks}",
+    "reload_failed": "❌ Конфигті қайта оқи алмадым: {error}",
+    "restarting": "🔄 Қайта іске қосылып жатырмын…"
+  },
+
+  "ytdlp": {
+    "new_version": "<code>yt-dlp</code> жаңа {channel} нұсқасы шықты: <b>{latest}</b>\nАғымдағы нұсқа: <b>{current}</b>\nWorker-ді қайта құрастырыңыз: <code>./redeploy.sh yt_worker</code>",
+    "up_to_date": "ℹ️ Сіздегі {channel} <code>yt-dlp</code> нұсқасы <b>{current}</b> — ең соңғысы."
+  }
+}

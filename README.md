@@ -35,8 +35,8 @@ back — no browser, no desktop app, no files left on someone else's server.
   along and Telegram seeks the file when you tap one.
 - **Readable failures** — a suspended account, a private video or an expired
   cookie is explained in a sentence instead of a stack trace.
-- **Speaks five languages** — English, Ukrainian, Russian, Hebrew and Latvian,
-  set for everyone or per person.
+- **Speaks fifteen languages** — set one for everyone, or a different one per
+  person.
 - **Run it from the chat** — admins add users and change settings without
   touching the server.
 - **Works headless too** — the same downloads can be triggered over HTTP.
@@ -161,9 +161,12 @@ telegram:
       lang_code: !!str "uk"      # except this one
 ```
 
-Available: `en`, `uk`, `ru`, `he`, `lv`. Anything else is rejected at startup
-with the list of valid values rather than silently falling back. A translation
-missing a string falls back to English and says so in the log.
+Available: `en` English, `be` Belarusian, `de` German, `el` Greek, `es` Spanish,
+`fr` French, `he` Hebrew, `it` Italian, `kk` Kazakh, `lt` Lithuanian,
+`lv` Latvian, `ru` Russian, `sr` Serbian (Cyrillic), `tt` Tatar,
+`uk` Ukrainian. Anything else is rejected at startup with the list of valid values rather than
+silently falling back. A translation missing a string falls back to English and
+says so in the log.
 
 Admins can switch the default without restarting:
 `/config set telegram.lang_code uk`.

@@ -2,8 +2,8 @@ telegram:
   api_id: 00000000000
   api_hash: "REPLACE-WITH-TELEGRAM-API-HASH"
   token: "REPLACE-WITH-TELEGRAM-TOKEN"
-  # Language the bot speaks: en, uk, ru, he or lv. Applies to everyone; a user
-  # below may pick a different one.
+  # Language the bot speaks. Applies to everyone; a user below may pick another.
+  # en be de el es fr he it kk lt lv ru sr tt uk
   lang_code: !!str "en"
   max_upload_tasks: 5
   url_validation_regexes:

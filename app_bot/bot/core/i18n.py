@@ -14,7 +14,24 @@ import logging
 from pathlib import Path
 from typing import Any, Final
 
-LANGUAGES: Final[tuple[str, ...]] = ('en', 'uk', 'ru', 'he', 'lv')
+# English first because it is the master catalogue; the rest alphabetically.
+LANGUAGES: Final[tuple[str, ...]] = (
+    'en',
+    'be',
+    'de',
+    'el',
+    'es',
+    'fr',
+    'he',
+    'it',
+    'kk',
+    'lt',
+    'lv',
+    'ru',
+    'sr',
+    'tt',
+    'uk',
+)
 FALLBACK_LANGUAGE: Final[str] = 'en'
 
 _LOCALES_DIR: Final[Path] = Path(__file__).parent.parent / 'locales'

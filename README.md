@@ -1,277 +1,227 @@
-## yt-dlp-bot - Video Download Telegram Bot 🇺🇦
+<p align="center">
+  <img src="./assets/readme/hero.gif" width="100%"
+       alt="yt-dlp-bot — a link is pasted in Telegram, format buttons appear, Video is chosen, the download reports its progress, processing takes over, and the finished file arrives in the same chat">
+</p>
 
-Simple and reliable self-hosted Video Download Telegram Bot.
+<p align="center">
+  <b>Self-hosted Telegram bot for <a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a>.</b>
+  Runs on your own machine with Docker Compose. 🇺🇦
+</p>
 
-Version: 1.7.2. [Release details](RELEASES.md).
+<p align="center">
+  Version 1.7.2 · <a href="RELEASES.md">Release notes</a> ·
+  Intended for videos under a Creative Commons licence
+</p>
 
-![frames](.assets/download_success.png)
-
+---
 
 ## Support the development
 
 - [Buy me a coffee](https://www.buymeacoffee.com/terletsky)
 - PayPal [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MA6RKYAZH9DSA)
-- Bitcoin wallet `14kMRS8SvfD2ydMSMEyAmefHV3Yynf9kAd`
+- Bitcoin `14kMRS8SvfD2ydMSMEyAmefHV3Yynf9kAd`
 
-## 😂 Features
+## What it does
 
-* Download audio and free videos with Creative Commons (CC) License from [yt-dlp](https://github.com/yt-dlp/yt-dlp) sites to your storage.
-* Upload downloaded media to Telegram.
-* **Interactive format selection**: Choose between Video, Audio, or Both directly in Telegram chat.
-* **Video quality selection**: Pick desired quality (Best, 4K, 1440p, 1080p, 720p, 480p, 360p) before downloading.
-* **Admin commands**: Manage users and configuration via Telegram commands.
-* **Live progress**: One status message tracks the task, showing download and upload percentage, ETA and size.
-* **Clean chat experience**: Only the final media file appears in chat (no intermediate status messages).
-* **Audio thumbnails**: YouTube covers are embedded in audio files.
-* Interact with the bot in private or group chats.
-* Trigger video downloads via link to the API.
-* Track download tasks using the API.
+Send a link to your bot. It asks what you want, downloads it, and sends the file
+back — no browser, no desktop app, no files left on someone else's server.
 
-## 🔧 Admin Commands
+- **Choose per download** — video, audio, or both; quality from 360p to 4K.
+- **One status message** — a single message tracks the task from percentage and
+  ETA through processing to upload, then makes way for the file itself.
+- **Files that look right in Telegram** — source covers survive as thumbnails,
+  and audio arrives tagged with its artist and track.
+- **Readable failures** — a suspended account, a private video or an expired
+  cookie is explained in a sentence instead of a stack trace.
+- **Run it from the chat** — admins add users and change settings without
+  touching the server.
+- **Works headless too** — the same downloads can be triggered over HTTP.
 
-Admin users can manage the bot configuration directly from Telegram:
+## How it works
 
-| Command | Description |
-|---------|-------------|
-| `/adduser <telegram_id>` | Add a new user with default settings |
-| `/deleteuser <telegram_id>` | Remove a user (admins cannot be deleted) |
-| `/listusers` | Show all configured users |
-| `/config get <path>` | Get a config value (e.g., `/config get telegram.max_upload_tasks`) |
-| `/config set <path> <value>` | Set a config value (e.g., `/config set telegram.max_upload_tasks 5`) |
-| `/reloadconfig` | Reload configuration from disk |
-| `/restartbot` | Gracefully restart the bot (Docker auto-restarts) |
+<p align="center">
+  <img src="./assets/readme/architecture.svg" width="100%"
+       alt="A link from the Telegram bot or the HTTP API is queued in RabbitMQ, downloaded by the worker with yt-dlp and FFmpeg, and the progress and result travel back through the same queue while PostgreSQL records every task">
+</p>
 
-**Note**: Changes made via admin commands are persisted to `config.yml` and survive bot restarts.
+Four services share one queue. The bot owns the conversation, the worker owns
+the downloading, and neither blocks the other — so a three-hour video does not
+stop the bot from answering.
 
-## Disclaimer
+## Quick start
 
-- Intended to use only with videos that are under Creative Commons (CC) License
+**1. Get your Telegram credentials**
 
-## ⚙ Quick Setup
+- Create a bot with [BotFather](https://t.me/BotFather) and copy its `token`.
+- Get an `api_id` and `api_hash` from [my.telegram.org/apps](https://my.telegram.org/apps).
+- Find [your Telegram user ID](https://stackoverflow.com/questions/32683992/find-out-my-own-user-id-for-sending-a-message-with-telegram-api).
 
-1. Create Telegram bot using [BotFather](https://t.me/BotFather) and get your `token`
-2. [Get your Telegram API Keys](https://my.telegram.org/apps) (`api_id` and `api_hash`)
-3. [Find your Telegram User ID](https://stackoverflow.com/questions/32683992/find-out-my-own-user-id-for-sending-a-message-with-telegram-api)
-4. Copy `app_bot/config-example.yml` to `app_bot/config.yml`
-5. Write `token`, `api_id`, `api_hash` to `app_bot/config.yml` by changing respective
-   placeholders
-6. Write your Telegram user or group ID to the `allowed_users` -> `id` by replacing dummy
-   value and change `forward_group_id` value if you want to forward the video to
-   some group/channel when upload is enabled. Bot should be added to the group/channel to be able to send messages.
-7. Change download media type for the user/group: `AUDIO`, `VIDEO` or `AUDIO_VIDEO`
-   in `app_bot/config.yml`'s variable `download_media_type`. Default `VIDEO`
-8. If you want your downloaded audio/video to be uploaded back to the Telegram, set `upload_video_file` config variable 
-   for your user/group in the `app_bot/config.yml` to `True`
-9. Media `STORAGE_PATH` environment variable is located in
-   the `envs/worker.env` file. By default, it's `/filestorage` path inside the
-   container. What you want is to map the real path to this inside
-   the `docker-compose.yml` file for `worker` service, e.g. if you're on Windows, next
-   strings mean container path `/filestorage` is mapped to real `D:/Videos` so your
-   videos will be saved to your `Videos` folder.
-   ```yml
-     worker:
-       volumes:
-         - "D:/Videos:/filestorage"
-   ```
-10. Change application's `LOG_LEVEL` in `envs/common.env` to `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` if needed
-
-## 🏃 Run
+**2. Write the config**
 
 ```bash
-# Build base image
+cp app_bot/config-example.yml app_bot/config.yml
+```
+
+Put the `token`, `api_id` and `api_hash` in place of the placeholders, then set
+your own ID under `allowed_users` → `id`.
+
+**3. Run it**
+
+```bash
 docker compose build base-image
-
-# Build and run all services in detached mode
 docker compose up --build -d -t 0 && docker compose logs --tail 100 -f
-
-# Stop all services
-docker compose stop -t 0
 ```
 
-To roll out changes later, `redeploy.sh` rebuilds, restarts and then reclaims the
-disk space each rebuild orphans (untagged images and excess build cache, which
-otherwise accumulate until an unrelated-looking service fails):
+The bot greets you with `✨ <YOUR_BOT_NAME> started, paste a video URL(s) to
+start download`. Paste a link and it takes over from there.
+
+Stop everything with `docker compose stop -t 0`.
+
+**Rolling out changes later**
+
+`redeploy.sh` rebuilds, restarts, and reclaims the disk space each rebuild
+orphans — untagged images and excess build cache accumulate quietly until an
+unrelated-looking service fails for want of space.
 
 ```bash
-./redeploy.sh                    # rebuild and restart every application service
-./redeploy.sh yt_bot             # only one service
-./redeploy.sh --pull --base      # update the branch and rebuild the base image too
-./redeploy.sh --clean-only       # just reclaim space
-./redeploy.sh --help             # all options
+./redeploy.sh                 # rebuild and restart every application service
+./redeploy.sh yt_bot          # only one service
+./redeploy.sh --pull --base   # update the branch and rebuild the base image too
+./redeploy.sh --clean-only    # just reclaim space
+./redeploy.sh --help          # all options
 ```
 
-Your Telegram Bot should send you a startup message:
-`✨ <YOUR_BOT_NAME> started, paste a video URL(s) to start download` and that's it. After
-pasting video URL(s) bot will send you appropriate message whether they were downloaded
-or something went wrong.
+## Telegram commands
 
-## 💻 Advanced setup
+Anyone allowed in the config can paste links. Admins get the rest:
 
-1. If you want to change `yt-dlp` download options, go to the `app_worker/ytdl_opts`
-   directory, copy content from `default.py` to `user.py` and modify as you wish by
-   checking [available options](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180).
-2. Default max simultaneous video downloads by worker service is 2. Change
-   the `MAX_SIMULTANEOUS_DOWNLOADS` variable in `envs/worker.env` to desired value but
-   keep in mind that default mounted volume size is 7168m (7GB) in `docker-compose.yml`
-   so it may be not enough if you download a lot of large videos at once.
-3. `yt-dlp` will try to download video thumbnail if it exists. In other case Worker
-   service (particularly the FFmpeg process) will make a JPEG thumbnail from the
-   video. It's needed when you choose to upload the video to the Telegram chat. By
-   default, it will try to make it on the 10th second of the video, but if the video is
-   shorter, it will make it on `video length / 2` time point because the FFmpeg process
-   will error out. Change the `THUMBNAIL_FRAME_SECOND` variable if needed in
-   the `envs/worker.env` file.
-4. Max upload file size for non-premium Telegram user is 2GB (2147483648 bytes) which is
-   reflected in the example config `app_bot/config-example.yml`. If the configured user
-   is the premium user, you're allowed to upload files up to 4GB (4294967296 bytes) and
-   can change the default value stored in the `upload_video_max_file_size` config
-   variable.
-5. If the website you want to download from requires authentication, you can use your
-   cookies — see the [Cookies](#-cookies) section below.
-6. Downloads are not rate limited by default. To stop the worker from saturating your
-   connection, set `DOWNLOAD_RATE_LIMIT` in `envs/worker.env` to a per-download speed
-   such as `500K` or `4.2M` (bytes per second, an empty value means no limit). Note this
-   applies to each download, so a value of `2M` with `MAX_SIMULTANEOUS_DOWNLOADS=2` can
-   still use up to 4 MB/s in total.
+| Command | What it does |
+|---|---|
+| `/adduser <telegram_id>` | Add a user with default settings |
+| `/deleteuser <telegram_id>` | Remove a user — admins are protected |
+| `/listusers` | Show everyone currently configured |
+| `/config get <path>` | Read a value, e.g. `/config get telegram.max_upload_tasks` |
+| `/config set <path> <value>` | Change a value, e.g. `/config set telegram.max_upload_tasks 5` |
+| `/reloadconfig` | Re-read `config.yml` from disk |
+| `/restartbot` | Restart the bot; Docker brings it back |
 
-## 🍪 Cookies
+Changes are written to `config.yml` and survive a restart.
 
-If a site requires authentication, export your cookies in the **Netscape format** and put
-them in the `app_worker/cookies/` directory. Two filenames are supported:
+## Configuration
 
-| File | Tracked by git? | Priority | Use it for |
-|------|-----------------|----------|------------|
-| `_cookies.txt` | ❌ No — ignored via `**/_cookies.txt` | **Highest** | ✅ **Your real cookies** |
-| `cookies.txt` | ✅ **Yes** — committed placeholder | Fallback | Leave empty |
+Per-user behaviour lives in `app_bot/config.yml`; service behaviour lives in
+`envs/`.
 
-**Always use `_cookies.txt` for real cookies.** Cookie files contain live session tokens
-for your account. `cookies.txt` is tracked by git, so anything written there shows up in
-`git status` and can be committed and published by accident. The underscore-prefixed file
-exists precisely to avoid that.
+**Where downloads are kept.** `STORAGE_PATH` in `envs/worker.env` is
+`/filestorage` inside the container. Map it to a real directory for the
+`yt_worker` service in `docker-compose.yml`:
 
-How the worker picks the file (`app_worker/worker/utils.py`):
+```yml
+  yt_worker:
+    volumes:
+      - "D:/Videos:/filestorage"
+```
 
-1. If `_cookies.txt` exists and is not empty → it is used.
-2. Otherwise, if `cookies.txt` is not empty → it is used.
-3. If both are empty → no `--cookies` option is passed to `yt-dlp`.
+**Temporary space.** Downloads are staged in the `shared-tmpfs` volume, which is
+**RAM-backed** and declared at 27 GB in `docker-compose.yml`. On a small machine
+a large download will exhaust memory and take the host down with it — size it
+below your available RAM, or drop the `driver_opts` block to stage on disk
+instead.
 
-Keep the empty `cookies.txt` file in place even when you are not using cookies — it is the
-placeholder the fallback expects.
+**Upload limits.** Telegram accepts 2 GB per file, or 4 GB with Premium. That
+ceiling is `upload_video_max_file_size` in `config.yml`.
 
-### Applying cookies
+**Download speed.** Unlimited by default. `DOWNLOAD_RATE_LIMIT` in
+`envs/worker.env` accepts a per-download rate such as `500K` or `4.2M`. It
+applies to each download, so `2M` with `MAX_SIMULTANEOUS_DOWNLOADS=2` can still
+use 4 MB/s in total.
 
-Cookie files are copied into the worker image at build time (there is no volume mount), and
-`yt-dlp` options are built once when the worker process starts. Adding or updating cookies
-therefore requires a rebuild:
+**Parallel downloads.** `MAX_SIMULTANEOUS_DOWNLOADS` in `envs/worker.env`,
+default 2. Raise it with the temporary space above in mind.
+
+**Thumbnails.** `yt-dlp` keeps the source cover when it matches the video's
+shape. Otherwise FFmpeg grabs a frame at `THUMBNAIL_FRAME_SECOND` seconds
+(`envs/worker.env`), or at the midpoint for shorter videos.
+
+**yt-dlp options.** Copy `app_worker/ytdl_opts/default.py` to `user.py` and edit
+it; the [full option list](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180)
+is upstream.
+
+**Logging.** `LOG_LEVEL` in `envs/common.env`.
+
+## Cookies
+
+Some sites only serve content to an authenticated session. Export your cookies
+in **Netscape format** into `app_worker/cookies/`. Two filenames are recognised:
+
+| File | In git? | Priority | Use it for |
+|---|---|---|---|
+| `_cookies.txt` | ❌ ignored via `**/_cookies.txt` | **highest** | ✅ your real cookies |
+| `cookies.txt` | ✅ committed placeholder | fallback | leave it empty |
+
+**Put real cookies only in `_cookies.txt`.** Cookie files hold live session
+tokens. `cookies.txt` is tracked by git, so anything written there appears in
+`git status` and can be published by accident. The underscore-prefixed name
+exists to prevent exactly that. Keep the empty `cookies.txt` in place — it is
+the placeholder the fallback expects.
+
+Cookies are copied into the worker image at build time, so updating them needs a
+rebuild:
 
 ```bash
-# Put your exported cookies here (this file is gitignored)
-cp /path/to/your/cookies.txt app_worker/cookies/_cookies.txt
+cp /path/to/exported.txt app_worker/cookies/_cookies.txt
 
-# Verify git does not see them — this must print nothing
-git status --short app_worker/cookies/
+git status --short app_worker/cookies/    # must print nothing
 
-# Rebuild and restart only the worker; the bot does not need cookies
-docker compose build --no-cache yt_worker
-docker compose up -d yt_worker
+./redeploy.sh yt_worker
 ```
 
-Verify they landed in the container:
+Two things worth knowing. For YouTube, **stale cookies are worse than none** —
+an anonymous request is often served where a rejected session is challenged, so
+the worker retries once without them and says so in the status message. And
+cookies exported from a browser you stay logged into are rotated away quickly;
+export from a private window and close it *without* logging out.
 
-```bash
-docker compose exec yt_worker ls -la /app/cookies/
+## HTTP API
+
+Runs on port `1984` with no authentication. Interactive docs at
+`http://127.0.0.1:1984/docs`.
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/status` | `GET` | Health check, normally `{"status": "OK"}` |
+| `/v1/yt-dlp` | `GET` | Installed and latest `yt-dlp` version |
+| `/v1/tasks` | `POST` | Queue a download from `{"url": "<URL>"}` |
+| `/v1/tasks/?include_meta=False&status=DONE` | `GET` | List tasks, filtered by `PENDING`, `PROCESSING`, `FAILED` or `DONE` |
+| `/v1/tasks/<id>?include_meta=True` | `GET` | One task by ID |
+| `/v1/tasks/latest?include_meta=True` | `GET` | The most recent task |
+| `/v1/tasks/<id>` | `DELETE` | Delete a task |
+| `/v1/tasks/stats` | `GET` | Overall counts |
+
+Queueing a download:
+
+```json
+{
+    "url": "https://www.youtube.com/watch?v=PavYAOpVpJI",
+    "download_media_type": "AUDIO_VIDEO",
+    "video_quality": "1080P",
+    "save_to_storage": false,
+    "custom_filename": "cool.mp4",
+    "automatic_extension": false
+}
 ```
 
-## 🛑 Failed download
+`video_quality` accepts `BEST` (default), `4K`, `1440P`, `1080P`, `720P`, `480P`
+and `360P`. The response carries the task `id` to poll:
 
-If your URL can't be downloaded for some reason, you will see a message with error
-details
+```json
+{
+    "id": "5ac05808-b29c-40d6-b250-07e3e769d8a6",
+    "url": "https://www.youtube.com/watch?v=PavYAOpVpJI",
+    "source": "API",
+    "added_at": "2022-02-14T00:35:25.419962+00:00"
+}
+```
 
-![frames](.assets/download_failed.png)
-
-## Access
-
-- **API**: default port is `1984` and no auth. Port can be changed
-  in `docker-compose.yml`
-- **RabbitMQ**: default credentials are located in `envs/common.env`
-- **PostgreSQL**: default credentials are located in `envs/common.env`.
-
-## API
-
-By default, API service will run on your `localhost` and `1984` port. API endpoint
-documentations lives at `http://127.0.0.1:1984/docs`.
-
-| Endpoint                                                           | Method   | Description                                                                                                                                |
-|--------------------------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| `/status`                                                          | `GET`    | Get API healthcheck status, usually response is `{"status": "OK"}`                                                                         |
-| `/v1/yt-dlp`                                                       | `GET`    | Get latest and currently installed `yt-dlp` version                                                                                        |
-| `/v1/tasks/?include_meta=False&status=DONE`                        | `GET`    | Get all tasks with filtering options like to include large file metadata and by task status: `PENDING`, `PROCESSING`, `FAILED` and `DONE`. |
-| `/v1/tasks/f828714a-5c50-45de-87c0-3b51b7e04039?include_meta=True` | `GET`    | Get info about task by ID                                                                                                                  |
-| `/v1/tasks/latest?include_meta=True`                               | `GET`    | Get info about latest task                                                                                                                 |
-| `/v1/tasks/f828714a-5c50-45de-87c0-3b51b7e04039`                   | `DELETE` | Delete task by ID                                                                                                                          |
-| `/v1/tasks`                                                        | `POST`   | Create a download task by sending json payload `{"url": "<URL>"}`                                                                          |
-| `/v1/tasks/stats`                                                  | `GET`    | Get overall tasks stats                                                                                                                    |
-
-### API examples
-
-1. `GET http://localhost:1984/v1/tasks/?include_meta=False&status=DONE&limit=2&offset=0`
-
-   Response
-   ```json
-   [
-       {
-           "id": "7ab91ef7-461c-4ef6-a35b-d3704fe28e6c",
-           "url": "https://www.youtube.com/watch?v=PavYAOpVpJI",
-           "status": "DONE",
-           "source": "BOT",
-           "added_at": "2022-02-14T02:29:55.981622",
-           "created": "2022-02-14T02:29:57.211622",
-           "updated": "2022-02-14T02:29:59.595551",
-           "message_id": 621,
-           "file": {
-               "id": "4b1c63ed-3e32-43e6-a0b7-c7fc8713b268",
-               "created": "2022-02-14T02:29:59.597839",
-               "updated": "2022-02-14T02:29:59.597845",
-               "name": "[Drone Freestyle] Mountain Landscape With Snow | Free Stock Footage | Creative Common Video",
-               "ext": "mp4"
-           }
-       }
-   ]
-   ```
-2. `POST http://localhost:1984/v1/tasks`
-
-   Request
-   ```json
-   {
-       "url": "https://www.youtube.com/watch?v=PavYAOpVpJI",
-       "download_media_type": "AUDIO_VIDEO",
-       "video_quality": "1080P",
-       "save_to_storage": false,
-       "custom_filename": "cool.mp4",
-       "automatic_extension": false
-   }
-   ```
-
-   Available `video_quality` values: `BEST` (default), `4K`, `1440P`, `1080P`, `720P`, `480P`, `360P`.
-   Response
-   ```json
-   {
-       "id": "5ac05808-b29c-40d6-b250-07e3e769d8a6",
-       "url": "https://www.youtube.com/watch?v=PavYAOpVpJI",
-       "source": "API",
-       "added_at": "2022-02-14T00:35:25.419962+00:00"
-   }
-   ```
-3. `GET http://localhost:1984/v1/tasks/stats`
-
-   Response
-   ```json
-   {
-       "total": 39,
-       "unique_urls": 5,
-       "pending": 0,
-       "processing": 0,
-       "failed": 26,
-       "done": 13
-   }
-   ```
+RabbitMQ and PostgreSQL credentials are in `envs/common.env`; the API port is in
+`docker-compose.yml`.

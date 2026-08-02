@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="420" viewBox="0 0 1200 420"
+     role="img" aria-labelledby="arch-title arch-desc">
+  <title id="arch-title">How one link becomes a file</title>
+  <desc id="arch-desc">A link arrives from the Telegram bot or the HTTP API and is queued in
+    RabbitMQ. The worker downloads it with yt-dlp and processes it with FFmpeg, sending progress
+    and the finished result back through the same queue. PostgreSQL records every task.</desc>
+
+  <defs>
+    <marker id="toTask" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#56A2E8"/>
+    </marker>
+    <marker id="toBack" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4FBF67"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="420" rx="26" fill="#0E1621"/>
+
+  <text x="64" y="66" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+        font-size="20" letter-spacing="3" fill="#7D8E9E">HOW ONE LINK BECOMES A FILE</text>
+
+  <g id="entry-points">
+    <rect x="64" y="108" width="224" height="84" rx="14" fill="#17212B" stroke="#2B5278" stroke-width="2"/>
+    <text x="88" y="143" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+          font-size="24" font-weight="600" fill="#E9EEF2">Telegram bot</text>
+    <text x="88" y="172" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="18" fill="#7D8E9E">you paste a link</text>
+
+    <rect x="64" y="252" width="224" height="84" rx="14" fill="#17212B" stroke="#33475C" stroke-width="2"/>
+    <text x="88" y="287" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+          font-size="24" font-weight="600" fill="#E9EEF2">HTTP API</text>
+    <text x="88" y="316" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="18" fill="#7D8E9E">POST /v1/tasks</text>
+  </g>
+
+  <g id="queue">
+    <rect x="440" y="132" width="200" height="172" rx="14" fill="#17212B" stroke="#33475C" stroke-width="2"/>
+    <text x="464" y="174" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+          font-size="24" font-weight="600" fill="#E9EEF2">RabbitMQ</text>
+    <text x="464" y="212" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="18" fill="#7D8E9E">input</text>
+    <text x="464" y="240" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="18" fill="#7D8E9E">progress</text>
+    <text x="464" y="268" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="18" fill="#7D8E9E">success · error</text>
+  </g>
+
+  <g id="worker">
+    <rect x="772" y="108" width="364" height="196" rx="14" fill="#17212B" stroke="#2B5278" stroke-width="2"/>
+    <text x="804" y="150" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+          font-size="24" font-weight="600" fill="#E9EEF2">Worker</text>
+    <text x="804" y="190" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="18" fill="#7D8E9E">yt-dlp fetches the media</text>
+    <text x="804" y="222" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="18" fill="#7D8E9E">FFmpeg merges and converts</text>
+    <text x="804" y="254" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="18" fill="#7D8E9E">covers and metadata</text>
+    <text x="804" y="286" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="18" fill="#7D8E9E">2 downloads in parallel</text>
+  </g>
+
+  <g id="flows">
+    <path d="M296 140 L428 186" stroke="#56A2E8" stroke-width="2.5" fill="none" marker-end="url(#toTask)"/>
+    <path d="M432 222 L300 178" stroke="#4FBF67" stroke-width="2.5" fill="none" marker-end="url(#toBack)"/>
+    <path d="M296 288 L428 248" stroke="#33475C" stroke-width="2.5" fill="none" marker-end="url(#toTask)"/>
+
+    <path d="M648 180 L764 158" stroke="#56A2E8" stroke-width="2.5" fill="none" marker-end="url(#toTask)"/>
+    <path d="M764 250 L648 258" stroke="#4FBF67" stroke-width="2.5" fill="none" marker-end="url(#toBack)"/>
+  </g>
+
+  <g id="storage">
+    <rect x="440" y="336" width="696" height="56" rx="14" fill="#141E29" stroke="#26333F" stroke-width="2"/>
+    <text x="464" y="371" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="18" fill="#7D8E9E">PostgreSQL records every task and file</text>
+    <path d="M954 304 L954 330" stroke="#26333F" stroke-width="2.5" fill="none"/>
+  </g>
+
+  <g id="legend">
+    <path d="M64 366 L104 366" stroke="#56A2E8" stroke-width="2.5" marker-end="url(#toTask)"/>
+    <text x="116" y="372" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="18" fill="#7D8E9E">task</text>
+    <path d="M104 400 L64 400" stroke="#4FBF67" stroke-width="2.5" marker-end="url(#toBack)"/>
+    <text x="116" y="406" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="18" fill="#7D8E9E">progress · result</text>
+  </g>
+</svg>

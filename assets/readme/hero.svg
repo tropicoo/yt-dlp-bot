@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="460" viewBox="0 0 1200 460"
+     role="img" aria-labelledby="hero-title hero-desc">
+  <title id="hero-title">yt-dlp-bot</title>
+  <desc id="hero-desc">Self-hosted Telegram bot: a pasted link is answered with format
+    buttons, live download progress, and the finished video delivered in the same chat.</desc>
+
+  <defs>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#56A2E8"/>
+      <stop offset="1" stop-color="#4FBF67"/>
+    </linearGradient>
+    <clipPath id="thumbClip">
+      <rect x="0" y="0" width="72" height="52" rx="8"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1200" height="460" rx="26" fill="#0E1621"/>
+
+  <!-- ============ title block ============ -->
+  <g id="title-block">
+    <text x="64" y="98" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="20" letter-spacing="3" fill="#7D8E9E">SELF-HOSTED · DOCKER COMPOSE</text>
+
+    <text x="64" y="182" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+          font-size="76" font-weight="700" fill="#E9EEF2">yt-dlp-bot</text>
+
+    <text x="64" y="240" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+          font-size="24" fill="#A8BACA">Paste a link, choose video or audio,</text>
+    <text x="64" y="276" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+          font-size="24" fill="#A8BACA">and get the file in the same chat.</text>
+
+    <rect x="64" y="316" width="72" height="3" rx="1.5" fill="#56A2E8"/>
+
+    <text x="64" y="366" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="19" fill="#7D8E9E">v1.7.2</text>
+    <text x="152" y="366" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="19" fill="#7D8E9E">yt-dlp</text>
+    <text x="240" y="366" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="19" fill="#7D8E9E">Pyrogram</text>
+    <text x="351" y="366" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="19" fill="#7D8E9E">RabbitMQ</text>
+
+    <text x="64" y="404" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="19" fill="#4A5B69">Creative Commons video only</text>
+  </g>
+
+  <!-- ============ the chat this project is ============ -->
+  <g id="chat-proof" transform="translate(640 0)">
+    <rect x="0" y="40" width="496" height="380" rx="18" fill="#17212B"/>
+
+    <!-- outgoing: the link you paste -->
+    <g id="msg-url">
+      <rect x="140" y="70" width="332" height="54" rx="14" fill="#2B5278"/>
+      <text x="164" y="103" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+            font-size="19" fill="#E9EEF2">youtu.be/AWy1qiTF64M</text>
+    </g>
+
+    <!-- incoming: the format keyboard -->
+    <g id="msg-keyboard">
+      <text x="24" y="156" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+            font-size="19" fill="#7D8E9E">Choose what to download</text>
+
+      <g transform="translate(24 170)">
+        <rect x="0" y="0" width="144" height="50" rx="10" fill="#232F3D" stroke="#33475C" stroke-width="1.5"/>
+        <rect x="18" y="18" width="18" height="14" rx="3" fill="#56A2E8"/>
+        <path d="M40 20 L52 25 L40 30 Z" fill="#56A2E8"/>
+        <text x="64" y="31" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+              font-size="20" fill="#E9EEF2">Video</text>
+
+        <rect x="152" y="0" width="144" height="50" rx="10" fill="#232F3D" stroke="#33475C" stroke-width="1.5"/>
+        <circle cx="176" cy="30" r="7" fill="#56A2E8"/>
+        <rect x="181" y="14" width="3" height="14" rx="1.5" fill="#56A2E8"/>
+        <text x="200" y="31" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+              font-size="20" fill="#E9EEF2">Audio</text>
+
+        <rect x="304" y="0" width="144" height="50" rx="10" fill="#232F3D" stroke="#33475C" stroke-width="1.5"/>
+        <rect x="322" y="17" width="14" height="16" rx="3" fill="none" stroke="#56A2E8" stroke-width="2.5"/>
+        <rect x="330" y="21" width="14" height="16" rx="3" fill="#232F3D" stroke="#56A2E8" stroke-width="2.5"/>
+        <text x="356" y="31" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+              font-size="20" fill="#E9EEF2">Both</text>
+      </g>
+    </g>
+
+    <!-- incoming: one status message that keeps updating -->
+    <g id="msg-progress" transform="translate(24 244)">
+      <path d="M8 6 L8 18 M2 12 L8 18 L14 12" stroke="#56A2E8" stroke-width="2.5"
+            fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="28" y="18" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+            font-size="20" font-weight="600" fill="#E9EEF2">Downloading 42.5%</text>
+      <rect x="0" y="34" width="448" height="10" rx="5" fill="#22303F"/>
+      <rect x="0" y="34" width="190" height="10" rx="5" fill="url(#bar)"/>
+      <text x="0" y="70" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+            font-size="18" fill="#7D8E9E">2:27 left · 67.7 of 159.3 MiB · 9.6 MiB/s</text>
+    </g>
+
+    <!-- incoming: the file itself -->
+    <g id="msg-file" transform="translate(24 338)">
+      <rect x="0" y="0" width="448" height="62" rx="14" fill="#1F2C3A"/>
+      <g transform="translate(12 5)" clip-path="url(#thumbClip)">
+        <rect x="0" y="0" width="72" height="52" fill="#2A3B4D"/>
+        <path d="M0 40 L20 24 L34 36 L52 18 L72 34 L72 52 L0 52 Z" fill="#3A5065"/>
+        <circle cx="55" cy="14" r="7" fill="#46617A"/>
+      </g>
+      <path d="M42 24 L54 31 L42 38 Z" fill="#E9EEF2"/>
+      <text x="98" y="27" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+            font-size="19" fill="#E9EEF2">Rufford Ford | part 47</text>
+      <text x="98" y="50" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+            font-size="18" fill="#7D8E9E">4:21 · 159.3 MB</text>
+      <path d="M424 46 l5 5 l9 -11" stroke="#4FBF67" stroke-width="2.5" fill="none"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

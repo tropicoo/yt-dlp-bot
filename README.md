@@ -147,6 +147,13 @@ shape. Otherwise FFmpeg grabs a frame at `THUMBNAIL_FRAME_SECOND` seconds
 it; the [full option list](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/YoutubeDL.py#L180)
 is upstream.
 
+**Metadata language.** YouTube serves titles, descriptions and chapters in
+English by default, even for videos in another language, because that is what
+the request asks for. Set `METADATA_LANGUAGE` in `envs/worker.env` to a tag such
+as `ru` or `pt-BR` to prefer the translation the uploader provided. Where no
+translation exists the original is returned unchanged. This applies to YouTube;
+other sites decide for themselves.
+
 **Logging.** `LOG_LEVEL` in `envs/common.env`.
 
 **Tidying the chat.** `telegram.delete_source_message` removes the message a

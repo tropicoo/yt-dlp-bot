@@ -19,7 +19,11 @@ DEFAULT_YTDL_OPTS: Final[_OptsType] = (
 from typing import Final
 
 from worker.core.config import settings
-from worker.utils import get_cookies_opts_if_not_empty, get_rate_limit_opts_if_set
+from worker.utils import (
+    get_cookies_opts_if_not_empty,
+    get_language_opts_if_set,
+    get_rate_limit_opts_if_set,
+)
 
 FINAL_AUDIO_FORMAT: Final[str] = 'mp3'
 FINAL_THUMBNAIL_FORMAT: Final[str] = 'jpg'
@@ -42,6 +46,7 @@ DEFAULT_YTDL_OPTS: Final[_OptsType] = (
     # priority runtime that is present, which keeps deno first when it works.
     '--js-runtimes',
     'node',
+    *get_language_opts_if_set(),
     *get_rate_limit_opts_if_set(),
     *get_cookies_opts_if_not_empty(),
 )

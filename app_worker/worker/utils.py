@@ -9,6 +9,7 @@ _PRIVATE_COOKIES_FILEPATH: Final[Path] = Path('/app/cookies/_cookies.txt')
 _COOKIES_FILEPATH: Final[Path] = Path('/app/cookies/cookies.txt')
 _COOKIES_OPTION_NAME: Final[str] = '--cookies'
 _RATE_LIMIT_OPTION_NAME: Final[str] = '--limit-rate'
+_EXTRACTOR_ARGS_OPTION_NAME: Final[str] = '--extractor-args'
 
 
 def cli_to_api(opts: list) -> dict:
@@ -27,6 +28,17 @@ def cli_to_api(opts: list) -> dict:
 def is_file_empty(filepath: Path) -> bool:
     """Check whether the file is empty."""
     return filepath.is_file() and filepath.stat().st_size == 0
+
+
+def get_language_opts_if_set() -> tuple[str, str] | tuple:
+    """Ask the site for metadata in a preferred language, where it offers one.
+
+    Titles, descriptions and chapters come back translated. Only YouTube is
+    covered here; other extractors take their own arguments.
+    """
+    if not settings.METADATA_LANGUAGE:
+        return ()
+    return _EXTRACTOR_ARGS_OPTION_NAME, f'youtube:lang={settings.METADATA_LANGUAGE}'
 
 
 def get_rate_limit_opts_if_set() -> tuple[str, str] | tuple:

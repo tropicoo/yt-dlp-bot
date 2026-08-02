@@ -42,3 +42,6 @@ class YoutubeHost(AbstractHostConfig, metaclass=HostConfRegistry):
             ffmpeg_video_opts=self.FFMPEG_VIDEO_OPTS,
             ytdl_opts=self._build_ytdl_opts(media_type, curr_tmp_dir, video_quality),
         )
+
+    def _build_custom_ytdl_video_opts(self) -> tuple[str, ...]:
+        return self.DEFAULT_VIDEO_FORMAT_SORT_OPT

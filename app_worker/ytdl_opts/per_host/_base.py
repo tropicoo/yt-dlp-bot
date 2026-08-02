@@ -150,6 +150,11 @@ class AbstractHostConfig:
         )
         return ytdl_opts
 
-    @abstractmethod
     def _build_custom_ytdl_video_opts(self) -> tuple[str, ...]:
-        pass
+        """Extra video options for this host, sorting by format by default.
+
+        Not abstract: this class is registered through a metaclass rather than
+        ABCMeta, so an abstract marker here is never enforced and a host that
+        forgot to override it returned None into an extend() call instead.
+        """
+        return self.DEFAULT_VIDEO_FORMAT_SORT_OPT
